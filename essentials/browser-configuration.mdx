@@ -14,8 +14,8 @@ The browser is controlled via the **Browser configuration object**, a json objec
   "captcha_config": { "active":true }, // Default: True
   "proxy_config": 
     {
-        "active": true, // Default: False
-        "type" : "anchor-resedential" // Optional, will default to anchor resedential
+        "active": true, // Default: False,
+        "type" : "anchor-resedential", // Optional, will default to anchor resedential
         "country": "COUNTRY_CODE" // Optional, default empty
     }
 }
@@ -25,14 +25,83 @@ Example utilization of browser configuration in code:
 
 <CodeGroup>
 ```tsx node.js
-{ "extensions": [“adblock”, “captcha”], "proxy": {“country”: “COUNTRY_CODE”} 
-  "adblock_config":
-  {"enabled":"true"}
+import fetch from "node-fetch";
+import { chromium } from "playwright-core";
+
+// Browser configuration settings
+const browserConfiguration = {
+  adblock_config: { active: true },
+  captcha_config: { active: true },
+  proxy_config: { active: true },
+};
+
+const ANCHOR_API_KEY = "YOUR_ANCHOR_API_KEY"; // Replace with your actual API key
+
+async function createBrowserSession() {
+  const response = await fetch("https://api.anchorbrowser.io/api/sessions", {
+    method: "POST",
+    headers: {
+      "anchor-api-key": ANCHOR_API_KEY,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(browserConfiguration),
+  });
+
+  const json = await response.json();
+  return json;
 }
+
+// Use the browser with the configuration
+(async () => {
+  const { id } = await createBrowserSession();
+  const browser = await chromium.connectOverCDP(
+    `wss://connect.anchorbrowser.io?apiKey=${ANCHOR_API_KEY}&sessionId=${id}`
+  );
+
+  // Use the browser instance as needed
+
+  await browser.close();
+})();
+
 ```
 
 ```python python
-pip3 install playwright
+import requests
+from playwright.sync_api import sync_playwright
+
+ANCHOR_API_KEY = "YOUR_ANCHOR_API_KEY"  # Replace with your actual API key
+
+# Browser configuration settings
+browser_configuration = {
+    "adblock_config": {"active": True},
+    "captcha_config": {"active": True},
+    "proxy_config": {"active": True},
+}
+
+def create_browser_session():
+    response = requests.post(
+        "https://api.anchorbrowser.io/api/sessions",
+        headers={
+            "anchor-api-key": ANCHOR_API_KEY,
+            "Content-Type": "application/json",
+        },
+        json=browser_configuration,
+    )
+    response.raise_for_status()  # Ensure a successful request
+    return response.json()
+
+# Use the browser with the configuration
+with sync_playwright() as p:
+    session_data = create_browser_session()
+    session_id = session_data["id"]
+    
+    browser = p.chromium.connect_over_cdp(
+        f"wss://connect.anchorbrowser.io?apiKey={ANCHOR_API_KEY}&sessionId={session_id}"
+    )
+
+    # Use the browser instance as needed
+    
+    browser.close()
 ```
 </CodeGroup>
 
@@ -299,4 +368,6 @@ pip3 install playwright
 <Note>Only proceed to steps 3 and 4 if you wish to control your browser in code</Note>
 
 ### Automated Captcha solving
+
+Catpcha challenges are completed by default when `captcha_config` is set to `active=true`. Captcha solving is active by default
 

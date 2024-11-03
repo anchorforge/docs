@@ -59,7 +59,8 @@
       "group": "Integrate",
       "pages": [
         "agent-frameworks/connect-to-agent-frameworks",
-        "agent-frameworks/crewai"
+        "agent-frameworks/crewai",
+        "agent-frameworks/langchain"
       ]
     },
     {
