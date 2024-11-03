@@ -33,14 +33,9 @@
   ],
   "anchors": [
     {
-      "name": "Documentation",
-      "icon": "book-open-cover",
-      "url": "https://docs.anchorbrowser.com/"
-    },
-    {
-      "name": "Blog",
-      "icon": "newspaper",
-      "url": "https://theautonomousweb.com/"
+      "name": "Interactive Playground",
+      "icon": "window-restore",
+      "url": "https://app.anchorbrowser.io/"
     }
   ],
   "navigation": [
@@ -49,18 +44,29 @@
       "pages": [
         "introduction",
         "quickstart",
-        "development"
+        "why"
       ]
     },
     {
       "group": "Essentials",
       "pages": [
-        "essentials/markdown",
-        "essentials/code",
-        "essentials/images",
-        "essentials/settings",
-        "essentials/navigation",
-        "essentials/reusable-snippets"
+        "essentials/browser-configuration",
+        "essentials/authentication-and-identity",
+        "essentials/tool-building"
+      ]
+    },
+    {
+      "group": "Advanced",
+      "pages": [
+        "advanced/captcha-solving",
+        "advanced/network-configuration"
+      ]
+    },
+    {
+      "group": "Agent Frameworks",
+      "pages": [
+        "agent-frameworks/connect-to-agent-frameworks",
+        "agent-frameworks/crewai"
       ]
     },
     {
