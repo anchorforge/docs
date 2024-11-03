@@ -48,7 +48,7 @@
       ]
     },
     {
-      "group": "Essentials",
+      "group": "Configure",
       "pages": [
         "essentials/browser-configuration",
         "essentials/authentication-and-identity",
@@ -56,14 +56,7 @@
       ]
     },
     {
-      "group": "Advanced",
-      "pages": [
-        "advanced/captcha-solving",
-        "advanced/network-configuration"
-      ]
-    },
-    {
-      "group": "Agent Frameworks",
+      "group": "Integrate",
       "pages": [
         "agent-frameworks/connect-to-agent-frameworks",
         "agent-frameworks/crewai"
