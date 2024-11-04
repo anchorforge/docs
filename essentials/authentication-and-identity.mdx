@@ -3,3 +3,169 @@ title: 'Authentication & Identity'
 description: ''
 icon: 'fingerprint'
 ---
+
+Anchor Browser enables secure connections to services that require authentication, without exposing credentials or cookies directly to the AI agent. This guide covers two supported methods for achieving secure access.
+
+## Method 1 (Recommended) - Mounting a Browser Context
+
+In this method, Anchor Browser uses a pre-authenticated browser context to access protected resources. This approach is recommended because it maintains a secure, isolated environment for authentication without exposing sensitive data.
+
+<Steps>
+<Step title="Authenticate Once">
+Start by logging into the target service in a dedicated browser session. This creates a browser context with the required cookies and session data.
+
+</Step>
+<Step title="Export Browser Context">
+Once authenticated, export the browser context (including cookies and session data) and save it securely.
+
+<Note> You can also export the browser context manually from your local browser by saving cookies and session data, using tools like browser devtools or extensions. - [How to manually collect the context object](https://chatgpt.com/share/6728a581-2030-800a-8f1b-9afd8297e0f1) </Note>
+
+  <Accordion title="Code example - Generate and store a browser context"> 
+    <CodeGroup>
+    ```jsx node.js
+    import { chromium } from 'playwright-core';
+    import fs from 'fs';
+    // Authenticate and save browser context
+    (async () => {
+    const browser = await chromium.launch();
+    const context = await browser.newContext();
+    const page = await context.newPage();
+    await page.goto('https://example.com/login');
+    // Perform authentication actions
+    await page.fill('#username', 'your-username');
+    await page.fill('#password', 'your-password');
+    await page.click('#login-button');
+    // Save browser context
+    const storageState = await context.storageState();
+    fs.writeFileSync('browser_context.json', JSON.stringify(storageState));
+    await browser.close();
+    })();
+    ```
+    ```python python
+    from playwright.sync_api import sync_playwright
+    import json
+
+    # Authenticate and save browser context
+    with sync_playwright() as p:
+        browser = p.chromium.launch()
+        context = browser.new_context()
+        page = context.new_page()
+        page.goto('https://example.com/login')
+        # Perform authentication actions (fill username/password and login)
+        page.fill('#username', 'your-username')
+        page.fill('#password', 'your-password')
+        page.click('#login-button')
+        # Save browser context
+        context_storage = context.storage_state()
+        with open('browser_context.json', 'w') as f:
+            f.write(json.dumps(context_storage))
+        browser.close()
+    ```
+    </CodeGroup>
+  </Accordion>
+
+</Step>
+<Step title="Mount in Anchor Browser">
+Use the saved browser context within Anchor Browser to access authenticated services seamlessly.
+
+<CodeGroup>
+```jsx node.js
+import { chromium } from 'playwright-core';
+import fs from 'fs';
+
+(async () => {
+    const storageState = JSON.parse(fs.readFileSync('browser_context.json', 'utf-8'));
+    const browser = await chromium.connectOverCDP(`wss://connect.anchorbrowser.io?api-key=${ANCHOR_API_KEY}`);
+    // Mount the browser context in Anchor Browser
+    const context = await browser.newContext({ storageState });
+    const page = await context.newPage();
+    // Use the authenticated session
+    await page.goto('https://example.com/protected');
+    await browser.close();
+})();
+
+```
+```python python
+import json
+from playwright.sync_api import sync_playwright
+
+with sync_playwright() as p:
+    with open('browser_context.json') as f:
+        context_storage = json.load(f)
+
+    browser = p.chromium.connect_over_cdp(f"wss://connect.anchorbrowser.io?api-key={ANCHOR_API_KEY}")
+    # Mount the browser context in Anchor Browser:
+    context = browser.new_context(storage_state=context_storage)
+    page = context.new_page()
+    # Use the authenticated session:
+    page.goto('https://example.com/protected')
+    browser.close()
+```
+</CodeGroup>
+
+</Step>
+</Steps>
+
+## Method 2 - Playwright-Based Cookie Injection
+
+For cases where browser context mounting isn’t feasible, Playwright allows direct injection of cookies into a browser session, enabling access to authenticated resources.
+
+<Steps>
+
+<Step title="Obtain Authentication Cookies">
+Authenticate manually or programmatically to capture the required cookies.
+</Step>
+<Step title="Inject Cookies into Playwright Session">
+Use Playwright’s API to inject cookies into the browser session before navigating to the authenticated page.
+</Step>
+<Step title="Access Resources">
+With the cookies injected, the AI agent can interact with the protected service as if logged in.
+
+### Code example
+<CodeGroup>
+```jsx node.js
+import { chromium } from 'playwright-core';
+import fs from 'fs';
+
+// Load cookies securely from a file
+const cookies = JSON.parse(fs.readFileSync('cookies.json', 'utf-8'));
+
+(async () => {
+  const browser = await chromium.connectOverCDP(`wss://connect.anchorbrowser.io?api-key=${ANCHOR_API_KEY}`);
+  const context = await browser.newContext();
+  // Inject cookies for authenticated access:
+  await context.addCookies(cookies);
+  const page = await context.newPage();
+  // Use the authenticated session:
+  await page.goto('https://example.com/protected'); 
+  await browser.close();
+})();
+```
+```python python
+import json
+from playwright.sync_api import sync_playwright
+
+# Load cookies securely from a file or environment variable:
+with open('cookies.json', 'r') as f:
+    cookies = json.load(f)
+
+with sync_playwright() as p:
+    browser = p.chromium.connect_over_cdp(f"wss://connect.anchorbrowser.io?api-key={ANCHOR_API_KEY}")
+    context = browser.new_context()
+    # Inject cookies for authenticated access:
+    context.add_cookies(cookies) 
+    page = context.new_page()
+    # Use the authenticated session:
+    page.goto('https://example.com/protected')
+    browser.close()
+```
+</CodeGroup>
+</Step>
+</Steps>
+
+## Secure Storage of Secrets
+
+To maintain the security of your credentials, API keys, and sensitive data, **do not store secrets directly in plaintext within your code**. Instead, consider these best practices:
+
+1. Environment Variables: Store secrets in environment variables. You can use libraries such as dotenv for Node.js to load variables from a .env file.
+2. Secrets Management Services: Use secure storage solutions like AWS Secrets Manager, Azure Key Vault, or HashiCorp Vault to manage sensitive data securely.

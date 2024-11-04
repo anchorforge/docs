@@ -6,22 +6,22 @@ icon: 'gear'
 
 ### Browser configuration object
 
-The browser is controlled via the **Browser configuration object**, a json object with the following format:
+The browser is controlled via the **Browser Configuration Object**, a JSON structure formatted as follows:
 
 ```json
 { 
-  "adblock_config": { "active":true }, // Default: True
-  "captcha_config": { "active":true }, // Default: True
+  "adblock_config": { "active":true }, // Default: true
+  "captcha_config": { "active":true }, // Default: true
   "proxy_config": 
     {
-        "active": true, // Default: False,
-        "type" : "anchor-resedential", // Optional, will default to anchor resedential
-        "country": "COUNTRY_CODE" // Optional, default empty
+        "active": true, // Default: false,
+        "type" : "anchor-resedential", // Optional, defaults to anchor-residential
+        "country": "COUNTRY_CODE" // Optional, defaults to empty
     }
 }
 ```
 
-Example utilization of browser configuration in code:
+Example usage of the browser configuration in code:
 
 <CodeGroup>
 ```tsx node.js
@@ -107,8 +107,8 @@ with sync_playwright() as p:
 
 ### Proxy Configuration
 
-`type` - Proxy type, currently only `anchor-resedential` supported
-`country` - Optional country code parameter, if left empty defaults to best available proxy. Full list of possible country codes:
+- `type` - Proxy type, currently only `anchor-resedential` supported
+- `country` - Optional country code; defaults to the best available proxy if left blank. Full list of country codes:
   <Accordion title="Country codes"> 
     ```json 
     country: "Afghanistan", code: "AF"
@@ -369,5 +369,5 @@ with sync_playwright() as p:
 
 ### Automated Captcha solving
 
-Catpcha challenges are completed by default when `captcha_config` is set to `active=true`. Captcha solving is active by default
+CAPTCHA challenges are resolved automatically when captcha_config is set to active: true, which is enabled by default.
 
