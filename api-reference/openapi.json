@@ -1,127 +1,146 @@
 {
-  "openapi": "3.0.1",
+  "openapi": "3.0.0",
   "info": {
-    "title": "OpenAPI Plant Store",
-    "description": "A sample API that uses a plant store as an example to demonstrate features in the OpenAPI specification",
-    "license": {
-      "name": "MIT"
-    },
-    "version": "1.0.0"
+    "title": "AnchorBrowser API",
+    "version": "1.0.0",
+    "description": "APIs to manage all browser-related actions and configuration."
   },
-  "servers": [
-    {
-      "url": "http://sandbox.mintlify.com"
+  "components": {
+    "securitySchemes": {
+      "apiKeyHeader": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "anchor-api-key",
+        "description": "API key passed in the header"
+      },
+      "apiKeyQuery": {
+        "type": "apiKey",
+        "in": "query",
+        "name": "apiKey",
+        "description": "API key passed as a query parameter"
+      }
     }
-  ],
-  "security": [
-    {
-      "bearerAuth": []
-    }
-  ],
+  },
   "paths": {
-    "/plants": {
-      "get": {
-        "description": "Returns all plants from the system that the user has access to",
-        "parameters": [
+    "/api/sessions": {
+      "post": {
+        "summary": "Create new session",
+        "description": "Allocates a new browser session for the user, with optional configurations for ad-blocking, captcha solving, and proxy usage.",
+        "security": [
           {
-            "name": "limit",
-            "in": "query",
-            "description": "The maximum number of results to return",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
+            "apiKeyHeader": []
+          },
+          {
+            "apiKeyQuery": []
           }
         ],
+        "tags": [
+          "Sessions"
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "adblock_config": {
+                    "type": "object",
+                    "description": "Configuration options for ad-blocking.",
+                    "properties": {
+                      "active": {
+                        "type": "boolean",
+                        "description": "Enable or disable ad-blocking. Defaults to `false`.",
+                        "example": false
+                      }
+                    }
+                  },
+                  "captcha_config": {
+                    "type": "object",
+                    "description": "Configuration options for captcha-solving.",
+                    "properties": {
+                      "active": {
+                        "type": "boolean",
+                        "description": "Enable or disable captcha-solving. Defaults to `false`.",
+                        "example": false
+                      }
+                    }
+                  },
+                  "proxy_config": {
+                    "type": "object",
+                    "description": "Configuration options for proxy usage.",
+                    "properties": {
+                      "active": {
+                        "type": "boolean",
+                        "description": "Enable or disable proxy usage. Defaults to `false`.",
+                        "example": false
+                      },
+                      "type": {
+                        "type": "string",
+                        "description": "Type of proxy to use. Defaults to `anchor-residential`.",
+                        "example": "anchor-residential"
+                      },
+                      "country": {
+                        "type": "string",
+                        "description": "Country for the proxy. Optional; if not provided, an arbitrary country will be chosen.",
+                        "example": "FR"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
-            "description": "Plant response",
+            "description": "Successfully returned a browser object",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Plant"
+                  "type": "object",
+                  "properties": {
+                    "pageId": {
+                      "type": "string",
+                      "description": "Unique identifier for the browser page"
+                    },
+                    "browserId": {
+                      "type": "string",
+                      "description": "Unique identifier for the browser instance"
+                    }
                   }
                 }
               }
             }
           },
-          "400": {
-            "description": "Unexpected error",
+          "402": {
+            "description": "Payment Required - Insufficient credits to allocate a new browser",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "description": "Creates a new plant in the store",
-        "requestBody": {
-          "description": "Plant to add to the store",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/NewPlant"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "plant response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Plant"
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Error message indicating insufficient credits."
+                    }
+                  }
                 }
               }
             }
           },
-          "400": {
-            "description": "unexpected error",
+          "500": {
+            "description": "Internal server error or no available browsers",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/plants/{id}": {
-      "delete": {
-        "description": "Deletes a single plant based on the ID supplied",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "ID of plant to delete",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Plant deleted",
-            "content": {}
-          },
-          "400": {
-            "description": "unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Error message for internal server or unavailability issues."
+                    }
+                  }
                 }
               }
             }
@@ -130,66 +149,5 @@
       }
     }
   },
-  "components": {
-    "schemas": {
-      "Plant": {
-        "required": [
-          "name"
-        ],
-        "type": "object",
-        "properties": {
-          "name": {
-            "description": "The name of the plant",
-            "type": "string"
-          },
-          "tag": {
-            "description": "Tag to specify the type",
-            "type": "string"
-          }
-        }
-      },
-      "NewPlant": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Plant"
-          },
-          {
-            "required": [
-              "id"
-            ],
-            "type": "object",
-            "properties": {
-              "id": {
-                "description": "Identification number of the plant",
-                "type": "integer",
-                "format": "int64"
-              }
-            }
-          }
-        ]
-      },
-      "Error": {
-        "required": [
-          "error",
-          "message"
-        ],
-        "type": "object",
-        "properties": {
-          "error": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "message": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer"
-      }
-    }
-  }
+  "tags": []
 }
