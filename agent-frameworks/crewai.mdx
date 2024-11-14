@@ -33,7 +33,7 @@ class AnchorBrowserTool(crewai.Tool):
     def run(self, command):
         with sync_playwright() as p:
             browser = p.chromium.connect_over_cdp(
-                f"wss://connect.anchorbrowser.io?api-key={ANCHOR_API_KEY}"
+                f"wss://connect.anchorbrowser.io?apiKey={ANCHOR_API_KEY}"
             )
             page = browser.new_page()
             page.goto(command['url'])
@@ -82,7 +82,7 @@ class AnchorBrowserTool {
   async run(command) {
     // Connect to Anchor Browser session
     const browser = await chromium.connectOverCDP(
-      `wss://connect.anchorbrowser.io?api-key=${ANCHOR_API_KEY}`
+      `wss://connect.anchorbrowser.io?apiKey=${ANCHOR_API_KEY}`
     );
 
     const page = await browser.newPage();
@@ -136,7 +136,7 @@ class AnchorSpecificTool(crewai.Tool):
         with sync_playwright() as p:
             # Connect to Anchor Browser session
             browser = p.chromium.connect_over_cdp(
-                f"wss://connect.anchorbrowser.io?api-key={ANCHOR_API_KEY}"
+                f"wss://connect.anchorbrowser.io?apiKey={ANCHOR_API_KEY}"
             )
             page = browser.new_page()
             page.goto(command['url'])
@@ -179,7 +179,7 @@ class AnchorSpecificTool {
   async run(command) {
     // Connect to Anchor Browser session
     const browser = await chromium.connectOverCDP(
-      `wss://connect.anchorbrowser.io?api-key=${ANCHOR_API_KEY}`
+      `wss://connect.anchorbrowser.io?apiKey=${ANCHOR_API_KEY}`
     );
 
     const page = await browser.newPage();

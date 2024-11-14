@@ -30,7 +30,7 @@ def use_anchor_browser(command):
     with sync_playwright() as p:
         # Connect to Anchor Browser session
         browser = p.chromium.connect_over_cdp(
-            f"wss://connect.anchorbrowser.io?api-key={ANCHOR_API_KEY}"
+            f"wss://connect.anchorbrowser.io?apiKey={ANCHOR_API_KEY}"
         )
         page = browser.new_page()
         page.goto(command['url'])
@@ -67,7 +67,7 @@ const ANCHOR_API_KEY = process.env.ANCHOR_API_KEY;  // Replace with your actual 
 async function useAnchorBrowser(command) {
   // Connect to Anchor Browser session
   const browser = await chromium.connectOverCDP(
-    `wss://connect.anchorbrowser.io?api-key=${ANCHOR_API_KEY}`
+    `wss://connect.anchorbrowser.io?apiKey=${ANCHOR_API_KEY}`
   );
 
   const page = await browser.newPage();
@@ -121,7 +121,7 @@ def specific_anchor_tool(command):
     with sync_playwright() as p:
         # Connect to Anchor Browser session
         browser = p.chromium.connect_over_cdp(
-            f"wss://connect.anchorbrowser.io?api-key={ANCHOR_API_KEY}"
+            f"wss://connect.anchorbrowser.io?apiKey={ANCHOR_API_KEY}"
         )
         page = browser.new_page()
         page.goto(command['url'])
@@ -154,7 +154,7 @@ const ANCHOR_API_KEY = process.env.ANCHOR_API_KEY;  // Replace with your actual 
 async function specificAnchorTool(command) {
   // Connect to Anchor Browser session
   const browser = await chromium.connectOverCDP(
-    `wss://connect.anchorbrowser.io?api-key=${ANCHOR_API_KEY}`
+    `wss://connect.anchorbrowser.io?apiKey=${ANCHOR_API_KEY}`
   );
 
   const page = await browser.newPage();

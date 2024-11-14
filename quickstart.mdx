@@ -47,7 +47,7 @@ The following example demonstrates how to start the browser
 ```tsx node.js
 import { chromium } from "playwright-core";
 
-const browserSession = await chromium.connectOverCDP(`wss://connect.anchorbrowser.io?api-key=ANCHOR-API-KEY`);
+const browserSession = await chromium.connectOverCDP(`wss://connect.anchorbrowser.io?apiKey=ANCHOR-API-KEY`);
 // Perform actions with `browser` as needed
 
 ```
@@ -57,7 +57,7 @@ const browserSession = await chromium.connectOverCDP(`wss://connect.anchorbrowse
 from playwright.sync_api import sync_playwright
 
 with sync_playwright() as p:
-    browser = p.chromium.connect_over_cdp("wss://connect.anchorbrowser.io?api-key=ANCHOR-API-KEY")
+    browser = p.chromium.connect_over_cdp("wss://connect.anchorbrowser.io?apiKey=ANCHOR-API-KEY")
     # Perform actions with `browser` as needed
 
     browser.close()

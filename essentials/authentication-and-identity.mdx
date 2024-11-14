@@ -75,7 +75,7 @@ import fs from 'fs';
 
 (async () => {
     const storageState = JSON.parse(fs.readFileSync('browser_context.json', 'utf-8'));
-    const browser = await chromium.connectOverCDP(`wss://connect.anchorbrowser.io?api-key=${ANCHOR_API_KEY}`);
+    const browser = await chromium.connectOverCDP(`wss://connect.anchorbrowser.io?apiKey=${ANCHOR_API_KEY}`);
     // Mount the browser context in Anchor Browser
     const context = await browser.newContext({ storageState });
     const page = await context.newPage();
@@ -93,7 +93,7 @@ with sync_playwright() as p:
     with open('browser_context.json') as f:
         context_storage = json.load(f)
 
-    browser = p.chromium.connect_over_cdp(f"wss://connect.anchorbrowser.io?api-key={ANCHOR_API_KEY}")
+    browser = p.chromium.connect_over_cdp(f"wss://connect.anchorbrowser.io?apiKey={ANCHOR_API_KEY}")
     # Mount the browser context in Anchor Browser:
     context = browser.new_context(storage_state=context_storage)
     page = context.new_page()
@@ -131,7 +131,7 @@ import fs from 'fs';
 const cookies = JSON.parse(fs.readFileSync('cookies.json', 'utf-8'));
 
 (async () => {
-  const browser = await chromium.connectOverCDP(`wss://connect.anchorbrowser.io?api-key=${ANCHOR_API_KEY}`);
+  const browser = await chromium.connectOverCDP(`wss://connect.anchorbrowser.io?apiKey=${ANCHOR_API_KEY}`);
   const context = await browser.newContext();
   // Inject cookies for authenticated access:
   await context.addCookies(cookies);
@@ -150,7 +150,7 @@ with open('cookies.json', 'r') as f:
     cookies = json.load(f)
 
 with sync_playwright() as p:
-    browser = p.chromium.connect_over_cdp(f"wss://connect.anchorbrowser.io?api-key={ANCHOR_API_KEY}")
+    browser = p.chromium.connect_over_cdp(f"wss://connect.anchorbrowser.io?apiKey={ANCHOR_API_KEY}")
     context = browser.new_context()
     # Inject cookies for authenticated access:
     context.add_cookies(cookies) 
