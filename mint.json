@@ -29,7 +29,12 @@
     {
       "name": "API Reference",
       "url": "api-reference",
-      "openapi": "https://anchorforge.io/anchorbrowser/openapi.json"
+      "openapi": "https://anchorforge.io/anchorbrowser/api_openapi.json"
+    },
+    {
+      "name": "Tools API Reference",
+      "url": "tools-api-reference",
+      "openapi": "https://anchorforge.io/anchorbrowser/connect_openapi.json"
     }
   ],
   "anchors": [
