@@ -31,57 +31,8 @@ You can choose from two common cost structures for end-user access to the browse
 
 Both options are straightforward to implement by following the guide below.
 
-## Intergration quickstart - step by step 
-
-The technical effort required for integration depends on your stack and typically ranges from a few hours to a few days.
-
-### Step-by-Step Guide
-
-<Steps>
-<Step title="Create an Anchor Account">
-
-Visit [Anchor UI](https://app.anchorbrowser.io/api-key) and ensure you have an active Anchor account.
-
-</Step>
-<Step title="Automatically create a browser-creation key per each user">
-
-Like authentication or billing services, each user in your system should have a dedicated browser-creation key.
-
-Use our [API reference](http://docs.anchorbrowser.io/api-reference/api-keys/create-api-key) to generate a key for each existing and new user.
-
-<Note> You can limit the number of concurrent browsers per user using the `max_concurrent_browsers` property in the `Create API Key` endpoint</Note>
-</Step>
-<Step title="Expose a New API Endpoint">
- 
-Implement a new API endpoint in your service to wrap the [Create Session API](http://docs.anchorbrowser.io/api-reference/sessions/create-session). Through this endpoint you can allow your customers to specify any HTTPS proxy string, allowing you to preserve configuration capabilities which are based on the proxy connection string values.
-
-</Step>
-<Step title="(Optional) DNS Configuration">
-
-For a seamless white-label experience, configure a CNAME record in your DNS to point a subdomain (e.g., `browsers.yourdomain.com`) to `connect.anchorbrowser.io`. This ensures browser traffic routes through your domain.
-
-<Note> Completing this step ensures no usage of Anchor Browser domains is required from your end users. </Note>
-
-</Step>
-<Step title="Expose the New Service to Customers">
-
-Update your documentation and/or UI to guide users on creating a new browser and establishing a CDP connection. You can adapt sections of the Anchor Browser User Quickstart Guide for your documentation.
-
-</Step>
-<Step title="Advanced - Provide live browser view to customers">
-
-Offer your customers a live view of the proxied browser session by embedding or linking to the following URL:
-
-```
-https://niftik.github.io/dtfe/inspector.html?wss=browsers.yourdomain.com?apiKey={End-User-Key}&sessionId={Session-Id}
-```
-
-You can also self-host this component and serve it as your own asset.
-
-</Step>
-
-</Steps>
-
 ### Next Steps
 
-[Schedule a technical integration call](https://calendar.app.google/h8CmWYR5sEaR1Q1C6) for personalized consulting and support in integrating Anchor Browser into your proxy solution. Get started today and elevate your product offering with a scalable, secure, and user-friendly browser solution
+1. Proceed to the [Integration Technical Guide](https://docs.anchorbrowser.io/proxy-integration/technical-guide)
+
+2. [Schedule a technical integration call](https://calendar.app.google/h8CmWYR5sEaR1Q1C6) for personalized consulting and support in integrating Anchor Browser into your proxy solution. Get started today and elevate your product offering with a scalable, secure, and user-friendly browser solution
