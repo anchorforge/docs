@@ -25,7 +25,7 @@ Use our [API reference](http://docs.anchorbrowser.io/api-reference/api-keys/crea
 </Step>
 <Step title="Expose a New API Endpoint">
  
-Implement a new API endpoint in your service to wrap the [Create Session API](http://docs.anchorbrowser.io/api-reference/sessions/create-session). Through this endpoint you can allow your customers to specify any HTTPS proxy string, allowing you to preserve configuration capabilities which are based on the proxy connection string values.
+Implement a new API endpoint in your service that will call the [Create Session API](http://docs.anchorbrowser.io/api-reference/sessions/create-session). Through this endpoint you can allow your customers to specify any HTTPS proxy string, allowing you to preserve configuration capabilities which are based on the proxy connection string values.
 
 </Step>
 <Step title="(Optional) DNS Configuration">
@@ -45,7 +45,7 @@ Update your documentation and/or UI to guide users on creating a new browser and
 Offer your customers a live view of the proxied browser session by embedding or linking to the following URL:
 
 ```
-https://niftik.github.io/dtfe/inspector.html?wss=browsers.yourdomain.com?apiKey={End-User-Key}&sessionId={Session-Id}
+https://anchorforge.io/devtools-frontend/inspector.html?wss=wss://browsers.yourdomain.com?apiKey={End-User-Key}&sessionId={Session-Id}
 ```
 
 You can also self-host this component and serve it as your own asset.
