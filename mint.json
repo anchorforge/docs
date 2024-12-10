@@ -64,6 +64,7 @@
     {
       "group": "Integrate",
       "pages": [
+        "advanced/browser-live-view",
         "agent-frameworks/connect-to-agent-frameworks",
         "agent-frameworks/crewai",
         "agent-frameworks/langchain",

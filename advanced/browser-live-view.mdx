@@ -1,0 +1,28 @@
+---
+title: 'Embed Browser UI'
+description: ''
+icon: 'check-to-slot'
+---
+
+### Getting the session URL
+
+Anchor Browser provides a live view to embed an interacteble frame of the website as a web element. 
+
+To get the browser live session URL, start by [creating a session](/api-reference/sessions/create-session) which will return the following object:
+
+```json
+{
+  "page_id": "<string>",
+  "id": "<string>",
+  "session_url" :"connect.anchorbrowser.io/devtools/page/{{page-id}}?sessionId={{session-id}}"
+}
+```
+
+### Embeddable object
+
+Embed the following Iframe object to get a live view of the browser.
+
+```html
+<iframe src="https://anchorforge.io/devtools-frontend/inspector.html?wss={{session_url}}" sandbox="allow-same-origin allow-scripts" allow="clipboard-read; clipboard-write" style="border: 0px; display: block; width: 100%; height: 100%; position: absolute; top: 0px; left: 0px;"></iframe>
+```
+
