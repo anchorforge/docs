@@ -1,0 +1,65 @@
+---
+title: 'AI Task Completion'
+description: ''
+icon: 'list-check'
+---
+
+### The browser AI object
+
+Anchor Browser comes with an embedded AI component, that allows to control the browser or extract data using natural language.
+
+This capability allows to use the browser without any coding.
+
+**For basic usage**, the [Perform Web Task Tool](/tools-api-reference/ai-tools/perform-web-task) exposes this capability through a single API request.
+
+**For advanced usage**, use it through the playwright CDP connection (all languages supported by PW are supported)
+
+### Code Example
+
+<CodeGroup>
+
+```tsx node.js
+import { chromium } from "playwright-core";
+
+const browserSession = await chromium.connectOverCDP(`wss://connect.anchorbrowser.io?apiKey=ANCHOR-API-KEY`);
+const ai = context.serviceWorkers()[0];
+const page = context.pages()[0];
+
+// Combine regular playwright and AI actions to benefit from both options
+await page.goto("http://docs.anchorbrowser.io/", {waitUntil:'domcontentloaded'});
+
+// Use the embedded 'ai' object, using the ~ magic string
+const result = await ai.evaluate('~ Find the last game played by Milwakee in the NBA and return the result')
+console.log(result);
+
+const author = await ai.evaluate('~ Find an article that discusses the game and return the name of the author')
+console.log(author);
+
+```
+
+```python python
+
+from playwright.sync_api import sync_playwright
+
+with sync_playwright() as p:
+    browser = p.chromium.connect_over_cdp("wss://connect.anchorbrowser.io?apiKey=ANCHOR-API-KEY")
+    context = browser.new_context()
+    page = context.pages()[0]
+    ai = context.serviceWorkers()[0]
+
+    page.goto("http://docs.anchorbrowser.io/", wait_until='domcontentloaded')
+
+    # Use the embedded 'ai' object
+    result = ai.evaluate('~ Find the last game played by Milwaukee in the NBA and return the result')
+    print(result)
+
+    author = ai.evaluate('~ Find an article that discusses the game and return the name of the author')
+    print(author)
+
+    browser.close()
+
+```
+
+</CodeGroup>
+
+<Note>AI Task completion is still in beta, contact us for feedback and support</Note>

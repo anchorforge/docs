@@ -1,43 +1,27 @@
 ---
 title: 'Captcha Solving'
 description: ''
-icon: 'check-to-slot'
+icon: 'square-check'
 ---
 
-## Basic
+### Visual CAPTCHA solving
 
-### Inline Code
+Anchor browser solves CAPTCHA challenges using a vision-based approach, along with extension-based fallbacks. The vision-based approach imitates human behavior to solve any CAPTCHA (including Cloudflare) without mulitple challenges.
 
-Anchor Browser provides a live view to embed an interacteble frame of the website as a web element. 
+<Note> CAPTCHA solving works best with proxy enabled. Bot detectors would likely fail CAPTCHA solving attempts that are performed without Proxy.</Note>
 
-To get the browser live session URL, start by creating a session
+For the full list of available options, view the [interactive api documentation](/api-reference/sessions/create-session)
 
+### Code Example
+
+```bash
+curl --request POST \
+  --url https://api.anchorbrowser.io/api/sessions \
+  --header 'Content-Type: application/json' \
+  --header 'anchor-api-key: <api-key>' \
+  --data '{
+  "captcha_config": {
+    "active": true
+  }
+}'
 ```
-{
-  "page_id": "<string>",
-  "id": "<string>",
-  "session_url" :"connect.anchorbrowser.io/devtools/page/{{page-id}}?sessionId={{session-id}}",
-}
-```
-
-### Code Block
-
-Use [fenced code blocks](https://www.markdownguide.org/extended-syntax/#fenced-code-blocks) by enclosing code in three backticks and follow the leading ticks with the programming language of your snippet to get syntax highlighting. Optionally, you can also write the name of your code after the programming language.
-
-```java HelloWorld.java
-class HelloWorld {
-    public static void main(String[] args) {
-        System.out.println("Hello, World!");
-    }
-}
-```
-
-````md
-```java HelloWorld.java
-class HelloWorld {
-    public static void main(String[] args) {
-        System.out.println("Hello, World!");
-    }
-}
-```
-````

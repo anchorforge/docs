@@ -15,7 +15,7 @@ The browser is controlled via the **Browser Configuration Object**, a JSON struc
   "proxy_config": 
     {
         "active": true, // Default: false,
-        "type" : "anchor-resedential", // Optional, defaults to anchor-residential
+        "type" : "anchor-residential", // Optional, defaults to anchor-residential
     }
 }
 ```
@@ -103,14 +103,3 @@ with sync_playwright() as p:
     browser.close()
 ```
 </CodeGroup>
-
-### Proxy Configuration
-
-- `type` - Proxy type, currently only `anchor-resedential` supported
-
-<Note>Only proceed to steps 3 and 4 if you wish to control your browser in code</Note>
-
-### Automated Captcha solving
-
-CAPTCHA challenges are resolved automatically when captcha_config is set to active: true, which is enabled by default.
-

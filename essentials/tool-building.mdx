@@ -1,20 +1,18 @@
 ---
-title: 'Tool Building'
+title: 'Tools, API Browser Control'
 description: ''
 icon: 'screwdriver-wrench'
 ---
 
-Anchor Browser allows you to build and customize tools to automate specific workflows and browser interactions efficiently. The tool-building feature provides a streamlined way to define reusable tools that interact with web pages in an automated fashion, including navigating pages, filling out forms, handling CAPTCHAs, and managing other advanced interactions.
+Anchor Browser offers API endpoints (also known as "agentic tools") to simplify the usage of the browser, and enable browser utilization *without any coding*
 
-### Overview
+### Featured tools
 
-- **Customizable Workflow Tools**: Design tools that automate multi-step workflows. These tools can be reused by AI agents to perform complex tasks in a consistent and efficient manner.
-- **Integration with AI Agents**: The tools you build can be seamlessly integrated into AI agent frameworks like Langchain, CrewAI, or your own custom frameworks, making it easy to scale web interactions.
-- **Consumed via API**: Once the tools are built, they can be consumed via a simple API. This allows your AI agents to leverage these tools to perform specific tasks efficiently without manual intervention.
-- **Secure Environment**: All tools are executed in secure, isolated browser sessions, ensuring that sensitive information such as cookies and credentials remains protected.
-  
-Tool building in Anchor Browser is designed to reduce repetitive code, allow for easy reuse of complex interactions, and accelerate the automation of web-based processes for your AI agents.
+- **[Screenshot webpage](/tools-api-reference/tools/screenshot-webpage)**: Get a fully javascript-rendered screenshot of a given webpage.
+- **[Get webpage content](/tools-api-reference/tools/get-webpage-content)**: Get an LLM ready, Markdown version of a given webpage.
 
-<Note>
-This feature is currently in early beta. If you are interested in gaining access, please [contact us](hi@anchorbrowser.io).
-</Note>
+### Featured AI based tools
+
+- **[Ask webpage](/tools-api-reference/ai-tools/ask-webpage)**: Use natural language to answer a question or get data from a specific webpage.
+- **[Perform task](/tools-api-reference/ai-tools/perform-web-task)**: Use natural language to have the browser autonomously act and perform a task.
+
