@@ -22,8 +22,8 @@
     }
   ],
   "topbarCtaButton": {
-    "name": "Dashboard",
-    "url": "https://app.anchorbrowser.io"
+    "name": "Live Playground",
+    "url": "https://app.anchorbrowser.io/playground"
   },
   "tabs": [
     {
