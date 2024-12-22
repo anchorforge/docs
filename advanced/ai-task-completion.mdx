@@ -6,7 +6,7 @@ icon: 'list-check'
 
 ### Anchor AI Task Completion
 
-Anchor Browser delivers a record 89% Score on the industry-standard benchmark WebVoyager, leveraging [browser-use](https://github.com/gregpr07/browser-use) as a core componenet of the automation capability.
+Anchor Browser delivers a record 89% Score on the industry-standard benchmark WebVoyager, leveraging [browser-use](https://github.com/gregpr07/browser-use) as a core component of the automation capability.
 
 <img
   className="hidden dark:block"
@@ -20,7 +20,7 @@ Anchor Browser comes with an embedded AI component, that allows to control the b
 
 This capability allows to use the browser without any coding.
 
-**For basic usage**, the [Perform Web Task Tool](/tools-api-reference/ai-tools/perform-web-task) exposes this capability through a single API request.
+**For basic usage**, the [Perform Web Task Tool](/tools-api-reference/ai-tools/perform-web-task) exposes these capabilities through a single API request.
 
 **For advanced usage**, use it through the playwright CDP connection (all languages supported by PW are supported)
 
@@ -39,7 +39,7 @@ const page = context.pages()[0];
 await page.goto("http://docs.anchorbrowser.io/", {waitUntil:'domcontentloaded'});
 
 // Use the embedded 'ai' object, using the ~ magic string
-const result = await ai.evaluate('~ Find the last game played by Milwakee in the NBA and return the result')
+const result = await ai.evaluate('~ Find the last game played by Milwaukee in the NBA and return the result')
 console.log(result);
 
 const author = await ai.evaluate('~ Find an article that discusses the game and return the name of the author')
