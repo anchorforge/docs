@@ -52,21 +52,13 @@ console.log(author);
 from playwright.sync_api import sync_playwright
 
 with sync_playwright() as p:
-    browser = p.chromium.connect_over_cdp("wss://connect.anchorbrowser.io?apiKey=ANCHOR-API-KEY")
-    context = browser.new_context()
-    page = context.pages()[0]
-    ai = context.serviceWorkers()[0]
+   browser = p.chromium.connect_over_cdp("wss://connect.anchorbrowser.io?apiKey=ANCHOR-API-KEY")
+   context = browser.contexts[0]
+   ai = context.service_workers[0]
 
-    page.goto("http://docs.anchorbrowser.io/", wait_until='domcontentloaded')
-
-    # Use the embedded 'ai' object
-    result = ai.evaluate('~ Find the last game played by Milwaukee in the NBA and return the result')
-    print(result)
-
-    author = ai.evaluate('~ Find an article that discusses the game and return the name of the author')
-    print(author)
-
-    browser.close()
+   # Use the embedded 'ai' object
+   result = ai.evaluate('~ Find the last game played by Milwaukee in the NBA and return the result')
+   print(result)
 
 ```
 
