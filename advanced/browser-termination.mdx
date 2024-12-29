@@ -1,0 +1,46 @@
+---
+title: 'Browser Termination'
+description: ''
+icon: 'forward-step'
+---
+
+### Configuring Browser Termination
+
+The AnchorBrowser API provides multiple options to manage and terminate browser sessions effectively. Two key options to control session lifetime are `timeout` and `idle_timeout`.
+
+For the full list of available options, view the [interactive api documentation](/api-reference/sessions/create-session)
+
+### Configuring Browser Termination
+
+The AnchorBrowser API offers options to manage and gracefully terminate browser sessions through `timeout` and `idle_timeout` parameters.
+
+- **`timeout`**:  
+  - Specifies the maximum time (in **minutes**) a browser session can run before automatic termination.  
+  - **Default**: `-1` (session runs indefinitely).  
+  - **Example**: Setting `timeout` to `10` terminates the session after 10 minutes.  
+  - **Note**: There is no maximum timeout for a browser. However, browser integrity is **guaranteed for a minimum of 7 days**. This ensures that long-running sessions are stable for at least a week.  
+
+- **`idle_timeout`**:  
+  - Defines the duration (in **minutes**) the session remains open while waiting for new connections after all other CDP (Chrome DevTools Protocol) connections are closed.  
+  - **Default**: `1` minute.  
+  - **Example**: Setting `idle_timeout` to `5` terminates the session after 5 minutes of inactivity.  
+  - **Purpose**:  
+    `idle_timeout` is particularly useful for maintaining **long-lived browsers** that persist **without an active CDP connection**. This allows the browser to stay alive in the background, ready to resume operations when reconnected, without requiring continuous activity or interaction.  
+  - **Note**: Use `-1` to disable automatic termination for idle sessions. Monitor long-running sessions manually to ensure resource optimization.  
+
+### Code Example
+
+```bash
+curl --request POST \
+  --url https://api.anchorbrowser.io/api/sessions \
+  --header 'Content-Type: application/json' \
+  --header 'anchor-api-key: your_api_key_here' \
+  --data '{
+    "timeout": 10,
+    "idle_timeout": 5
+  }'
+```
+
+Replace `"your_api_key_here"` with your actual API key.  
+- `timeout: 10` sets a 10-minute session limit.  
+- `idle_timeout: 5` keeps the session alive for 5 minutes of inactivity.  

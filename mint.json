@@ -61,7 +61,8 @@
         "advanced/captcha-solving",
         "advanced/ai-task-completion",
         "essentials/tool-building",
-        "essentials/authentication-and-identity"
+        "essentials/authentication-and-identity",
+        "advanced/browser-termination"
       ]
     },
     {
@@ -72,6 +73,12 @@
         "agent-frameworks/crewai",
         "agent-frameworks/langchain",
         "agent-frameworks/custom-agent-framework"
+      ]
+    },
+    {
+      "group": "Additional Details",
+      "pages": [
+        "pricing"
       ]
     }
   ],
