@@ -4,11 +4,11 @@ description: ''
 icon: 'check-to-slot'
 ---
 
-### Getting the session URL
+### Obtaining the Session URL
 
-Anchor Browser provides a live view to embed an interacteble frame of the website as a web element. 
+Anchor Browser offers a live view feature that allows you to embed an interactive frame of a website as a web element.
 
-To get the browser live session URL, start by [creating a session](/api-reference/sessions/create-session) which will return the following object:
+To obtain the browser live session URL, start by [creating a session](/api-reference/sessions/create-session), which will return the following object:
 
 ```json
 {
@@ -18,11 +18,109 @@ To get the browser live session URL, start by [creating a session](/api-referenc
 }
 ```
 
-### Embeddable object
+### Embedding the Live View
 
-Embed the following Iframe object to get a live view of the browser.
+Embed the following iframe to get a live view of the browser session.
+
 
 ```html
 <iframe src="https://anchorforge.io/devtools-frontend/inspector.html?wss={{session_url}}" sandbox="allow-same-origin allow-scripts" allow="clipboard-read; clipboard-write" style="border: 0px; display: block; width: 100%; height: 100%; position: absolute; top: 0px; left: 0px;"></iframe>
 ```
 
+
+## Advanced Embedding Configuration
+
+### Embed in Fullscreen View (Hide Navigation Bar)
+
+To use the fullscreen view, replace the live view URL with the following:
+
+```html
+<iframe src="https://anchorforge.io/devtools-frontend/inspector-fullscreen.html?wss={{session_url}}" sandbox="allow-same-origin allow-scripts" allow="clipboard-read; clipboard-write" style="border: 0px; display: block; width: 100%; height: 100%; position: absolute; top: 0px; left: 0px;"></iframe>
+```
+
+### Disable Browser Interactivity
+
+To prevent users from interacting with the browser, add the `pointer-events: none;` style to the iframe:
+
+```html
+<iframe src="https://anchorforge.io/devtools-frontend/inspector.html?wss={{session_url}}" sandbox="allow-same-origin allow-scripts" allow="clipboard-read; clipboard-write" style="border: 0px; display: block; width: 100%; height: 100%; position: absolute; top: 0px; left: 0px; pointer-events: none;"></iframe>
+```
+
+### Embedding Browser with Multiple Tabs
+
+To embed the browser with multiple tabs, use the [Get Pages for a Session](/api-reference/sessions/get-pages-for-a-session) API to obtain metadata about the open tabs:
+
+
+```json
+[
+      {
+        "frontend_url": "https://anchorforge.io/devtools-frontend/inspector.html?wss=<session_url>",
+        "id": "4471AF05DB5CB530971145A14848E5A7",
+        "title": "Documentation - Anchor Browser Docs",
+        "url": "https://docs.anchorbrowser.io/introduction"
+      },
+      {
+        "frontend_url": "https://anchorforge.io/devtools-frontend/inspector.html?wss=<session_url>",
+        "id": "4471AF05DB5CB530971145A14848E5A7",
+        "title": "API Reference - Anchor Browser Docs",
+        "url": "https://docs.anchorbrowser.io/api-reference"
+      }
+]
+```
+
+Below is an example of how to dynamically embed multiple tabs with a tab selector:
+
+<Accordion title="Code example - Embed browser with multiple tabs"> 
+```html 
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Browser Tabs</title>
+    <style>
+        select { margin-bottom: 10px; padding: 5px; }
+        iframe { border: 0; width: 100%; height: 600px; }
+    </style>
+</head>
+<body>
+    <select id="tabSelector"></select>
+    <div id="iframeContainer"></div>
+
+    <script>
+        const tabSelector = document.getElementById('tabSelector');
+        const container = document.getElementById('iframeContainer');
+
+        fetch('https://api.anchorbrowser.io/api/sessions/YOUR_SESSION_ID/pages', {
+            headers: {
+                'anchor-api-key': 'YOUR_API_KEY'
+            }
+        })
+        .then(res => res.json())
+        .then(tabs => {
+            tabs.forEach(tab => {
+                const option = document.createElement('option');
+                option.value = tab.frontend_url;
+                option.textContent = tab.title || 'Untitled Tab';
+                tabSelector.appendChild(option);
+            });
+            
+            if (tabs.length > 0) {
+                createIframe(tabs[0].frontend_url);
+            }
+        });
+
+        tabSelector.onchange = (e) => createIframe(e.target.value);
+
+        function createIframe(url) {
+            container.innerHTML = `
+                <iframe 
+                    src="https://anchorforge.io/devtools-frontend/inspector.html?wss=${url}"
+                    sandbox="allow-same-origin allow-scripts"
+                    allow="clipboard-read; clipboard-write">
+                </iframe>
+            `;
+        }
+    </script>
+</body>
+</html>
+```
+</Accordion>
