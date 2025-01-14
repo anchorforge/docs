@@ -1,12 +1,41 @@
 ---
-title: 'Authentication & Identity'
+title: 'Identity Profiles'
 description: ''
 icon: 'fingerprint'
 ---
 
-Anchor Browser enables secure connections to services that require authentication, without exposing credentials or cookies directly to the AI agent. This guide covers two supported methods for achieving secure access.
+Anchor allows you to save an existing browser state as "profiles" for use in future browser sessions. This feature enables users to:
 
-## Method 1 (Recommended) - Mounting a Browser Context
+- Store authenticated sessions and identities
+- Cache static content to reduce network requests and improve overall speed and performance
+
+The following guide explains how to create and use Identity Profiles in Anchor Browser.
+
+## Quick start - Create and use a profile
+
+<Steps>
+<Step title="Authenticate Once">
+Start a new session in Anchor playground or API, and authenticate to the target service to create a browser context with the required cookies and session data.
+</Step>
+<Step title="Get your session ID">
+**Without closing your current session**, go to the [sessions page](https://app.anchorbrowser.io/sessions) to get your session ID.
+</Step>
+<Step title="Call the 'Create Profile' API">
+Use the [create profile](/api-reference/profile/create-a-new-profile) API to save the current browser context as a profile.
+</Step>
+<Step title="Termintae the session">
+Close the current session to save the profile.
+</Step>
+<Step title="Use the profile in a new session">
+Now, when using the [create session](/api-reference/sessions/create-session) API, pass the `profile` parameter with the name of the profile you created to load the saved browser context.
+</Step>
+</Steps>
+
+For additional capabilities and advanced use cases, refer to the API documentation for [profiles](/api-reference/profiles).
+
+## Alternative approaches 
+
+### Method 1 - Mounting a Browser Context
 
 In this method, Anchor Browser uses a pre-authenticated browser context to access protected resources. This approach is recommended because it maintains a secure, isolated environment for authentication without exposing sensitive data.
 
@@ -106,7 +135,7 @@ with sync_playwright() as p:
 </Step>
 </Steps>
 
-## Method 2 - Playwright-Based Cookie Injection
+### Method 2 - Playwright-Based Cookie Injection
 
 For cases where browser context mounting isn’t feasible, Playwright allows direct injection of cookies into a browser session, enabling access to authenticated resources.
 

@@ -38,18 +38,17 @@ To use the fullscreen view, replace the live view URL with the following:
 <iframe src="https://anchorforge.io/devtools-frontend/inspector-fullscreen.html?wss={{session_url}}" sandbox="allow-same-origin allow-scripts" allow="clipboard-read; clipboard-write" style="border: 0px; display: block; width: 100%; height: 100%; position: absolute; top: 0px; left: 0px;"></iframe>
 ```
 
-### Disable Browser Interactivity
+### Disable browser interactivity
 
-To prevent users from interacting with the browser, add the `pointer-events: none;` style to the iframe:
+To prevent the end user from interacting with the browser, add the `style="pointer-events: none;"` attribute to the iframe:
 
 ```html
 <iframe src="https://anchorforge.io/devtools-frontend/inspector.html?wss={{session_url}}" sandbox="allow-same-origin allow-scripts" allow="clipboard-read; clipboard-write" style="border: 0px; display: block; width: 100%; height: 100%; position: absolute; top: 0px; left: 0px; pointer-events: none;"></iframe>
 ```
 
-### Embedding Browser with Multiple Tabs
+### Embed browser with multiple tabs
 
-To embed the browser with multiple tabs, use the [Get Pages for a Session](/api-reference/sessions/get-pages-for-a-session) API to obtain metadata about the open tabs:
-
+To embed the browser with multiple tabs, use the [live view URLs](/api-reference/sessions/get-pages-for-a-session) API to obtain the metadata about the open tabs:
 
 ```json
 [
