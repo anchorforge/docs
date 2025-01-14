@@ -60,8 +60,8 @@
         "advanced/proxy", 
         "advanced/captcha-solving",
         "advanced/ai-task-completion",
-        "essentials/tool-building",
         "essentials/authentication-and-identity",
+        "essentials/tool-building",
         "advanced/browser-termination"
       ]
     },
