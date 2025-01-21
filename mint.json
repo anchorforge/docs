@@ -49,7 +49,14 @@
       "group": "Get Started",
       "pages": [
         "introduction",
-        "quickstart",
+        {
+          "group": "Quickstart",
+          "pages": ["quickstart/use-via-code", "quickstart/use-via-api", "quickstart/embed-browser-in-your-product"]
+        },
+        {
+          "group": "Example Use-Cases",
+          "pages": ["examples/form-filling", "examples/buyer-intent", "examples/configuration-collection", "examples/research-task"]
+        },
         "why"
       ]
     },
@@ -62,7 +69,12 @@
         "advanced/ai-task-completion",
         "essentials/authentication-and-identity",
         "essentials/tool-building",
-        "advanced/browser-termination"
+        "advanced/browser-termination",
+        {
+          "group": "Files Upload / Download",
+          "icon": "file",
+          "pages": ["advanced/file-upload", "advanced/file-download"]
+        }
       ]
     },
     {

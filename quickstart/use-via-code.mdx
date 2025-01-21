@@ -1,0 +1,106 @@
+---
+title: 'Code Quick Start'
+---
+
+<Steps>
+<Step title="Fetch API Key">
+In [Anchor UI](https://app.anchorbrowser.io/api-key), copy your API key
+</Step>
+<Step title="Install playwright">
+
+<CodeGroup>
+
+```bash node.js
+npm i playwright-core
+```
+
+```bash python
+pip3 install playwright
+```
+
+</CodeGroup>
+</Step>
+<Step title="Run sample code">
+
+If you don't have access to code running, consider using the [live playground](https://app.anchorbrowser.io/playground)
+
+The following example demonstrates how to start the browser
+
+<CodeGroup>
+
+```tsx node.js
+import { chromium } from "playwright-core";
+
+const browserSession = await chromium.connectOverCDP(`wss://connect.anchorbrowser.io?apiKey=ANCHOR-API-KEY`);
+// Perform actions with `browser` as needed
+
+```
+
+```python python
+
+from playwright.sync_api import sync_playwright
+
+with sync_playwright() as p:
+    browser = p.chromium.connect_over_cdp("wss://connect.anchorbrowser.io?apiKey=ANCHOR-API-KEY")
+    # Perform actions with `browser` as needed
+
+    browser.close()
+
+```
+
+</CodeGroup>
+</Step>
+
+<Step title="Alter the browser configuration">
+
+Anchor Browser supports different configurations of the browser session, such as [network configuration](/advanced/proxy), [identity profiles](/essentials/authentication-and-identity), [termination](/advanced/browser-termination) and more.
+
+To use a browser with a sepecific configuration, first create a browser session with the desired configuration, then connect to the session using the session URL.
+
+<CodeGroup>
+
+```tsx node.js
+import { chromium } from "playwright-core";
+
+const response = await fetch("https://api.anchorbrowser.io/api/sessions", {
+  method: "POST",
+  headers: {
+    "anchor-api-key": ANCHOR_API_KEY,
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify(browserConfiguration),
+});
+
+const json = await response.json();
+const { id } = json;
+
+const browser = await chromium.connectOverCDP(`wss://connect.anchorbrowser.io?apiKey=${ANCHOR_API_KEY}&SessionId=${id}`);
+
+```
+
+```python python
+import requests
+from playwright.sync_api import sync_playwright
+
+response = requests.post(
+    "https://api.anchorbrowser.io/api/sessions",
+    headers={
+        "anchor-api-key": ANCHOR_API_KEY,
+        "Content-Type": "application/json",
+    },
+    json=browser_configuration
+)
+response.raise_for_status()
+session_id = response.json()["id"]
+
+with sync_playwright() as p:
+    browser = p.chromium.connect_over_cdp(
+        f"wss://connect.anchorbrowser.io?apiKey={ANCHOR_API_KEY}&SessionId={session_id}"
+    )
+    # Work with browser here
+    browser.close()
+```
+
+</CodeGroup>
+</Step>
+</Steps>

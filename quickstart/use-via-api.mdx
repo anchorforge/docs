@@ -1,0 +1,25 @@
+---
+title: 'No-code Quick Start (API)'
+---
+
+### Method 1 - Single Step Browser Tool Call (API Call)
+
+The easiest way to utilze Anchor Browser is through browser tools. Browser tools are API endpoints that wrap end-to-end browser functionality in a single API call.
+
+Use the [interactive tools API](/tools-api-reference/ai-tools/ask-webpage), which can easily integrate to no-code automation platforms like n8n, Zapier, Make and more.
+
+### Method 2 - Multi-Step Browser flow & Browser Configuration
+
+For use cases where a custom browser configuration is required, or a multi-step browser flow is needed, perform the following steps:
+
+<Steps>
+<Step title="Fetch API Key">
+In [Anchor UI](https://app.anchorbrowser.io/api-key), copy your API key
+</Step>
+<Step title="Create a session">
+[Create a session](/api-reference/sessions/create-session) with the desired configuration
+</Step>
+<Step title="Use tools on the created session">
+Perform [tool calls](/tools-api-reference/ai-tools/ask-webpage) while referencing the created session ID
+</Step>
+</Steps>

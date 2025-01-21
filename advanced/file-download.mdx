@@ -1,0 +1,39 @@
+---
+title: 'File Download'
+description: ''
+icon: 'download'
+---
+
+Anchor Browser supports downloading files during your browser sessions.
+
+The following examples demonstrate how to download a file and retrieve it from the browser session.
+
+<Steps>
+<Step title="Create a browser session">
+Use the [create session](/api-reference/sessions/create-session) API to create a new browser session.
+</Step>
+<Step title="Browse and download a file">
+Use the following example to perform a file download
+<CodeGroup>
+
+```tsx node.js
+await page.goto("https://browser-tests-alpha.vercel.app/api/download-test");
+
+await Promise.all([page.waitForEvent("download"), page.locator("#download").click()]); // The download has completed
+```
+
+```python python
+await page.goto("https://browser-tests-alpha.vercel.app/api/download-test")
+
+async with page.expect_download() as download_info:
+    await page.locator("#download").click()
+
+download = await download_info.value
+```
+
+</CodeGroup>  
+</Step>
+<Step title="Fetch the file from the browser session">
+You can retrieve the downloaded file from the browser session using the [get session downloads](/api-reference/sessions/get-session-downloads) API
+</Step>
+</Steps>

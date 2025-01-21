@@ -17,16 +17,14 @@ The following guide explains how to create and use Identity Profiles in Anchor B
 <Step title="Authenticate Once">
 Start a new session in Anchor playground or API, and authenticate to the target service to create a browser context with the required cookies and session data.
 </Step>
-<Step title="Get your session ID">
+<Step title="Save identity using the 'Create Profile' API">
 **Without closing your current session**, go to the [sessions page](https://app.anchorbrowser.io/sessions) to get your session ID.
-</Step>
-<Step title="Call the 'Create Profile' API">
-Use the [create profile](/api-reference/profile/create-a-new-profile) API to save the current browser context as a profile.
+Then, use the [create profile](/api-reference/profile/create-a-new-profile) API to save the current browser context as a profile.
 </Step>
 <Step title="Terminate the session">
 Close the current session to save the profile.
 </Step>
-<Step title="Use the profile in a new session">
+<Step title="Use the profile in other sessions">
 Now, when using the [create session](/api-reference/sessions/create-session) API, pass the `profile` parameter with the name of the profile you created to load the saved browser context.
 </Step>
 </Steps>
