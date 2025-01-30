@@ -74,7 +74,7 @@ const response = await fetch("https://api.anchorbrowser.io/api/sessions", {
 const json = await response.json();
 const { id } = json;
 
-const browser = await chromium.connectOverCDP(`wss://connect.anchorbrowser.io?apiKey=${ANCHOR_API_KEY}&SessionId=${id}`);
+const browser = await chromium.connectOverCDP(`wss://connect.anchorbrowser.io?apiKey=${ANCHOR_API_KEY}&sessionId=${id}`);
 
 ```
 
@@ -95,7 +95,7 @@ session_id = response.json()["id"]
 
 with sync_playwright() as p:
     browser = p.chromium.connect_over_cdp(
-        f"wss://connect.anchorbrowser.io?apiKey={ANCHOR_API_KEY}&SessionId={session_id}"
+        f"wss://connect.anchorbrowser.io?apiKey={ANCHOR_API_KEY}&sessionId={session_id}"
     )
     # Work with browser here
     browser.close()
