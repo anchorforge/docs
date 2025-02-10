@@ -1,0 +1,55 @@
+---
+title: 'Browser-use'
+description: ''
+icon: 'stars'
+---
+
+<Note>This guide is dedicated to running your own browser-use agent while connecting to an Anchor browser. To use the embedded browser use capability, refer to [AI task completion](/advanced/ai-task-completion)</Note>
+
+<Steps>
+<Step title="Step one - Create an Anchor browser session">
+Start a new session in Anchor playground or API, and authenticate to the target service to create a browser context with the required cookies and session data.
+
+```python
+import requests
+
+ANCHOR_API_KEY = "YOUR_ANCHOR_API_KEY"
+
+response = requests.post(
+    "https://api.anchorbrowser.io/api/sessions",
+    headers={
+        "anchor-api-key": ANCHOR_API_KEY,
+        "Content-Type": "application/json",
+    },
+    json={
+    "headless": False, # Use headless false to view the browser when combining with browser-use
+    }).json()
+```
+
+Returns:
+```json
+{
+  "page_id": "<string>",
+  "id": "<string>",
+  "live_view_url" :"https://live.anchorbrowser.io/inspector.html?host=connect.anchorbrowser.io&sessionId=<session_id>"
+  // Use the live view URL to view the browser session in real-time
+}
+```
+</Step>
+<Step title="Point browser-use to the Anchor browser instance">
+```python
+from browser_use import BrowserConfig
+
+config = BrowserConfig(
+    wss_url=f"wss://connect.anchorbrowser.io?apiKey={ANCHOR_API_KEY}&sessionId={response['id']}"
+    # Use the session ID returned from the first step
+)
+```
+</Step>
+<Step title="Optional - Live view the browser">
+Use the `live_view_url` returned on the first step to view the browser session in real-time, or to embed it as a UI component
+```html
+<iframe src="https://live.anchorbrowser.io/inspector.html?host=connect.anchorbrowser.io&sessionId=<session_id>" sandbox="allow-same-origin allow-scripts" allow="clipboard-read; clipboard-write" style="border: 0px; display: block; width: 100%; height: 100%; position: absolute; top: 0px; left: 0px;"></iframe>
+```
+</Step>
+</Steps>
