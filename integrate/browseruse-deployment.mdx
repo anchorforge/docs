@@ -40,7 +40,7 @@ Returns:
 from browser_use import BrowserConfig
 
 config = BrowserConfig(
-    wss_url=f"wss://connect.anchorbrowser.io?apiKey={ANCHOR_API_KEY}&sessionId={response['id']}"
+    cdp_url=f"wss://connect.anchorbrowser.io?apiKey={ANCHOR_API_KEY}&sessionId={response['id']}"
     # Use the session ID returned from the first step
 )
 ```
