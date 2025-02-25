@@ -81,6 +81,7 @@
       "group": "Integrate",
       "pages": [
         "advanced/browser-live-view",
+        "integrate/browseruse-deployment",
         "agent-frameworks/connect-to-agent-frameworks",
         "agent-frameworks/crewai",
         "agent-frameworks/langchain",
