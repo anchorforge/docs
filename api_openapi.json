@@ -1,0 +1,1213 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "AnchorBrowser API",
+    "version": "1.0.0",
+    "description": "APIs to manage all browser-related actions and configuration."
+  },
+  "servers": [
+    {
+      "url": "https://api.anchorbrowser.io",
+      "description": "API server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "api_key_header": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "anchor-api-key",
+        "description": "API key passed in the header"
+      }
+    }
+  },
+  "paths": {
+    "/api/profiles": {
+      "post": {
+        "summary": "Create Profile",
+        "description": "Creates a new profile from a session. A Profile stores cookies, local storage, and cache.",
+        "security": [
+          {
+            "api_key_header": []
+          }
+        ],
+        "tags": [
+          "Profiles"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "The name of the profile.",
+                    "example": "my-profile"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "A description of the profile.",
+                    "example": "This is my profile description."
+                  },
+                  "source": {
+                    "type": "string",
+                    "description": "The source of the profile data. currently only `session` is supported.",
+                    "example": "session",
+                    "enum": [
+                      "session"
+                    ]
+                  },
+                  "session_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "The session ID is required if the source is set to `session`. The session must be running, and the profile will be stored once the session terminates.",
+                    "example": "550e8400-e29b-41d4-a716-446655440000"
+                  },
+                  "store_cache": {
+                    "type": "boolean",
+                    "description": "Indicates whether the session cache should be saved when the session ends. Defaults to `false`.",
+                    "example": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Profile created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "description": "Details of the created profile."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or input.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "example": 400
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Invalid source type"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Session not found or unreachable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "example": 404
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Session does not exist or not reachable"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Profile name already exists.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "example": 409
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Profile name already exists"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "501": {
+            "description": "Feature not implemented.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "example": 501
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Not implemented"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "List Profiles",
+        "description": "Fetches all stored profiles.",
+        "security": [
+          {
+            "api_key_header": []
+          }
+        ],
+        "tags": [
+          "Profiles"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of user profiles retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "The name of the profile.",
+                        "example": "my-profile"
+                      },
+                      "description": {
+                        "type": "string",
+                        "description": "A brief description of the profile.",
+                        "example": "This is a profile description."
+                      },
+                      "source": {
+                        "type": "string",
+                        "description": "The source of the profile data.",
+                        "example": "session"
+                      },
+                      "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "The timestamp when the profile was created.",
+                        "example": "2024-01-01T12:00:00Z"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unable to list user profiles due to an unexpected error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "example": 500
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Unable to list profiles"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/profiles/{profile_name}": {
+      "put": {
+        "summary": "Update Profile",
+        "description": "Updates the description or data of an existing profile using a session.",
+        "security": [
+          {
+            "api_key_header": []
+          }
+        ],
+        "tags": [
+          "Profiles"
+        ],
+        "parameters": [
+          {
+            "name": "profile_name",
+            "in": "path",
+            "required": true,
+            "description": "The name of the profile to update.",
+            "schema": {
+              "type": "string",
+              "example": "my-profile"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "description": {
+                    "type": "string",
+                    "description": "The new description for the profile.",
+                    "example": "Updated profile description."
+                  },
+                  "source": {
+                    "type": "string",
+                    "description": "The source of the profile data. Currently, only `session` is supported.",
+                    "example": "session",
+                    "enum": [
+                      "session",
+                      "file_upload"
+                    ]
+                  },
+                  "session_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "The session ID is required if the source is set to `session`. The session must belong to the user and be active.",
+                    "example": "550e8400-e29b-41d4-a716-446655440000"
+                  },
+                  "store_cache": {
+                    "type": "boolean",
+                    "description": "Indicates whether the session cache should be saved when the session ends. Defaults to `false`.",
+                    "example": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Profile updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or input.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "example": 400
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Invalid source type"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Profile or session not found or unreachable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "example": 404
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Profile does not exist"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unable to update profile due to an unexpected error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "example": 500
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Unable to update profile"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "501": {
+            "description": "Feature not implemented.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "example": 501
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Not implemented"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete Profile",
+        "description": "Deletes an existing profile by its name.",
+        "security": [
+          {
+            "api_key_header": []
+          }
+        ],
+        "tags": [
+          "Profiles"
+        ],
+        "parameters": [
+          {
+            "name": "profile_name",
+            "in": "path",
+            "required": true,
+            "description": "The name of the profile to delete.",
+            "schema": {
+              "type": "string",
+              "example": "my-profile"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Profile deleted successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Profile not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "example": 404
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Profile does not exist"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unable to delete the profile due to an unexpected error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "example": 500
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Unable to delete profile"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sessions/active": {
+      "get": {
+        "summary": "List Active Sessions",
+        "description": "Fetch a list of live session IDs associated with the provided API key.",
+        "tags": [
+          "Browser Sessions"
+        ],
+        "security": [
+          {
+            "api_key_header": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of active session objects with detailed information.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "session_id": {
+                        "type": "string",
+                        "description": "Unique identifier for the session."
+                      },
+                      "status": {
+                        "type": "string",
+                        "description": "Current status of the session. For example, 'running'."
+                      },
+                      "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Timestamp when the session was created in ISO 8601 format."
+                      }
+                    },
+                    "required": [
+                      "session_id",
+                      "status",
+                      "created_at"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error."
+          }
+        }
+      }
+    },
+    "/api/sessions": {
+      "post": {
+        "summary": "Start Browser",
+        "description": "Allocates a new browser session for the user, with optional configurations for ad-blocking, captcha solving, proxy usage, and idle timeout.",
+        "security": [
+          {
+            "api_key_header": []
+          }
+        ],
+        "tags": [
+          "Browser Sessions"
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "adblock_config": {
+                    "type": "object",
+                    "description": "Configuration options for ad-blocking.",
+                    "properties": {
+                      "active": {
+                        "type": "boolean",
+                        "description": "Enable or disable ad-blocking. Defaults to `true`.",
+                        "example": false
+                      },
+                      "popup_blocking_active": {
+                        "type": "boolean",
+                        "description": "Blocks popups, including ads and CAPTCHA consent banners.",
+                        "example": false
+                      }
+                    }
+                  },
+                  "captcha_config": {
+                    "type": "object",
+                    "description": "Configuration options for captcha-solving.",
+                    "properties": {
+                      "active": {
+                        "type": "boolean",
+                        "description": "Configuration options for captcha-solving. Requires `proxy_config.active` to be `true`. Defaults to `false`.",
+                        "example": false
+                      }
+                    }
+                  },
+                  "headless": {
+                    "type": "boolean",
+                    "description": "Whether browser should be headless or headfull.",
+                    "example": false
+                  },
+                  "proxy_config": {
+                    "type": "object",
+                    "description": "Configuration options for proxy usage.",
+                    "properties": {
+                      "active": {
+                        "type": "boolean",
+                        "description": "Enable or disable proxy usage. Defaults to `false`.",
+                        "example": false
+                      }
+                    },
+                    "oneOf": [
+                      {
+                        "title": "Anchor Residential",
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "anchor_residential"
+                            ],
+                            "default": "anchor_residential"
+                          }
+                        }
+                      },
+                      {
+                        "title": "Custom",
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "custom"
+                            ]
+                          },
+                          "server": {
+                            "type": "string",
+                            "description": "Proxy server address",
+                            "example": "proxy.example.com"
+                          },
+                          "username": {
+                            "type": "string",
+                            "description": "Proxy username",
+                            "example": "myUser"
+                          },
+                          "password": {
+                            "type": "string",
+                            "description": "Proxy password",
+                            "example": "myPassword"
+                          }
+                        },
+                        "required": [
+                          "server",
+                          "username",
+                          "password"
+                        ]
+                      }
+                    ]
+                  },
+                  "recording": {
+                    "type": "object",
+                    "description": "Should the session be recorded.",
+                    "properties": {
+                      "active": {
+                        "type": "boolean",
+                        "description": "Configuration options for video recording the sessions. Defaults to `false`.",
+                        "example": false
+                      }
+                    }
+                  },
+                  "profile": {
+                    "type": "object",
+                    "description": "Options for managing and persisting session profiles.",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "The name of the profile to be used during the session. If the specified profile does not exist, a new one will be created with default settings.",
+                        "example": "my-profile"
+                      },
+                      "persist": {
+                        "type": "boolean",
+                        "description": "Indicates whether the session profile data should be saved when the session ends.",
+                        "example": true
+                      },
+                      "store_cache": {
+                        "type": "boolean",
+                        "description": "Indicates whether the session cache should be saved when the session ends. Defaults to `false`.",
+                        "example": true
+                      }
+                    }
+                  },
+                  "viewport": {
+                    "type": "object",
+                    "description": "Configuration for the browser's viewport size.",
+                    "properties": {
+                      "width": {
+                        "type": "integer",
+                        "description": "Width of the viewport in pixels. Defaults to `1440`.",
+                        "example": 1440
+                      },
+                      "height": {
+                        "type": "integer",
+                        "description": "Height of the viewport in pixels. Defaults to `900`.",
+                        "example": 900
+                      }
+                    }
+                  },
+                  "timeout": {
+                    "type": "integer",
+                    "description": "Maximum amount of time (in minutes) for the browser to run, before terminating. Defaults to `-1`, which disables the global timeout mechanism.",
+                    "example": 10
+                  },
+                  "idle_timeout": {
+                    "type": "integer",
+                    "description": "The amount of time (in minutes) the session waits for new connections after all others are closed before stopping. Defaults to `1`. Setting it to `-1` let the browser session continue forever [CAUTION - Keep track of long living sessions and manually kill them].",
+                    "example": 3
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully returned a browser object",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "page_id": {
+                      "type": "string",
+                      "description": "Unique identifier for the browser page"
+                    },
+                    "id": {
+                      "type": "string",
+                      "description": "Unique identifier for the browser instance"
+                    },
+                    "session_url": {
+                      "type": "string",
+                      "description": "The cdp based live view embedding url"
+                    },
+                    "live_view_url": {
+                      "type": "string",
+                      "description": "The headfull chrome live view url, only available for headfull sessions"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid request parameters or configuration.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Error message indicating the nature of the bad request."
+                    }
+                  }
+                },
+                "examples": {
+                  "captchaSolverRequiresProxy": {
+                    "summary": "CAPTCHA solver requires proxy to be active.",
+                    "value": {
+                      "error": "CAPTCHA solver requires proxy to be active."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required - Insufficient credits to allocate a new browser",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Error message indicating insufficient credits."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sessions/{session_id}": {
+      "delete": {
+        "summary": "Terminate Browser",
+        "description": "Deletes the session associated with the provided session ID. Requires a valid API key for authentication.",
+        "tags": [
+          "Browser Sessions"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "session_id",
+            "required": true,
+            "description": "The ID of the session to delete.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "api_key_header": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Session deleted successfully.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Session abc123 deleted successfully."
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API Key or session ID"
+          },
+          "500": {
+            "description": "Internal Server Error."
+          }
+        }
+      }
+    },
+    "/api/sessions/{session_id}/pages": {
+      "get": {
+        "summary": "Get Live View URLs",
+        "description": "Retrieves an array of pages associated with the specified session ID. Requires a valid API key for authentication.",
+        "tags": [
+          "Browser Sessions"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "session_id",
+            "required": true,
+            "description": "The ID of the session to retrieve pages for.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "api_key_header": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A collection of pages linked to the specified session, representing browser tabs. Each entry includes details such as the tab's URL and a link to its graphical interface, which can be used for debugging or embedding purposes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "description": "The top-level object containing the list of pages.",
+                      "properties": {
+                        "items": {
+                          "type": "array",
+                          "description": "An array of page objects, each representing a browser page associated with the session.",
+                          "items": {
+                            "type": "object",
+                            "description": "An individual page object with detailed information about a browser page.",
+                            "properties": {
+                              "frontend_url": {
+                                "type": "string",
+                                "description": "The frontend URL for accessing developer tools for this page.",
+                                "example": "https://anchorforge.io/devtools-frontend/inspector.html?wss=connect.local.anchorbrowser.io/devtools/page/4471AF05DB5CB530971145A14848E5A7%3FsessionId=7d7b035c-d67e-4dfe-8c21-1af6a91b9dfc"
+                              },
+                              "id": {
+                                "type": "string",
+                                "description": "A unique identifier for the page.",
+                                "example": "4471AF05DB5CB530971145A14848E5A7"
+                              },
+                              "title": {
+                                "type": "string",
+                                "description": "The title of the page, typically the text displayed on the browser tab.",
+                                "example": "Documentation - Anchor Browser Docs"
+                              },
+                              "url": {
+                                "type": "string",
+                                "description": "The URL of the webpage being viewed.",
+                                "example": "https://docs.anchorbrowser.io/introduction"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API Key or session ID"
+          },
+          "404": {
+            "description": "Session not found"
+          }
+        }
+      }
+    },
+    "/api/sessions/{session_id}/recording": {
+      "get": {
+        "summary": "Get Session Recordings",
+        "description": "Retrieves the URLs of the session's video recording. Requires a valid API key for authentication.",
+        "tags": [
+          "Browser Sessions"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "session_id",
+            "required": true,
+            "description": "The ID of the session to retrieve recordings for.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "api_key_header": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A set of recording URLs associated with the session.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "videos": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "description": "An array of video recording URLs."
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid API Key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Invalid API key"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Session recordings not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Session recordings not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sessions/{session_id}/downloads": {
+      "get": {
+        "summary": "Get Session Downloads",
+        "description": "Retrieves metadata of files downloaded during a session. Requires a valid API key for authentication.",
+        "tags": [
+          "Browser Sessions"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "session_id",
+            "required": true,
+            "description": "The unique identifier of the session to retrieve downloads for.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "api_key_header": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of download metadata associated with the session.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "The unique ID of the download record.",
+                            "example": "014101cd-263a-47a2-bb73-9768089da639"
+                          },
+                          "file_link": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "The URL to download the file from anchorbrowser servers. Requires api key authentication.",
+                            "example": "https://api.anchorbrowser.io/api/sessions/42b60264-c48a-4ded-aa54-e4a83a710ee5/downloads/6daab24f-0853-44e6-abb0-618565a7244a/fetch"
+                          },
+                          "original_download_url": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "The URL used to download the file.",
+                            "example": "https://example.com/files/document.doc"
+                          },
+                          "origin_url": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "The original URL where the file was found.",
+                            "example": "https://example.com/files/"
+                          },
+                          "suggested_file_name": {
+                            "type": "string",
+                            "description": "The suggested file name for saving the file.",
+                            "example": "document (2).doc"
+                          },
+                          "original_file_name": {
+                            "type": "string",
+                            "description": "The original file name before any modification.",
+                            "example": "document.doc"
+                          },
+                          "duration": {
+                            "type": "integer",
+                            "description": "The time it took to process or download the file, in milliseconds.",
+                            "example": 2025
+                          },
+                          "size": {
+                            "type": "integer",
+                            "description": "The size of the file in bytes.",
+                            "example": 177152
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "The timestamp when the file record was created.",
+                            "example": "2025-01-18T03:34:56.043Z"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or missing API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Invalid API key"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The session or its downloads metadata could not be found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Session downloads not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sessions/end-all-sessions": {
+      "delete": {
+        "summary": "Terminate all active sessions",
+        "description": "Terminates all active sessions associated with the provided API key.",
+        "tags": [
+          "Browser Sessions"
+        ],
+        "security": [
+          {
+            "api_key_header": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully terminated all active sessions.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "A message indicating the number of active sessions terminated.",
+                      "example": "5 active sessions terminated."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "tags": []
+}
