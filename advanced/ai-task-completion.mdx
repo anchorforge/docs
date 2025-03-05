@@ -4,16 +4,14 @@ description: ''
 icon: 'list-check'
 ---
 
-### Anchor AI Task Completion
-
-Anchor Browser delivers a record 89% Score on the industry-standard benchmark WebVoyager, leveraging browser-use as a core component of the automation capability.
+Anchor Browser delivers a state-of-the-art 89% Score on the industry-standard benchmark WebVoyager, leveraging browser-use as a core component of the automation capability.
 
 <img
-  className="hidden dark:block"
+  className="hidden dark:block mx-auto"
   src="/images/bu-graph.jpeg"
   alt="Browser Use Graph"
+  width="560"
 />
-
 <video
   autoPlay
   muted
@@ -23,7 +21,7 @@ Anchor Browser delivers a record 89% Score on the industry-standard benchmark We
   src="/images/vid.mp4"
 ></video>
 
-### The browser AI object
+## The browser AI object
 
 Anchor Browser comes with an embedded AI component, that allows to control the browser or extract data using natural language.
 
@@ -48,12 +46,9 @@ const page = context.pages()[0];
 // Combine regular playwright and AI actions to benefit from both options
 await page.goto("http://docs.anchorbrowser.io/", {waitUntil:'domcontentloaded'});
 
-// Use the embedded 'ai' object, using the ~ magic string
-const result = await ai.evaluate('~ Find the last game played by Milwaukee in the NBA and return the result')
+// Use the embedded 'ai' object
+const result = await ai.evaluate('Find the last game played by Milwaukee in the NBA and return the result')
 console.log(result);
-
-const author = await ai.evaluate('~ Find an article that discusses the game and return the name of the author')
-console.log(author);
 
 ```
 ```python python
@@ -67,10 +62,79 @@ with sync_playwright() as p:
    ai = next((sw for sw in context.service_workers if sw.url == target_url), None)
             
    # Use the embedded 'ai' object
-   result = ai.evaluate('~ Find the last game played by Milwaukee in the NBA and return the result')
+   result = ai.evaluate('Find the last game played by Milwaukee in the NBA and return the result')
    print(result)
 
 ```
 </CodeGroup>
 
-<Note>AI Task completion is still in beta, contact us for feedback and support</Note>
+## Structured Output
+
+The AI object can also be used to extract structured data from the browser. This is done by providing a **JSON schema** to the AI object, which will then return the structured data.
+The following demonstrates using **Zod** and **Pydantic** to utilize the structured output capability.
+
+<CodeGroup>
+
+```tsx node.js
+import { chromium } from 'playwright';
+import { z } from "zod";
+import { zodToJsonSchema } from "zod-to-json-schema";
+
+const browser = await chromium.connectOverCDP("wss://connect.anchorbrowser.io?apiKey=ANCHOR-API-KEY");
+const context = browser.contexts()[0];
+const ai = context.serviceWorkers()[0];
+const page = context.pages()[0];
+
+const outputSchema = z.object({
+  nodes_cpu_usage: z.array(
+    z.object({
+      node: z.string(),
+      cluster: z.string(),
+      cpu_avg_percentage: z.number(),
+    })
+  )
+});
+
+const jsonSchema = zodToJsonSchema(outputSchema);
+const taskPayload = {
+  output_schema: jsonSchema,
+  prompt: 'Collect the node names and their CPU average %',
+};
+
+await page.goto("https://play.grafana.org/a/grafana-k8s-app/navigation/nodes?from=now-1h&to=now&refresh=1m");
+
+const result = await ai.evaluate(JSON.stringify(taskPayload));
+console.info(result);
+```
+```python python
+from playwright.sync_api import sync_playwright
+from pydantic import BaseModel
+from typing import List
+import json
+
+class NodeCpuUsage(BaseModel):
+    node: str
+    cluster: str
+    cpu_avg_percentage: float
+
+class OutputSchema(BaseModel):
+    nodes_cpu_usage: List[NodeCpuUsage]
+
+with sync_playwright() as p:
+    browser = p.chromium.connect_over_cdp("wss://connect.anchorbrowser.io?apiKey=ANCHOR-API-KEY")
+    context = browser.contexts[0]
+    ai = next((sw for sw in context.service_workers if sw.url == "chrome-extension://bppehibnhionalpjigdjdilknbljaeai/background.js"), None)
+    page = context.pages[0]
+
+    task_payload = {
+        'prompt': 'Collect the node names and their CPU average %',
+        'output_schema': json.loads(NodeCpuUsage.schema_json())
+    }
+
+    page.goto("https://play.grafana.org/a/grafana-k8s-app/navigation/nodes?from=now-1h&to=now&refresh=1m")
+    result = ai.evaluate(json.dumps(task_payload))
+    print(result)
+    browser.close()
+
+```
+</CodeGroup>
