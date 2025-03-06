@@ -12,6 +12,6 @@ const ai = context.serviceWorkers()[0];
 const page = context.pages()[0];
 
 await page.goto("https://play.grafana.org/a/grafana-k8s-app/navigation/nodes?from=now-1h&to=now&refresh=1m", { waitUntil: 'domcontentloaded' });
-const result = await ai.evaluate('~ Collect the node names and their CPU average %, return in JSON array')
+const result = await ai.evaluate('Collect the node names and their CPU average %, return in JSON array')
 console.log(result);
 ```

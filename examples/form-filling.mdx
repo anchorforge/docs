@@ -15,7 +15,7 @@ const page = context.pages()[0];
 const form_url = "https://formspree.io/library/donation/charity-donation-form/preview.html"
 await page.goto(form_url);
 
-const task = '~ Fill out the form as if you were Micheal Scott'
+const task = 'Fill out the form as if you were Micheal Scott'
 const result = await ai.evaluate(task)
 
 console.log(result);

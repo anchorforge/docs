@@ -14,9 +14,9 @@ const page = context.pages()[0];
 
 await page.goto("http://docs.anchorbrowser.io/", { waitUntil: 'domcontentloaded' });
 
-const result = await ai.evaluate('~ Find the most recent NBA game played by the Milwaukee Bucks and provide the result.')
+const result = await ai.evaluate('Find the most recent NBA game played by the Milwaukee Bucks and provide the result.')
 console.log(result);
 
-const author = await ai.evaluate('~ Find an article discussing the game and provide the author\'s name.')
+const author = await ai.evaluate('Find an article discussing the game and provide the author\'s name.')
 console.log(author);
 ```
