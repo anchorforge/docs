@@ -27,7 +27,7 @@ To create a browser in headful mode, set the `headless` parameter to `false` whe
 }
 ```
 
-Then, embed the live view URL directly into an iframe:
+Then, use the **create-session** response to embed the live view URL directly into an iframe:
 
 ```html
 <iframe src="{{live_view_url}}" sandbox="allow-same-origin allow-scripts" allow="clipboard-read; clipboard-write" style="border: 0px; display: block; width: 100%; height: 100%; position: absolute; top: 0px; left: 0px;"></iframe>
@@ -46,10 +46,7 @@ To obtain the browser live session URL, start by [creating a session](/api-refer
 
 <Warning>The session_url points to the browser default first page. If your browser proccess involves creating a **new page**, collect the corresponding URL by using the [live view URLs](/api-reference/sessions/get-pages-for-a-session) endpoint.</Warning>
 
-### Embedding the Live View
-
-Embed the following iframe to get a live view of the browser session.
-
+Then, use the **create-session** response to embed the live view URL directly into an iframe:
 
 ```html
 <iframe src="https://anchorforge.io/devtools-frontend/inspector.html?wss={{session_url}}" sandbox="allow-same-origin allow-scripts" allow="clipboard-read; clipboard-write" style="border: 0px; display: block; width: 100%; height: 100%; position: absolute; top: 0px; left: 0px;"></iframe>

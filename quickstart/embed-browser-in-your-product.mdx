@@ -3,24 +3,49 @@ title: 'Browser UI Component'
 description: ''
 ---
 
-### Obtaining the Session URL
+## Obtaining the Live View URL
 
 Anchor Browser offers a live view feature that allows you to embed an interactive frame of a website as a web element.
 
-To obtain the browser live session URL, start by [creating a session](/api-reference/sessions/create-session), which will return the following object:
+### Headful (Reommended) 
+
+Headful mode provides a single URL to view the full chrome view, including the address bar. This also ensurese the presented tab is always the active tab.
+
+<img
+  className="hidden dark:block mx-auto"
+  src="/images/vnc-live-view.png"
+  alt="Browser Use Graph"
+  width="560"
+/>
+
+To create a browser in headful mode, set the `headless` parameter to `false` when [creating a session](/api-reference/sessions/create-session).
 
 ```json
 {
-  "page_id": "<string>",
-  "id": "<string>",
-  "session_url" :"connect.anchorbrowser.io/devtools/page/{{page-id}}?sessionId={{session-id}}"
+  "headless": false
 }
 ```
 
-### Embedding the Live View
+Then, use the **create-session** response to embed the live view URL directly into an iframe:
 
-Embed the following iframe to get a live view of the browser session.
+```html
+<iframe src="{{live_view_url}}" sandbox="allow-same-origin allow-scripts" allow="clipboard-read; clipboard-write" style="border: 0px; display: block; width: 100%; height: 100%; position: absolute; top: 0px; left: 0px;"></iframe>
+```
 
+### Headless
+
+To obtain the browser live session URL, start by [creating a session](/api-reference/sessions/create-session)
+
+<img
+  className="hidden dark:block mx-auto"
+  src="/images/cdp-live-view.png"
+  alt="Browser Use Graph"
+  width="560"
+/>
+
+<Warning>The session_url points to the browser default first page. If your browser proccess involves creating a **new page**, collect the corresponding URL by using the [live view URLs](/api-reference/sessions/get-pages-for-a-session) endpoint.</Warning>
+
+Then, use the **create-session** response to embed the live view URL directly into an iframe:
 
 ```html
 <iframe src="https://anchorforge.io/devtools-frontend/inspector.html?wss={{session_url}}" sandbox="allow-same-origin allow-scripts" allow="clipboard-read; clipboard-write" style="border: 0px; display: block; width: 100%; height: 100%; position: absolute; top: 0px; left: 0px;"></iframe>
@@ -34,7 +59,7 @@ Embed the following iframe to get a live view of the browser session.
 To use the fullscreen view, replace the live view URL with the following:
 
 ```html
-<iframe src="https://anchorforge.io/devtools-frontend/inspector-fullscreen.html?wss={{session_url}}" sandbox="allow-same-origin allow-scripts" allow="clipboard-read; clipboard-write" style="border: 0px; display: block; width: 100%; height: 100%; position: absolute; top: 0px; left: 0px;"></iframe>
+<iframe src="https://anchorforge.io/devtools-frontend/inspector-fullscreen.html?wss={{session_url}}" ...></iframe>
 ```
 
 ### Disable browser interactivity
@@ -42,83 +67,5 @@ To use the fullscreen view, replace the live view URL with the following:
 To prevent the end user from interacting with the browser, add the `style="pointer-events: none;"` attribute to the iframe:
 
 ```html
-<iframe src="https://anchorforge.io/devtools-frontend/inspector.html?wss={{session_url}}" sandbox="allow-same-origin allow-scripts" allow="clipboard-read; clipboard-write" style="border: 0px; display: block; width: 100%; height: 100%; position: absolute; top: 0px; left: 0px; pointer-events: none;"></iframe>
+<iframe ... style="... pointer-events: none;"></iframe>
 ```
-
-### Embed browser with multiple tabs
-
-To embed the browser with multiple tabs, use the [live view URLs](/api-reference/sessions/get-pages-for-a-session) API to obtain the metadata about the open tabs:
-
-```json
-[
-      {
-        "frontend_url": "https://anchorforge.io/devtools-frontend/inspector.html?wss=<session_url>",
-        "id": "4471AF05DB5CB530971145A14848E5A7",
-        "title": "Documentation - Anchor Browser Docs",
-        "url": "https://docs.anchorbrowser.io/introduction"
-      },
-      {
-        "frontend_url": "https://anchorforge.io/devtools-frontend/inspector.html?wss=<session_url>",
-        "id": "4471AF05DB5CB530971145A14848E5A7",
-        "title": "API Reference - Anchor Browser Docs",
-        "url": "https://docs.anchorbrowser.io/api-reference"
-      }
-]
-```
-
-Below is an example of how to dynamically embed multiple tabs with a tab selector:
-
-<Accordion title="Code example - Embed browser with multiple tabs"> 
-```html 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Browser Tabs</title>
-    <style>
-        select { margin-bottom: 10px; padding: 5px; }
-        iframe { border: 0; width: 100%; height: 600px; }
-    </style>
-</head>
-<body>
-    <select id="tabSelector"></select>
-    <div id="iframeContainer"></div>
-
-    <script>
-        const tabSelector = document.getElementById('tabSelector');
-        const container = document.getElementById('iframeContainer');
-
-        fetch('https://api.anchorbrowser.io/api/sessions/YOUR_SESSION_ID/pages', {
-            headers: {
-                'anchor-api-key': 'YOUR_API_KEY'
-            }
-        })
-        .then(res => res.json())
-        .then(tabs => {
-            tabs.forEach(tab => {
-                const option = document.createElement('option');
-                option.value = tab.frontend_url;
-                option.textContent = tab.title || 'Untitled Tab';
-                tabSelector.appendChild(option);
-            });
-            
-            if (tabs.length > 0) {
-                createIframe(tabs[0].frontend_url);
-            }
-        });
-
-        tabSelector.onchange = (e) => createIframe(e.target.value);
-
-        function createIframe(url) {
-            container.innerHTML = `
-                <iframe 
-                    src="https://anchorforge.io/devtools-frontend/inspector.html?wss=${url}"
-                    sandbox="allow-same-origin allow-scripts"
-                    allow="clipboard-read; clipboard-write">
-                </iframe>
-            `;
-        }
-    </script>
-</body>
-</html>
-```
-</Accordion>

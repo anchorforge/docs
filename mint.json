@@ -29,12 +29,12 @@
     {
       "name": "API Reference",
       "url": "api-reference",
-      "openapi": "/api_openapi.json"
+      "openapi": "https://anchorforge.io/anchorbrowser/api_openapi.json"
     },
     {
       "name": "Tools API Reference",
       "url": "tools-api-reference",
-      "openapi": "/connect_openapi.json"
+      "openapi": "https://anchorforge.io/anchorbrowser/connect_openapi.json"
     }
   ],
   "anchors": [
@@ -69,12 +69,12 @@
         "advanced/ai-task-completion",
         "essentials/authentication-and-identity",
         "essentials/tool-building",
-        "advanced/browser-termination",
         {
           "group": "Files Upload / Download",
           "icon": "file",
           "pages": ["advanced/file-upload", "advanced/file-download"]
-        }
+        },
+        "advanced/browser-termination"
       ]
     },
     {
@@ -82,7 +82,6 @@
       "pages": [
         "advanced/browser-live-view",
         "integrate/browseruse-deployment",
-        "agent-frameworks/connect-to-agent-frameworks",
         "agent-frameworks/crewai",
         "agent-frameworks/langchain",
         "agent-frameworks/custom-agent-framework"
