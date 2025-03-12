@@ -82,6 +82,7 @@
       "pages": [
         "advanced/browser-live-view",
         "integrate/browseruse-deployment",
+        "integrate/openai-cua",
         "agent-frameworks/crewai",
         "agent-frameworks/langchain",
         "agent-frameworks/custom-agent-framework"

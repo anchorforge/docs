@@ -1,0 +1,55 @@
+---
+title: 'OpenAI CUA'
+description: 'Integrate OpenAI Computer Use Agent with Anchor Browser'
+icon: 'stars'
+---
+
+## Overview
+
+Learn how to combine OpenAI's Computer Use Agent (CUA) with Anchor Browser to enable powerful cloud-based browser automation.
+
+CUA is an advanced AI system that combines visual perception, contextual understanding, and browser control capabilities. When integrated with Anchor Browser's cloud infrastructure, it provides a robust platform for deploying automated web interactions at scale.
+
+### Prerequisites
+
+- OpenAI API key with Computer Use Agent access
+- Anchorbrowser account and API key
+- Python 3.8+
+
+### Basic Integration
+This basic setup will get you up and running with a CUA agent using Anchor Browser as the underlying browser automation platform.
+
+<Steps>
+<Step title="Clone the repository">
+```bash 
+git clone https://github.com/anchorforge/openai-cua-sample-app.git
+```
+</Step>
+<Step title="Install the required packages">
+```bash 
+pip install -r "requirements.txt"
+```
+</Step>
+<Step title="Set the environment variables">
+```
+ANCHOR_API_KEY=YOUR_API_KEY
+OPENAI_API_KEY=YOUR_OPENAI_API_KEY
+OPENAI_ORG=YOUR_OPENAI_ORG
+```
+</Step>
+<Step title="Run the agent">
+```
+python cli.py --computer anchorbrowser --input "Play tic tac toe"
+```
+</Step>
+</Steps>
+
+### Customizing the CUA Agent
+The CUA agent can be customized by updating the flags in the CLI:
+
+- `--input`: The initial input to the agent (optional: the CLI will prompt you for input if not provided)
+- `--debug`: Enable debug mode.
+- `--show`: Show images (screenshots) during the execution.
+- `--start-url`: Start the browsing session with a specific URL. By default, the CLI will start the browsing session with https://bing.com.
+
+For the full capabilites set, refer to [openapi documentation](https://platform.openai.com/docs/guides/tools-computer-use/)
