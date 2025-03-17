@@ -1,0 +1,126 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "Anchor Browser Docs",
+  "colors": {
+    "primary": "#faa380",
+    "light": "#fa804f",
+    "dark": "#faa380"
+  },
+  "favicon": "/favicon.svg",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              {
+                "group": "Quickstart",
+                "pages": [
+                  "quickstart/use-via-code",
+                  "quickstart/use-via-api",
+                  "quickstart/embed-browser-in-your-product"
+                ]
+              },
+              {
+                "group": "Example Use-Cases",
+                "pages": [
+                  "examples/form-filling",
+                  "examples/buyer-intent",
+                  "examples/configuration-collection",
+                  "examples/research-task"
+                ]
+              },
+              "why"
+            ]
+          },
+          {
+            "group": "Capabilities",
+            "pages": [
+              "essentials/browser-configuration",
+              "advanced/proxy",
+              "advanced/captcha-solving",
+              "advanced/ai-task-completion",
+              "essentials/authentication-and-identity",
+              "essentials/tool-building",
+              {
+                "group": "Files Upload / Download",
+                "icon": "file",
+                "pages": [
+                  "advanced/file-upload",
+                  "advanced/file-download"
+                ]
+              },
+              "advanced/browser-termination"
+            ]
+          },
+          {
+            "group": "Integrate",
+            "pages": [
+              "advanced/browser-live-view",
+              "integrate/browseruse-deployment",
+              "integrate/openai-cua",
+              "agent-frameworks/crewai",
+              "agent-frameworks/langchain",
+              "agent-frameworks/custom-agent-framework"
+            ]
+          },
+          {
+            "group": "Additional Details",
+            "pages": [
+              "pricing"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "openapi": {
+          "source": "https://anchorforge.io/anchorbrowser/api_openapi.json",
+          "directory": "api-reference"
+        }
+      },
+      {
+        "tab": "Tools API Reference",
+        "openapi": {
+          "source": "https://anchorforge.io/anchorbrowser/connect_openapi.json",
+          "directory": "tools-api-reference"
+        }
+      }
+    ],
+    "global": {
+      "anchors": [
+        {
+          "anchor": "Interactive Playground",
+          "href": "https://app.anchorbrowser.io/",
+          "icon": "window-restore"
+        }
+      ]
+    }
+  },
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg"
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "Support",
+        "href": "mailto:support@anchorbrowser.io"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Live Playground",
+      "href": "https://app.anchorbrowser.io/playground"
+    }
+  },
+  "footer": {
+    "socials": {
+      "x": "https://x.com/anchorbrowser"
+    }
+  }
+}
