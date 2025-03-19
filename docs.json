@@ -79,14 +79,14 @@
       {
         "tab": "API Reference",
         "openapi": {
-          "source": "https://anchorforge.io/anchorbrowser/api_openapi.json",
+          "source": "https://anchorforge.io/anchorbrowser/api_openapi.yaml",
           "directory": "api-reference"
         }
       },
       {
         "tab": "Tools API Reference",
         "openapi": {
-          "source": "https://anchorforge.io/anchorbrowser/connect_openapi.json",
+          "source": "https://anchorforge.io/anchorbrowser/connect_openapi.yaml",
           "directory": "tools-api-reference"
         }
       }
