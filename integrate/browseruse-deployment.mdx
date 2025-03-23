@@ -15,23 +15,30 @@ import requests
 ANCHOR_API_KEY = "YOUR_ANCHOR_API_KEY"
 
 response = requests.post(
-    "https://api.anchorbrowser.io/api/sessions",
+    "https://api.anchorbrowser.io/v1/sessions",
     headers={
         "anchor-api-key": ANCHOR_API_KEY,
         "Content-Type": "application/json",
     },
     json={
-    "headless": False, # Use headless false to view the browser when combining with browser-use
+      "browser": {
+        "headless": {"active": False} # Use headless false to view the browser when combining with browser-use
+      }
     }).json()
+
+# Access the data object from the response
+session_data = response["data"]
 ```
 
 Returns:
 ```json
 {
-  "page_id": "<string>",
-  "id": "<string>",
-  "live_view_url" :"https://live.anchorbrowser.io/inspector.html?host=connect.anchorbrowser.io&sessionId=<session_id>"
-  // Use the live view URL to view the browser session in real-time
+  "data": {
+    "id": "<string>",
+    "cdp_url": "<string>",
+    "live_view_url": "https://live.anchorbrowser.io?sessionId=<session_id>"
+    // Use the live view URL to view the browser session in real-time
+  }
 }
 ```
 </Step>
@@ -40,7 +47,7 @@ Returns:
 from browser_use import BrowserConfig
 
 config = BrowserConfig(
-    cdp_url=f"wss://connect.anchorbrowser.io?apiKey={ANCHOR_API_KEY}&sessionId={response['id']}"
+    cdp_url=f"wss://connect.anchorbrowser.io?apiKey={ANCHOR_API_KEY}&sessionId={session_data['id']}"
     # Use the session ID returned from the first step
 )
 ```
@@ -48,7 +55,7 @@ config = BrowserConfig(
 <Step title="Optional - Live view the browser">
 Use the `live_view_url` returned on the first step to view the browser session in real-time, or to embed it as a UI component
 ```html
-<iframe src="https://live.anchorbrowser.io/inspector.html?host=connect.anchorbrowser.io&sessionId=<session_id>" sandbox="allow-same-origin allow-scripts" allow="clipboard-read; clipboard-write" style="border: 0px; display: block; width: 100%; height: 100%; position: absolute; top: 0px; left: 0px;"></iframe>
+<iframe src="https://live.anchorbrowser.io?sessionId=<session_id>" sandbox="allow-same-origin allow-scripts" allow="clipboard-read; clipboard-write" style="border: 0px; display: block; width: 100%; height: 100%; position: absolute; top: 0px; left: 0px;"></iframe>
 ```
 </Step>
 </Steps>
