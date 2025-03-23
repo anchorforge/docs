@@ -3,9 +3,6 @@ info:
   title: AnchorBrowser API
   version: 1.0.0
   description: APIs to manage all browser-related actions and configuration.
-servers:
-  - url: https://api.anchorbrowser.io
-    description: API server
 components:
   securitySchemes:
     api_key_header:
@@ -13,6 +10,11 @@ components:
       in: header
       name: anchor-api-key
       description: API key passed in the header
+    apiKeyQuery:
+      type: apiKey
+      in: query
+      name: apiKey
+      description: API key passed as a query parameter
   schemas:
     AnchorResidentialProxyType:
       type: object
@@ -82,6 +84,9 @@ components:
         - $ref: '#/components/schemas/CustomProxyType'
 paths:
   /api/profiles:
+    servers:
+      - url: https://api.anchorbrowser.io
+        description: Main API server
     post:
       summary: Create Profile
       description: Creates a new profile from a session. A Profile stores cookies, local storage, and cache.
@@ -421,6 +426,9 @@ paths:
                         type: string
                         example: Unable to delete profile
   /api/sessions/active:
+    servers:
+      - url: https://api.anchorbrowser.io
+        description: Main API server
     get:
       summary: List Active Sessions
       description: Fetch a list of live session IDs associated with the provided API key.
@@ -455,6 +463,9 @@ paths:
         '500':
           description: Internal Server Error.
   /api/sessions:
+    servers:
+      - url: https://api.anchorbrowser.io
+        description: Main API server
     post:
       summary: Start Browser
       description: Allocates a new browser session for the user, with optional configurations for ad-blocking, captcha solving, proxy usage, and idle timeout.
@@ -589,6 +600,9 @@ paths:
                     type: string
                     description: Error message indicating insufficient credits.
   /api/sessions/all:
+    servers:
+      - url: https://api.anchorbrowser.io
+        description: Main API server
     delete:
       summary: Terminate all active sessions
       description: Terminates all active sessions associated with the provided API key.
@@ -609,6 +623,9 @@ paths:
                     description: A message indicating the number of active sessions terminated.
                     example: 5 active sessions terminated.
   /api/sessions/{session_id}:
+    servers:
+      - url: https://api.anchorbrowser.io
+        description: Main API server
     delete:
       summary: Terminate Browser
       description: Deletes the session associated with the provided session ID. Requires a valid API key for authentication.
@@ -636,6 +653,9 @@ paths:
         '500':
           description: Internal Server Error.
   /api/sessions/{session_id}/pages:
+    servers:
+      - url: https://api.anchorbrowser.io
+        description: Main API server
     get:
       summary: Get Live View URLs
       description: Retrieves an array of pages associated with the specified session ID. Requires a valid API key for authentication.
@@ -690,6 +710,9 @@ paths:
         '404':
           description: Session not found
   /api/sessions/{session_id}/recording:
+    servers:
+      - url: https://api.anchorbrowser.io
+        description: Main API server
     get:
       summary: Get Session Recordings
       description: Retrieves the URLs of the session's video recording. Requires a valid API key for authentication.
@@ -741,6 +764,9 @@ paths:
                     type: string
                     example: Session recordings not found
   /api/sessions/{session_id}/downloads:
+    servers:
+      - url: https://api.anchorbrowser.io
+        description: Main API server
     get:
       summary: Get Session Downloads
       description: Retrieves metadata of files downloaded during a session. Requires a valid API key for authentication.
@@ -828,4 +854,237 @@ paths:
                   error:
                     type: string
                     example: Session downloads not found
+  /tools/fetch-webpage:
+    servers:
+      - url: https://connect.anchorbrowser.io
+        description: Connect API server
+    post:
+      summary: Get Webpage Content
+      description: Retrieve the rendered content of a webpage, optionally formatted as Markdown or HTML.
+      tags:
+        - Tools
+      security:
+        - apiKeyQuery: []
+      parameters:
+        - in: query
+          name: sessionId
+          schema:
+            type: string
+          description: An optional session identifier to reference an existing running session. If provided, the tool will execute within that session.
+          example: 2b814554-02b2-4b28-bc61-6bc9d29bfe0a
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                  description: The URL of the webpage to fetch content from. When left empty, the current webpage is used.
+                  example: https://anchorbrowser.io
+                format:
+                  type: string
+                  description: The output format of the content.
+                  enum:
+                    - html
+                    - markdown
+                  default: markdown
+                  example: markdown
+                new_page:
+                  type: boolean
+                  description: If true, opens the URL in a new page instead of navigating the current page.
+                  default: false
+                  example: false
+      responses:
+        '200':
+          description: The fetched webpage content in the specified format.
+          content:
+            text/plain:
+              schema:
+                type: string
+                description: The rendered content of the webpage.
+                example: A secure way to **let AI agents do anything on the internet**.
+        '400':
+          description: Invalid request, such as missing or invalid URL.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: A detailed error message.
+                    example: URL is required
+        '500':
+          description: Internal server error while processing the request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: A detailed error message.
+                    example: Failed to fetch webpage
+  /tools/perform-web-task:
+    servers:
+      - url: https://connect.anchorbrowser.io
+        description: Connect API server
+    post:
+      summary: Perform Web Task
+      description: Start from a URL and perform the given task.
+      tags:
+        - AI Tools
+      security:
+        - apiKeyQuery: []
+      parameters:
+        - in: query
+          name: sessionId
+          schema:
+            type: string
+            title: Browser Session
+          description: An optional session identifier to reference an existing running sessions. When passed, the tool will be executed on the provided session.
+          example: 2b814554-02b2-4b28-bc61-6bc9d29bfe0a
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                  description: The URL of the webpage. If not provided, the tool will use the current page in the session.
+                  example: https://anchorbrowser.io
+                task:
+                  type: string
+                  description: The task to be autonomously completed.
+                  example: Who is the heighest player in the 49ers team?
+                output_schema:
+                  type: object
+                  description: Optional schema to format the output of the task.
+                  example:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        description: player name
+                      age:
+                        type: integer
+                        description: player age
+                      shirt_number:
+                        type: integer
+                        description: player shirt number
+                    required:
+                      - name
+                      - age
+                      - shirt_number
+      responses:
+        '200':
+          description: The result of the autonomous task.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+                    description: The outcome or answer produced by the autonomous task.
+                    example: The article discusses various secure browsers...
+        '400':
+          description: Invalid request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: A detailed error message.
+                    example: Task are required
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: A detailed error message.
+                    example: Failed to complete the autonomous task
+  /tools/screenshot:
+    servers:
+      - url: https://connect.anchorbrowser.io
+        description: Connect API server
+    post:
+      summary: Screenshot Webpage
+      description: This endpoint captures a screenshot of the specified webpage using Chromium. Users can customize the viewport dimensions and capture options.
+      tags:
+        - Tools
+      security:
+        - apiKeyQuery: []
+      parameters:
+        - in: query
+          name: sessionId
+          schema:
+            type: string
+          description: An optional session identifier to reference an existing running sessions. When passed, the tool will be executed on the provided session.
+          example: 2b814554-02b2-4b28-bc61-6bc9d29bfe0a
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                  description: The URL of the webpage to capture.
+                  example: https://anchorbrowser.io
+                width:
+                  type: integer
+                  description: The width of the browser viewport in pixels.
+                  example: 1280
+                  default: 1280
+                height:
+                  type: integer
+                  description: The height of the browser viewport in pixels.
+                  example: 720
+                  default: 720
+                image_quality:
+                  type: integer
+                  description: Quality of the output image, on the range 1-100. 100 will not perform any compression.
+                  example: 70
+                  default: 100
+                wait:
+                  type: integer
+                  description: Duration in milliseconds to wait after page has loaded, mainly used for sites with JS animations.
+                  example: 200
+                  default: 0
+                scroll_all_content:
+                  type: boolean
+                  description: If true, scrolls the page and captures all visible content.
+                  example: true
+                capture_full_height:
+                  type: boolean
+                  description: If true, captures the entire height of the page, ignoring the viewport height.
+                  example: true
+                s3_target_address:
+                  type: string
+                  description: Presigned S3 url target to upload the image to.
+                  example: https://your-bucket.s3.amazonaws.com/your/object/key?X-Amz-Signature=...
+      responses:
+        '200':
+          description: Screenshot successfully captured.
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Invalid input parameters.
+        '500':
+          description: Failed to take screenshot due to an internal server error.
 tags: [] 

@@ -1,0 +1,1400 @@
+openapi: 3.1.0
+info:
+  title: AnchorBrowser API
+  version: 1.0.0
+  description: APIs to manage all browser-related actions and configuration.
+servers:
+  - url: https://api.anchorbrowser.io
+    description: API server
+components:
+  securitySchemes:
+    api_key_header:
+      type: apiKey
+      in: header
+      name: anchor-api-key
+      description: API key passed in the header
+  schemas:
+    AnchorResidentialProxyType:
+      type: object
+      title: Anchor Residential Proxy
+      description: Configuration options for residential proxy usage.
+      properties:
+        type:
+          enum:
+            - anchor_residential
+          default: anchor_residential
+      required:
+        - type
+    AnchorMobileProxyType:
+      type: object
+      title: Anchor Mobile Proxy
+      description: Configuration options for mobile proxy usage.
+      properties:
+        type:
+          enum:
+            - anchor_mobile
+          default: anchor_mobile
+        country_code:
+          type: string
+          description: Country code for mobile proxy
+          example: uk
+      required:
+        - type
+    CustomProxyType:
+      type: object
+      title: Custom Proxy
+      description: Configuration options for custom proxy usage.
+      properties:
+        type:
+          enum:
+            - custom
+          default: custom
+        server:
+          type: string
+          description: Proxy server address
+          example: proxy.example.com
+        username:
+          type: string
+          description: Proxy username
+          example: myUser
+        password:
+          type: string
+          description: Proxy password
+          example: myPassword
+      required:
+        - type
+        - server
+        - username
+        - password
+    ProxyConfig:
+      type: object
+      description: Configuration options for proxy usage.
+      properties:
+        active:
+          type: boolean
+          description: Enable or disable proxy usage. Defaults to `false`.
+          example: false
+      required:
+        - active
+      oneOf:
+        - $ref: '#/components/schemas/AnchorResidentialProxyType'
+        - $ref: '#/components/schemas/AnchorMobileProxyType'
+        - $ref: '#/components/schemas/CustomProxyType'
+paths:
+  /v1/profiles:
+    post:
+      summary: Create Profile
+      description: Creates a new profile from a browser session. A Profile stores cookies, local storage, and cache.
+      security:
+        - api_key_header: []
+      tags:
+        - Profiles
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                  description: The name of the profile.
+                  example: my-profile
+                description:
+                  type: string
+                  description: A description of the profile.
+                  example: This is my profile description.
+                source:
+                  type: string
+                  description: The source of the profile data. currently only `session` is supported.
+                  example: session
+                  enum:
+                    - session
+                session_id:
+                  type: string
+                  format: uuid
+                  description: The browser session ID is required if the source is set to `session`. The browser session must be running, and the profile will be stored once the browser session terminates.
+                  example: 550e8400-e29b-41d4-a716-446655440000
+                store_cache:
+                  type: boolean
+                  description: Indicates whether the browser session cache should be saved when the browser session ends. Defaults to `false`.
+                  example: true
+      responses:
+        '200':
+          description: Profile created successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        example: "success"
+                    description: Details of the created profile.
+        '400':
+          description: Invalid request or input.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 400
+                      message:
+                        type: string
+                        example: Invalid source type
+        '404':
+          description: Session not found or unreachable.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 404
+                      message:
+                        type: string
+                        example: Session does not exist or not reachable
+        '409':
+          description: Profile name already exists.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 409
+                      message:
+                        type: string
+                        example: Profile name already exists
+        '501':
+          description: Feature not implemented.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 501
+                      message:
+                        type: string
+                        example: Not implemented
+    get:
+      summary: List Profiles
+      description: Fetches all stored profiles.
+      security:
+        - api_key_header: []
+      tags:
+        - Profiles
+      responses:
+        '200':
+          description: List of user profiles retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      count:
+                        type: integer
+                        description: Total number of profiles
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                              description: The name of the profile.
+                              example: my-profile
+                            description:
+                              type: string
+                              description: A brief description of the profile.
+                              example: This is a profile description.
+                            source:
+                              type: string
+                              description: The source of the profile data.
+                              example: session
+                              enum:
+                                - session
+                            store_cache:
+                              type: boolean
+                              description: Whether the profile stores browser cache.
+                              example: true
+                            created_at:
+                              type: string
+                              format: date-time
+                              description: The timestamp when the profile was created.
+                              example: '2024-01-01T12:00:00Z'
+        '500':
+          description: Unable to list user profiles due to an unexpected error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 500
+                      message:
+                        type: string
+                        example: Unable to list profiles
+  /v1/profiles/{name}:
+    get:
+      summary: Get Profile
+      description: Retrieves details of a specific profile by its name.
+      security:
+        - api_key_header: []
+      tags:
+        - Profiles
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description: The name of the profile to retrieve.
+          schema:
+            type: string
+            example: my-profile
+      responses:
+        '200':
+          description: Profile details retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        description: The name of the profile.
+                        example: my-profile
+                      description:
+                        type: string
+                        description: A description of the profile.
+                        example: This is my profile description.
+                      source:
+                        type: string
+                        description: The source of the profile data.
+                        example: session
+                        enum:
+                          - session
+                      session_id:
+                        type: string
+                        format: uuid
+                        description: The browser session ID used to create this profile, if applicable.
+                        example: 550e8400-e29b-41d4-a716-446655440000
+                      store_cache:
+                        type: boolean
+                        description: Whether the profile stores browser cache.
+                        example: true
+                        default: false
+                      status:
+                        type: string
+                        description: The current status of the profile.
+                        example: active
+                      created_at:
+                        type: string
+                        format: date-time
+                        description: The timestamp when the profile was created.
+                        example: '2024-01-01T12:00:00Z'
+        '401':
+          description: Invalid API Key.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 401
+                      message:
+                        type: string
+                        example: Invalid API key
+        '404':
+          description: Profile not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 404
+                      message:
+                        type: string
+                        example: Profile not found
+        '500':
+          description: Unable to retrieve profile due to an unexpected error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 500
+                      message:
+                        type: string
+                        example: Unable to retrieve profile
+    put:
+      summary: Update Profile
+      description: Updates the description or data of an existing profile using a browser session.
+      security:
+        - api_key_header: []
+      tags:
+        - Profiles
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description: The name of the profile to update.
+          schema:
+            type: string
+            example: my-profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                description:
+                  type: string
+                  description: The new description for the profile.
+                  example: Updated profile description.
+                source:
+                  type: string
+                  description: The source of the profile data. Currently, only `session` is supported.
+                  example: session
+                  enum:
+                    - session
+                session_id:
+                  type: string
+                  format: uuid
+                  description: The browser session ID is required if the source is set to `session`. The browser session must belong to the user and be active.
+                  example: 550e8400-e29b-41d4-a716-446655440000
+                store_cache:
+                  type: boolean
+                  description: Indicates whether the browser session cache should be saved when the browser session ends. Defaults to `false`.
+                  example: true
+      responses:
+        '200':
+          description: Profile updated successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        example: "success"
+        '400':
+          description: Invalid request or input.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 400
+                      message:
+                        type: string
+                        example: Invalid source type
+        '404':
+          description: Profile or session not found or unreachable.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 404
+                      message:
+                        type: string
+                        example: Profile does not exist
+        '500':
+          description: Unable to update profile due to an unexpected error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 500
+                      message:
+                        type: string
+                        example: Unable to update profile
+        '501':
+          description: Feature not implemented.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 501
+                      message:
+                        type: string
+                        example: Not implemented
+    delete:
+      summary: Delete Profile
+      description: Deletes an existing profile by its name.
+      security:
+        - api_key_header: []
+      tags:
+        - Profiles
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description: The name of the profile to delete.
+          schema:
+            type: string
+            example: my-profile
+      responses:
+        '200':
+          description: Profile deleted successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        example: "success"
+        '404':
+          description: Profile not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 404
+                      message:
+                        type: string
+                        example: Profile does not exist
+        '500':
+          description: Unable to delete the profile due to an unexpected error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 500
+                      message:
+                        type: string
+                        example: Unable to delete profile
+  /v1/sessions:
+    post:
+      summary: Start Browser Session
+      description: Allocates a new browser session for the user, with optional configurations for ad-blocking, captcha solving, proxy usage, and idle timeout.
+      security:
+        - api_key_header: []
+      tags:
+        - Browser Sessions
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                session:
+                  type: object
+                  description: Session-related configurations.
+                  properties:
+                    recording:
+                      type: object
+                      description: Configuration for session recording.
+                      properties:
+                        active:
+                          type: boolean
+                          description: Enable or disable video recording of the browser session. Defaults to `false`.
+                          example: false
+                    proxy:
+                      $ref: '#/components/schemas/ProxyConfig'
+                    timeout:
+                      type: object
+                      description: Timeout configurations for the browser session.
+                      properties:
+                        max_duration:
+                          type: integer
+                          description: Maximum amount of time (in minutes) for the browser to run before terminating. Defaults to `180`.
+                          example: 10
+                        idle_timeout:
+                          type: integer
+                          description: The amount of time (in minutes) the browser session waits for new connections after all others are closed before stopping. Defaults to `5`.
+                          example: 3
+                    live_view:
+                      type: object
+                      description: Configuration for live viewing the browser session.
+                      properties:
+                        read_only:
+                          type: boolean
+                          description: Enable or disable read-only mode for live viewing. Defaults to `false`.
+                          example: false
+                browser:
+                  type: object
+                  description: Browser-specific configurations.
+                  properties:
+                    profile:
+                      type: object
+                      description: Options for managing and persisting browser session profiles.
+                      properties:
+                        name:
+                          type: string
+                          description: The name of the profile to be used during the browser session.
+                          example: my-profile
+                        persist:
+                          type: boolean
+                          description: Indicates whether the browser session profile data should be saved when the browser session ends. Defaults to `false`.
+                          example: true
+                        store_cache:
+                          type: boolean
+                          description: Indicates whether the browser session cache should be saved when the browser session ends. Defaults to `false`.
+                          example: true
+                    adblock:
+                      type: object
+                      description: Configuration for ad-blocking.
+                      properties:
+                        active:
+                          type: boolean
+                          description: Enable or disable ad-blocking. Defaults to `true`.
+                          example: false
+                    popup_blocker:
+                      type: object
+                      description: Configuration for popup blocking.
+                      properties:
+                        active:
+                          type: boolean
+                          description: Blocks popups, including ads and CAPTCHA consent banners. Requires adblock to be active. Defaults to `true`.
+                          example: false
+                    captcha_solver:
+                      type: object
+                      description: Configuration for captcha-solving.
+                      properties:
+                        active:
+                          type: boolean
+                          description: Enable or disable captcha-solving. Requires proxy to be active. Defaults to `false`.
+                          example: false
+                    headless:
+                      type: object
+                      description: Configuration for headless mode.
+                      properties:
+                        active:
+                          type: boolean
+                          description: Whether browser should be headless or headful. Defaults to `false`.
+                          example: true
+                    viewport:
+                      type: object
+                      description: Configuration for the browser's viewport size.
+                      properties:
+                        width:
+                          type: integer
+                          description: Width of the viewport in pixels. Defaults to `1440`.
+                          example: 1440
+                        height:
+                          type: integer
+                          description: Height of the viewport in pixels. Defaults to `900`.
+                          example: 900
+      responses:
+        '200':
+          description: Successfully returned a browser object
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        description: Unique identifier for the browser session
+                      cdp_url:
+                        type: string
+                        description: The CDP websocket connection string
+                      live_view_url:
+                        type: string
+                        description: The browser session live view url
+        '400':
+          description: Bad Request - Invalid request parameters or configuration.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 400
+                      message:
+                        type: string
+                        example: Invalid request parameters
+              examples:
+                captchaSolverRequiresProxy:
+                  summary: CAPTCHA solver requires proxy to be active.
+                  value:
+                    error:
+                      code: 400
+                      message: CAPTCHA solver requires proxy to be active.
+        '402':
+          description: Payment Required - Insufficient credits to allocate a new browser
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 402
+                      message:
+                        type: string
+                        example: Insufficient credits to allocate a new browser
+  /v1/sessions/all:
+    delete:
+      summary: End All Sessions
+      description: Terminates all active browser sessions associated with the provided API key.
+      tags:
+        - Browser Sessions
+      security:
+        - api_key_header: []
+      responses:
+        '200':
+          description: Successfully terminated all active browser sessions.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        example: "success"
+  /v1/sessions/all/status:
+    get:
+      summary: List All Sessions Status
+      description: Retrieves status information for all browser sessions associated with the API key.
+      security:
+        - api_key_header: []
+      tags:
+        - Browser Sessions
+      responses:
+        '200':
+          description: Successfully retrieved status for all browser sessions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      count:
+                        type: integer
+                        description: Total number of browser sessions
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            session_id:
+                              type: string
+                              description: Unique identifier for the browser session
+                              example: "550e8400-e29b-41d4-a716-446655440000"
+                            status:
+                              type: string
+                              description: Current status of the browser session
+                              example: "running"
+                            created_at:
+                              type: string
+                              format: date-time
+                              description: Timestamp when the browser session was created
+                              example: "2024-01-01T12:00:00Z"
+                          required:
+                            - session_id
+                            - status
+                            - created_at
+        '401':
+          description: Invalid API Key
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 401
+                      message:
+                        type: string
+                        example: Invalid API key
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 500
+                      message:
+                        type: string
+                        example: Internal server error
+  /v1/sessions/{session_id}:
+    delete:
+      summary: End Browser Session
+      description: Deletes the browser session associated with the provided browser session ID. Requires a valid API key for authentication.
+      tags:
+        - Browser Sessions
+      parameters:
+        - in: path
+          name: session_id
+          required: true
+          description: The ID of the browser session to end.
+          schema:
+            type: string
+      security:
+        - api_key_header: []
+      responses:
+        '200':
+          description: Browser session ended successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        example: "success"
+        '401':
+          description: Invalid API Key or browser session ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 401
+                      message:
+                        type: string
+                        example: Invalid API key
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 500
+                      message:
+                        type: string
+                        example: Internal server error
+  /v1/sessions/{session_id}/recordings:
+    get:
+      summary: List Session Recordings
+      description: Retrieves the URLs of the browser session's video recordings. Requires a valid API key for authentication.
+      tags:
+        - Browser Sessions
+      parameters:
+        - in: path
+          name: session_id
+          required: true
+          description: The ID of the browser session to retrieve recordings for.
+          schema:
+            type: string
+      security:
+        - api_key_header: []
+      responses:
+        '200':
+          description: A set of recording URLs associated with the browser session.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      count:
+                        type: integer
+                        description: Total number of video recordings
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              description: Unique identifier for the recording
+                            is_primary:
+                              type: boolean
+                              description: Indicates if this is the primary recording
+                            file_link:
+                              type: string
+                              description: URL to access the recording file
+                            suggested_file_name:
+                              type: string
+                              description: Suggested filename for the recording
+                            duration:
+                              type: string
+                              description: Duration of the recording
+                            size:
+                              type: number
+                              description: Size of the recording file in bytes
+                            created_at:
+                              type: string
+                              format: date-time
+                              description: Timestamp when the recording was created
+        '401':
+          description: Invalid API Key.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 401
+                      message:
+                        type: string
+                        example: Invalid API key
+        '404':
+          description: Session recordings not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 404
+                      message:
+                        type: string
+                        example: Session recordings not found
+  /v1/sessions/{session_id}/downloads:
+    get:
+      summary: List Session Downloads
+      description: Retrieves metadata of files downloaded during a browser session. Requires a valid API key for authentication.
+      tags:
+        - Browser Sessions
+      parameters:
+        - in: path
+          name: session_id
+          required: true
+          description: The unique identifier of the browser session to retrieve downloads for.
+          schema:
+            type: string
+      security:
+        - api_key_header: []
+      responses:
+        '200':
+          description: A list of download metadata associated with the browser session.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      count:
+                        type: integer
+                        description: Total number of downloads
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              description: The unique ID of the download record.
+                            file_link:
+                              type: string
+                              format: uri
+                              description: The URL to download the file from anchorbrowser servers. Requires api key authentication.
+                              example: https://api.anchorbrowser.io/sessions/42b60264-c48a-4ded-aa54-e4a83a710ee5/downloads/6daab24f-0853-44e6-abb0-618565a7244a/fetch
+                            original_download_url:
+                              type: string
+                              format: uri
+                              description: The URL used to download the file.
+                              example: https://example.com/files/document.doc
+                            origin_url:
+                              type: string
+                              format: uri
+                              description: The original URL where the file was found.
+                              example: https://example.com/files/
+                            suggested_file_name:
+                              type: string
+                              description: The suggested file name for saving the file.
+                              example: document (2).doc
+                            original_file_name:
+                              type: string
+                              description: The original file name before any modification.
+                              example: document.doc
+                            duration:
+                              type: integer
+                              description: The time it took to process or download the file, in milliseconds.
+                              example: 2025
+                            size:
+                              type: integer
+                              description: The size of the file in bytes.
+                              example: 177152
+                            created_at:
+                              type: string
+                              format: date-time
+                              description: The timestamp when the file record was created.
+                              example: '2025-01-18T03:34:56.043Z'
+        '401':
+          description: Invalid or missing API key.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 401
+                      message:
+                        type: string
+                        example: Invalid API key
+        '404':
+          description: The browser session or its downloads metadata could not be found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 404
+                      message:
+                        type: string
+                        example: Session downloads not found
+  /v1/sessions/{session_id}/recordings/primary/fetch:
+    get:
+      summary: Get Session Recording
+      description: Downloads the primary recording file for the specified browser session. Returns the recording as an MP4 file.
+      tags:
+        - Browser Sessions
+      parameters:
+        - in: path
+          name: session_id
+          required: true
+          description: The ID of the browser session to download the recording for.
+          schema:
+            type: string
+      security:
+        - api_key_header: []
+      responses:
+        '200':
+          description: The browser session recording file
+          content:
+            video/mp4:
+              schema:
+                type: string
+                format: binary
+        '401':
+          description: Invalid API Key - Authentication failed or API key is missing.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 401
+                      message:
+                        type: string
+                        example: Invalid API key
+        '404':
+          description: Recording not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 404
+                      message:
+                        type: string
+                        example: Recording not found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 500
+                      message:
+                        type: string
+                        example: Internal server error
+  /v1/tools/fetch-webpage:
+    post:
+      summary: Get Webpage Content
+      description: Retrieve the rendered content of a webpage, optionally formatted as Markdown or HTML.
+      tags:
+        - Tools
+      security:
+        - api_key_header: []
+      parameters:
+        - in: query
+          name: sessionId
+          schema:
+            type: string
+          description: An optional browser session identifier to reference an existing running browser session. If provided, the tool will execute within that browser session.
+          example: 2b814554-02b2-4b28-bc61-6bc9d29bfe0a
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                  description: The URL of the webpage to fetch content from. When left empty, the current webpage is used.
+                  example: https://anchorbrowser.io
+                format:
+                  type: string
+                  description: The output format of the content.
+                  enum:
+                    - html
+                    - markdown
+                  default: markdown
+                  example: markdown
+      responses:
+        '200':
+          description: The fetched webpage content in the specified format.
+          content:
+            text/plain:
+              schema:
+                type: string
+                description: The rendered content of the webpage.
+                example: A secure way to **let AI agents do anything on the internet**.
+        '400':
+          description: Invalid request, such as missing or invalid URL.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 400
+                      message:
+                        type: string
+                        example: URL is required
+        '500':
+          description: Internal server error while processing the request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 500
+                      message:
+                        type: string
+                        example: Failed to fetch webpage
+  /v1/tools/perform-web-task:
+    post:
+      summary: Perform Web Task
+      description: Start from a URL and perform the given task.
+      tags:
+        - AI Tools
+      security:
+        - api_key_header: []
+      parameters:
+        - in: query
+          name: sessionId
+          schema:
+            type: string
+            title: Browser Session
+          description: An optional browser session identifier to reference an existing running browser sessions. When passed, the tool will be executed on the provided browser session.
+          example: 2b814554-02b2-4b28-bc61-6bc9d29bfe0a
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - prompt
+              properties:
+                url:
+                  type: string
+                  description: The URL of the webpage. If not provided, the tool will use the current page in the session.
+                  example: https://anchorbrowser.io
+                prompt:
+                  type: string
+                  description: The task to be autonomously completed.
+                  example: What is anchor browser?
+      responses:
+        '200':
+          description: The result of the autonomous task.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      result:
+                        type: string
+                        description: The outcome or answer produced by the autonomous task.
+                        example: The article discusses various secure browsers...
+        '400':
+          description: Invalid request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 400
+                      message:
+                        type: string
+                        example: Task is required
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 500
+                      message:
+                        type: string
+                        example: Failed to complete the autonomous task
+  /v1/tools/screenshot:
+    post:
+      summary: Screenshot Webpage
+      description: This endpoint captures a screenshot of the specified webpage using Chromium. Users can customize the viewport dimensions and capture options.
+      tags:
+        - Tools
+      security:
+        - api_key_header: []
+      parameters:
+        - in: query
+          name: sessionId
+          schema:
+            type: string
+          description: An optional browser session identifier to reference an existing running browser sessions. When passed, the tool will be executed on the provided browser session.
+          example: 2b814554-02b2-4b28-bc61-6bc9d29bfe0a
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                  description: The URL of the webpage to capture.
+                  example: https://anchorbrowser.io
+                width:
+                  type: integer
+                  description: The width of the browser viewport in pixels.
+                  example: 1280
+                height:
+                  type: integer
+                  description: The height of the browser viewport in pixels.
+                  example: 720
+                image_quality:
+                  type: integer
+                  description: Quality of the output image, on the range 1-100. 100 will not perform any compression.
+                  example: 70
+                wait:
+                  type: integer
+                  description: Duration in milliseconds to wait after page has loaded, mainly used for sites with JS animations.
+                  example: 200
+                scroll_all_content:
+                  type: boolean
+                  description: If true, scrolls the page and captures all visible content.
+                  example: true
+                capture_full_height:
+                  type: boolean
+                  description: If true, captures the entire height of the page, ignoring the viewport height.
+                  example: true
+                s3_target_address:
+                  type: string
+                  description: Presigned S3 url target to upload the image to.
+                  example: https://your-bucket.s3.amazonaws.com/your/object/key?X-Amz-Signature=...
+      responses:
+        '200':
+          description: Screenshot successfully captured.
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Invalid input parameters.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 400
+                      message:
+                        type: string
+                        example: Invalid input parameters
+        '500':
+          description: Failed to take screenshot.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 500
+                      message:
+                        type: string
+                        example: Failed to take screenshot
+tags: []

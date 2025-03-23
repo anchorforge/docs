@@ -78,17 +78,23 @@
       },
       {
         "tab": "API Reference",
-        "openapi": {
-          "source": "/api_openapi.yaml",
-          "directory": "api-reference"
-        }
-      },
-      {
-        "tab": "Tools API Reference",
-        "openapi": {
-          "source": "/connect_openapi.yaml",
-          "directory": "tools-api-reference"
-        }
+        "versions": [
+          {
+            "version": "Latest - v1",
+            "default": true,
+            "openapi": {
+              "source": "/openapi.yaml",
+              "directory": "api-reference"
+            }
+          },
+          {
+            "version": "Legacy",
+            "openapi": {
+              "source": "/legacy_openapi.yaml",
+              "directory": "api-reference/legacy"
+            }
+          }
+        ]
       }
     ],
     "global": {
