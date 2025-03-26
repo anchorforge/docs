@@ -710,7 +710,7 @@
                     "properties": {
                       "active": {
                         "type": "boolean",
-                        "description": "Configuration options for video recording the sessions. Defaults to `false`.",
+                        "description": "Configuration options for video recording the sessions. Defaults to `true`.",
                         "example": false
                       }
                     }

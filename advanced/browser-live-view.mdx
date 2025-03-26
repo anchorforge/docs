@@ -19,13 +19,7 @@ Headful mode provides a single URL to view the full chrome view, including the a
   width="560"
 />
 
-To create a browser in headful mode, set the `headless` parameter to `false` when [creating a session](/api-reference/sessions/create-session).
-
-```json
-{
-  "headless": false
-}
-```
+Browsers are headful by default.
 
 Then, use the **create-session** response to embed the live view URL directly into an iframe:
 
@@ -35,7 +29,18 @@ Then, use the **create-session** response to embed the live view URL directly in
 
 ### Headless
 
-To obtain the browser live session URL, start by [creating a session](/api-reference/sessions/create-session)
+To create a browser in headless mode, set the `headless` parameter to `false` when [creating a session](/api-reference/browser-sessions/start-browser-session).
+
+```json
+{
+  "browser: 
+  {
+    "headless": true
+  }
+}
+```
+
+To obtain the browser live session URL, start by [creating a session](/api-reference/browser-sessions/start-browser-session)
 
 <img
   className="mx-auto"
@@ -44,12 +49,12 @@ To obtain the browser live session URL, start by [creating a session](/api-refer
   width="560"
 />
 
-<Warning>The session_url points to the browser default first page. If your browser proccess involves creating a **new page**, collect the corresponding URL by using the [live view URLs](/api-reference/sessions/get-pages-for-a-session) endpoint.</Warning>
+<Warning>The live_view_url points to the browser default first page. If your browser proccess involves creating a **new page**, collect the corresponding URL by using the [live view URLs](/api-reference/browser-sessions/get-live-view-urls) endpoint.</Warning>
 
 Then, use the **create-session** response to embed the live view URL directly into an iframe:
 
 ```html
-<iframe src="https://anchorforge.io/devtools-frontend/inspector.html?wss={{session_url}}" sandbox="allow-same-origin allow-scripts" allow="clipboard-read; clipboard-write" style="border: 0px; display: block; width: 100%; height: 100%; position: absolute; top: 0px; left: 0px;"></iframe>
+<iframe src="https://anchorforge.io/devtools-frontend/inspector.html?wss={{live_view_url}}" sandbox="allow-same-origin allow-scripts" allow="clipboard-read; clipboard-write" style="border: 0px; display: block; width: 100%; height: 100%; position: absolute; top: 0px; left: 0px;"></iframe>
 ```
 
 
@@ -60,7 +65,7 @@ Then, use the **create-session** response to embed the live view URL directly in
 To use the fullscreen view, replace the live view URL with the following:
 
 ```html
-<iframe src="https://anchorforge.io/devtools-frontend/inspector-fullscreen.html?wss={{session_url}}" ...></iframe>
+<iframe src="https://anchorforge.io/devtools-frontend/inspector-fullscreen.html?wss={{live_view_url}}" ...></iframe>
 ```
 
 ### Disable browser interactivity

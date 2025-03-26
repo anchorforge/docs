@@ -4,19 +4,21 @@ description: ''
 icon: 'map'
 ---
 
-For the full list of available options, view the [interactive api documentation](/api-reference/sessions/create-session)
+For the full list of available options, view the [interactive api documentation](/api-reference)
 
 ### Use Anchor Residential Proxy
 
 ```bash
 curl --request POST \
-  --url https://api.anchorbrowser.io/api/sessions \
+  --url https://api.anchorbrowser.io/v1/sessions \
   --header 'Content-Type: application/json' \
   --header 'anchor-api-key: <api-key>' \
   --data '{
-  "proxy_config": {
-    "type": "anchor-residential",
-    "active": true
+  "session": {
+    "proxy": {
+      "type": "anchor_residential",
+      "active": true
+    }
   }
 }'
 ```
@@ -26,16 +28,18 @@ curl --request POST \
 
 ```bash
 curl --request POST \
-  --url https://api.anchorbrowser.io/api/sessions \
+  --url https://api.anchorbrowser.io/v1/sessions \
   --header 'Content-Type: application/json' \
   --header 'anchor-api-key: <api-key>' \
   --data '{
-  "proxy_config": {
-    "type": "custom",
-    "server": "proxy-server",
-    "username": "proxy-username",
-    "password": "proxy-password",
-    "active": true
+  "session": {
+    "proxy": {
+      "type": "custom",
+      "server": "proxy.example.com",
+      "username": "myUser",
+      "password": "myPassword",
+      "active": true
+    }
   }
 }'
 ```

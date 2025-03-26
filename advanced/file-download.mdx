@@ -10,7 +10,7 @@ The following examples demonstrate how to download a file and retrieve it from t
 
 <Steps>
 <Step title="Create a browser session">
-Use the [create session](/api-reference/sessions/create-session) API to create a new browser session.
+Use the [create session](api-reference/browser-sessions/start-browser-session) API to create a new browser session.
 </Step>
 <Step title="Browse and download a file">
 Use the following example to perform a file download
@@ -34,6 +34,6 @@ download = await download_info.value
 </CodeGroup>  
 </Step>
 <Step title="Fetch the file from the browser session">
-You can retrieve the downloaded file from the browser session using the [get session downloads](/api-reference/sessions/get-session-downloads) API
+You can retrieve the downloaded file from the browser session using the [get session downloads](/api-reference/browser-sessions/list-session-downloads) API
 </Step>
 </Steps>

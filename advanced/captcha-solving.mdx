@@ -10,18 +10,20 @@ Anchor browser solves CAPTCHA challenges using a vision-based approach, along wi
 
 <Note> CAPTCHA solving works best with proxy enabled. Bot detectors would likely fail CAPTCHA solving attempts that are performed without Proxy.</Note>
 
-For the full list of available options, view the [interactive api documentation](/api-reference/sessions/create-session)
+For the full list of available options, view the [interactive api documentation](/api-reference)
 
 ### Code Example
 
 ```bash
 curl --request POST \
-  --url https://api.anchorbrowser.io/api/sessions \
+  --url https://api.anchorbrowser.io/v1/sessions \
   --header 'Content-Type: application/json' \
   --header 'anchor-api-key: <api-key>' \
   --data '{
-  "captcha_config": {
-    "active": true
+  "browser": {
+    "captcha_solver": {
+      "active": true
+    }
   }
 }'
 ```
