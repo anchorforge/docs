@@ -1404,7 +1404,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Session VNC
+        - OS Level Control
       parameters:
         - name: sessionId
           in: path
@@ -1449,7 +1449,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Session VNC
+        - OS Level Control
       parameters:
         - name: sessionId
           in: path
@@ -1507,7 +1507,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Session VNC
+        - OS Level Control
       parameters:
         - name: sessionId
           in: path
@@ -1565,7 +1565,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Session VNC
+        - OS Level Control
       parameters:
         - name: sessionId
           in: path
@@ -1623,7 +1623,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Session VNC
+        - OS Level Control
       parameters:
         - name: sessionId
           in: path
@@ -1681,7 +1681,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Session VNC
+        - OS Level Control
       parameters:
         - name: sessionId
           in: path
@@ -1733,7 +1733,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Session VNC
+        - OS Level Control
       parameters:
         - name: sessionId
           in: path
@@ -1801,7 +1801,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Session VNC
+        - OS Level Control
       parameters:
         - name: sessionId
           in: path
@@ -1868,7 +1868,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Session VNC
+        - OS Level Control
       parameters:
         - name: sessionId
           in: path
@@ -1920,7 +1920,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Session VNC
+        - OS Level Control
       parameters:
         - name: sessionId
           in: path
@@ -1974,7 +1974,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Session VNC
+        - OS Level Control
       parameters:
         - name: sessionId
           in: path
@@ -2005,7 +2005,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Session VNC
+        - OS Level Control
       parameters:
         - name: sessionId
           in: path
@@ -2052,7 +2052,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Session VNC
+        - OS Level Control
       parameters:
         - name: sessionId
           in: path
@@ -2085,7 +2085,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Session VNC
+        - OS Level Control
       parameters:
         - name: sessionId
           in: path
