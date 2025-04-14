@@ -1397,4 +1397,731 @@ paths:
                       message:
                         type: string
                         example: Failed to take screenshot
+  /v1/sessions/{sessionId}/screenshot:
+    get:
+      summary: Take Screenshot
+      description: Takes a screenshot of the current browser session and returns it as an image.
+      security:
+        - api_key_header: []
+      tags:
+        - Session VNC
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          description: The ID of the browser session
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Screenshot taken successfully
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: Session not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Session not found
+        '500':
+          description: Failed to take screenshot
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Failed to capture screenshot
+
+  /v1/sessions/{sessionId}/mouse/click:
+    post:
+      summary: Mouse Click
+      description: Performs a mouse click at the specified coordinates
+      security:
+        - api_key_header: []
+      tags:
+        - Session VNC
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          description: The ID of the browser session
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                x:
+                  type: integer
+                  description: X coordinate for the click
+                  example: 200
+                y:
+                  type: integer
+                  description: Y coordinate for the click
+                  example: 150
+                button:
+                  type: string
+                  description: Mouse button to use
+                  enum: [left, middle, right]
+                  default: left
+                  example: left
+              required:
+                - x
+                - y
+      responses:
+        '200':
+          description: Click performed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+        '400':
+          description: Invalid coordinates or parameters
+        '404':
+          description: Session not found
+        '500':
+          description: Failed to perform click
+
+  /v1/sessions/{sessionId}/mouse/doubleClick:
+    post:
+      summary: Mouse Double Click
+      description: Performs a double click at the specified coordinates
+      security:
+        - api_key_header: []
+      tags:
+        - Session VNC
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          description: The ID of the browser session
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                x:
+                  type: integer
+                  description: X coordinate for the double click
+                  example: 250
+                y:
+                  type: integer
+                  description: Y coordinate for the double click
+                  example: 150
+                button:
+                  type: string
+                  description: Mouse button to use
+                  enum: [left, middle, right]
+                  default: left
+                  example: left
+              required:
+                - x
+                - y
+      responses:
+        '200':
+          description: Double click performed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+        '400':
+          description: Invalid coordinates or parameters
+        '404':
+          description: Session not found
+        '500':
+          description: Failed to perform double click
+
+  /v1/sessions/{sessionId}/mouse/down:
+    post:
+      summary: Mouse Down
+      description: Performs a mouse button down action at the specified coordinates
+      security:
+        - api_key_header: []
+      tags:
+        - Session VNC
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          description: The ID of the browser session
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                x:
+                  type: integer
+                  description: X coordinate for the mouse down
+                  example: 300
+                y:
+                  type: integer
+                  description: Y coordinate for the mouse down
+                  example: 200
+                button:
+                  type: string
+                  description: Mouse button to use
+                  enum: [left, middle, right]
+                  default: left
+                  example: left
+              required:
+                - x
+                - y
+      responses:
+        '200':
+          description: Mouse down performed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+        '400':
+          description: Invalid coordinates or parameters
+        '404':
+          description: Session not found
+        '500':
+          description: Failed to perform mouse down
+
+  /v1/sessions/{sessionId}/mouse/up:
+    post:
+      summary: Mouse Up
+      description: Performs a mouse button up action at the specified coordinates
+      security:
+        - api_key_header: []
+      tags:
+        - Session VNC
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          description: The ID of the browser session
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                x:
+                  type: integer
+                  description: X coordinate for the mouse up
+                  example: 350
+                y:
+                  type: integer
+                  description: Y coordinate for the mouse up
+                  example: 250
+                button:
+                  type: string
+                  description: Mouse button to use
+                  enum: [left, middle, right]
+                  default: left
+                  example: left
+              required:
+                - x
+                - y
+      responses:
+        '200':
+          description: Mouse up performed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+        '400':
+          description: Invalid coordinates or parameters
+        '404':
+          description: Session not found
+        '500':
+          description: Failed to perform mouse up
+
+  /v1/sessions/{sessionId}/mouse/move:
+    post:
+      summary: Mouse Move
+      description: Moves the mouse cursor to the specified coordinates
+      security:
+        - api_key_header: []
+      tags:
+        - Session VNC
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          description: The ID of the browser session
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                x:
+                  type: integer
+                  description: X coordinate to move to
+                  example: 350
+                y:
+                  type: integer
+                  description: Y coordinate to move to
+                  example: 250
+              required:
+                - x
+                - y
+      responses:
+        '200':
+          description: Mouse move performed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+        '400':
+          description: Invalid coordinates
+        '404':
+          description: Session not found
+        '500':
+          description: Failed to perform mouse move
+
+  /v1/sessions/{sessionId}/drag-and-drop:
+    post:
+      summary: Drag and Drop
+      description: Performs a drag and drop operation from start coordinates to end coordinates
+      security:
+        - api_key_header: []
+      tags:
+        - Session VNC
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          description: The ID of the browser session
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                startX:
+                  type: integer
+                  description: Starting X coordinate
+                  example: 400
+                startY:
+                  type: integer
+                  description: Starting Y coordinate
+                  example: 200
+                endX:
+                  type: integer
+                  description: Ending X coordinate
+                  example: 500
+                endY:
+                  type: integer
+                  description: Ending Y coordinate
+                  example: 300
+                button:
+                  type: string
+                  description: Mouse button to use
+                  enum: [left, middle, right]
+                  default: left
+                  example: left
+              required:
+                - startX
+                - startY
+                - endX
+                - endY
+      responses:
+        '200':
+          description: Drag and drop performed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+        '400':
+          description: Invalid coordinates or parameters
+        '404':
+          description: Session not found
+        '500':
+          description: Failed to perform drag and drop
+
+  /v1/sessions/{sessionId}/scroll:
+    post:
+      summary: Scroll
+      description: Performs a scroll action at the specified coordinates
+      security:
+        - api_key_header: []
+      tags:
+        - Session VNC
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          description: The ID of the browser session
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                x:
+                  type: integer
+                  description: X coordinate for the scroll
+                  example: 350
+                y:
+                  type: integer
+                  description: Y coordinate for the scroll
+                  example: 250
+                deltaX:
+                  type: integer
+                  description: Horizontal scroll amount (positive is right, negative is left)
+                  default: 0
+                  example: 0
+                deltaY:
+                  type: integer
+                  description: Vertical scroll amount (positive is down, negative is up)
+                  example: 100
+                steps:
+                  type: integer
+                  description: Number of steps to break the scroll into for smoother scrolling
+                  default: 1
+                  example: 10
+              required:
+                - x
+                - y
+                - deltaY
+      responses:
+        '200':
+          description: Scroll performed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+        '400':
+          description: Invalid coordinates or parameters
+        '404':
+          description: Session not found
+        '500':
+          description: Failed to perform scroll
+
+  /v1/sessions/{sessionId}/keyboard/type:
+    post:
+      summary: Type Text
+      description: Types the specified text with optional delay between keystrokes
+      security:
+        - api_key_header: []
+      tags:
+        - Session VNC
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          description: The ID of the browser session
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+                  description: Text to type
+                  example: "Hello from Session Manager VNC API test!"
+                delay:
+                  type: integer
+                  description: Delay between keystrokes in milliseconds
+                  default: 0
+                  example: 30
+              required:
+                - text
+      responses:
+        '200':
+          description: Text typed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+        '400':
+          description: Invalid parameters
+        '404':
+          description: Session not found
+        '500':
+          description: Failed to type text
+
+  /v1/sessions/{sessionId}/keyboard/shortcut:
+    post:
+      summary: Keyboard Shortcut
+      description: Performs a keyboard shortcut using the specified keys
+      security:
+        - api_key_header: []
+      tags:
+        - Session VNC
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          description: The ID of the browser session
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                keys:
+                  type: array
+                  description: Array of keys to press simultaneously
+                  items:
+                    type: string
+                  example: ["Ctrl", "a"]
+                holdTime:
+                  type: integer
+                  description: Time to hold the keys down in milliseconds
+                  default: 0
+                  example: 100
+              required:
+                - keys
+      responses:
+        '200':
+          description: Shortcut performed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+        '400':
+          description: Invalid parameters
+        '404':
+          description: Session not found
+        '500':
+          description: Failed to perform shortcut
+
+  /v1/sessions/{sessionId}/clipboard:
+    get:
+      summary: Get Clipboard Content
+      description: Retrieves the current content of the clipboard
+      security:
+        - api_key_header: []
+      tags:
+        - Session VNC
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          description: The ID of the browser session
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Clipboard content retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  text:
+                    type: string
+                    description: Text content of the clipboard
+                    example: "Clipboard content"
+        '404':
+          description: Session not found
+        '500':
+          description: Failed to get clipboard content
+    post:
+      summary: Set Clipboard Content
+      description: Sets the content of the clipboard
+      security:
+        - api_key_header: []
+      tags:
+        - Session VNC
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          description: The ID of the browser session
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+                  description: Text to set in the clipboard
+                  example: "Text from clipboard API"
+              required:
+                - text
+      responses:
+        '200':
+          description: Clipboard content set successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+        '400':
+          description: Invalid parameters
+        '404':
+          description: Session not found
+        '500':
+          description: Failed to set clipboard content
+
+  /v1/sessions/{sessionId}/copy:
+    post:
+      summary: Copy Selected Text
+      description: Copies the currently selected text to the clipboard
+      security:
+        - api_key_header: []
+      tags:
+        - Session VNC
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          description: The ID of the browser session
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Text copied successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  text:
+                    type: string
+                    description: The text that was copied
+                    example: "Selected text"
+        '404':
+          description: Session not found
+        '500':
+          description: Failed to copy text
+
+  /v1/sessions/{sessionId}/paste:
+    post:
+      summary: Paste Text
+      description: Pastes text at the current cursor position
+      security:
+        - api_key_header: []
+      tags:
+        - Session VNC
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          description: The ID of the browser session
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+                  description: Text to paste
+                  example: "Text pasted via API"
+              required:
+                - text
+      responses:
+        '200':
+          description: Text pasted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+        '400':
+          description: Invalid parameters
+        '404':
+          description: Session not found
+        '500':
+          description: Failed to paste text
 tags: []
