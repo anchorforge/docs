@@ -889,7 +889,7 @@ paths:
       summary: List Session Recordings
       description: Retrieves the URLs of the browser session's video recordings. Requires a valid API key for authentication.
       tags:
-        - Browser Sessions
+        - Session Recordings
       parameters:
         - in: path
           name: session_id
@@ -1082,7 +1082,7 @@ paths:
       summary: Get Session Recording
       description: Downloads the primary recording file for the specified browser session. Returns the recording as an MP4 file.
       tags:
-        - Browser Sessions
+        - Session Recordings
       parameters:
         - in: path
           name: session_id
@@ -2124,4 +2124,161 @@ paths:
           description: Session not found
         '500':
           description: Failed to paste text
+
+  /v1/sessions/{session_id}/recordings/pause:
+    post:
+      summary: Pause Session Recording
+      description: Pauses the video recording for the specified browser session.
+      tags:
+        - Session Recordings
+      parameters:
+        - in: path
+          name: session_id
+          required: true
+          description: The ID of the browser session for which to pause recording.
+          schema:
+            type: string
+      security:
+        - api_key_header: []
+      responses:
+        '200':
+          description: Recording paused successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        example: "success"
+        '401':
+          description: Invalid API Key.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 401
+                      message:
+                        type: string
+                        example: Invalid API key
+        '404':
+          description: Session not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 404
+                      message:
+                        type: string
+                        example: Session not found
+        '500':
+          description: Failed to pause recording.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 500
+                      message:
+                        type: string
+                        example: Failed to pause recording
+
+  /v1/sessions/{session_id}/recordings/resume:
+    post:
+      summary: Resume Session Recording
+      description: Resumes the video recording for the specified browser session.
+      tags:
+        - Session Recordings
+      parameters:
+        - in: path
+          name: session_id
+          required: true
+          description: The ID of the browser session for which to resume recording.
+          schema:
+            type: string
+      security:
+        - api_key_header: []
+      responses:
+        '200':
+          description: Recording resumed successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        example: "success"
+        '401':
+          description: Invalid API Key.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 401
+                      message:
+                        type: string
+                        example: Invalid API key
+        '404':
+          description: Session not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 404
+                      message:
+                        type: string
+                        example: Session not found
+        '500':
+          description: Failed to resume recording.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 500
+                      message:
+                        type: string
+                        example: Failed to resume recording
+
 tags: []
