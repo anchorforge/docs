@@ -588,7 +588,7 @@ paths:
                       properties:
                         max_duration:
                           type: integer
-                          description: Maximum amount of time (in minutes) for the browser to run before terminating. Defaults to `180`.
+                          description: Maximum amount of time (in minutes) for the browser to run before terminating. Defaults to `20`.
                           example: 10
                         idle_timeout:
                           type: integer

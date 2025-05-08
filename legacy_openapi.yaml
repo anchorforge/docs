@@ -544,11 +544,11 @@ paths:
                       example: 900
                 timeout:
                   type: integer
-                  description: Maximum amount of time (in minutes) for the browser to run, before terminating. Defaults to `-1`, which disables the global timeout mechanism.
+                  description: Maximum amount of time (in minutes) for the browser to run, before terminating. Defaults to `20`. Setting it to `-1` disables the global timeout mechanism [CAUTION - Keep track of long living sessions and manually kill them].
                   example: 10
                 idle_timeout:
                   type: integer
-                  description: The amount of time (in minutes) the session waits for new connections after all others are closed before stopping. Defaults to `1`. Setting it to `-1` let the browser session continue forever [CAUTION - Keep track of long living sessions and manually kill them].
+                  description: The amount of time (in minutes) the session waits for new connections after all others are closed before stopping. Defaults to `5`. Setting it to `-1` let the browser session continue forever [CAUTION - Keep track of long living sessions and manually kill them].
                   example: 3
                 view_only:
                   type: boolean
