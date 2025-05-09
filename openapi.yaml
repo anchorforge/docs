@@ -4,7 +4,7 @@ info:
   version: 1.0.0
   description: APIs to manage all browser-related actions and configuration.
 servers:
-  - url: https://api.local.anchorbrowser.io
+  - url: https://api.anchorbrowser.io
     description: API server
 components:
   securitySchemes:
