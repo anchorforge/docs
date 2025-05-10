@@ -1,0 +1,150 @@
+---
+title: 'VSCode Extension'
+description: 'Install and use the Anchor Browser VSCode Extension'
+icon: 'code'
+---
+
+# Anchor Browser VSCode Extension
+
+The Anchor Browser VSCode Extension allows you to start and view Anchor Browser sessions directly from your Visual Studio Code environment, streamlining your development workflow.
+
+## Prerequisites
+
+Before installing the extension, make sure you have:
+
+1. Visual Studio Code (version 1.60.0 or higher)
+2. A valid Anchor Browser API key (available from [anchorbrowser.io](https://anchorbrowser.io))
+
+## Installation Steps
+
+<Steps>
+
+<Step title="Install the Extension in VSCode">
+1. Open Visual Studio Code
+2. Open the Command Palette by pressing `Ctrl+Shift+P` (Windows/Linux) or `Cmd+Shift+P` (macOS)
+3. Type "Extensions: Install from VSIX..." and press Enter
+
+<img
+  className="mx-auto"
+  src="/images/vscode-install-from-vsix.png"
+  alt="Install from VSIX"
+  width="560"
+/>
+
+4. Navigate to the location where you downloaded the VSIX file
+5. Select the file and click "Install"
+6. Wait for the installation to complete. You'll see a notification when the extension has been successfully installed.
+</Step>
+
+<Step title="Configure Your API Key">
+1. Open the VSCode Settings by selecting "File > Preferences > Settings" (Windows/Linux) or "Code > Preferences > Settings" (macOS)
+2. In the search bar, type "Anchor Browser" to filter settings
+3. Find the "Anchor Browser: API Key" setting
+4. Enter your Anchor Browser API key in the text field
+
+<img
+  className="mx-auto"
+  src="/images/vscode-api-key-setting.png"
+  alt="API Key Setting"
+  width="560"
+/>
+
+5. The setting will be automatically saved when you exit the field
+</Step>
+</Steps>
+
+## Using the Extension
+
+### Starting a Browser Session
+
+<Steps>
+<Step title="Open the Command Palette">
+Press `Ctrl+Shift+P` (Windows/Linux) or `Cmd+Shift+P` (macOS) and type "Anchor Browser: Start Session"
+
+<img
+  className="mx-auto"
+  src="/images/vscode-start-session-command.png"
+  alt="Start Session Command"
+  width="560"
+/>
+</Step>
+
+<Step title="Configure the Session">
+A configuration form will appear where you can set up your browser session:
+
+<img
+  className="mx-auto"
+  src="/images/vscode-session-config.png"
+  alt="Session Configuration"
+  width="560"
+/>
+
+Configure the session according to your needs:
+- Enable/disable video recording
+- Configure proxy settings if needed
+- Set session timeout parameters
+- Configure browser profile settings
+- Enable/disable features like ad blocking, popup blocking, and captcha solving
+- Set viewport dimensions
+</Step>
+
+<Step title="Start the Session">
+Click "Start Browser Session" to launch your session.
+
+After a moment, you'll receive a notification that your session has started successfully.
+
+<img
+  className="mx-auto"
+  src="/images/vscode-session-started.png"
+  alt="Session Started Notification"
+  width="560"
+/>
+</Step>
+</Steps>
+
+### Performing AI Tasks on Webpages
+
+Once your browser session is running and visible in VSCode:
+
+1. Use the input field at the top of the browser view to enter tasks for the AI to perform
+2. Type your instruction (e.g., "Extract all product prices from this page")
+3. Click "Run" or press Enter
+
+<img
+  className="mx-auto"
+  src="/images/vscode-ai-task-input.png"
+  alt="AI Task Input"
+  width="560"
+/>
+
+The AI will process your request and display the results below the input field.
+
+## Troubleshooting
+
+### API Key Issues
+
+If you see an error message about an invalid API key:
+
+1. Double-check that you've entered your API key correctly in the VSCode settings
+2. Ensure your API key is active and has the necessary permissions
+3. Try restarting VSCode after updating the API key
+
+### Connection Problems
+
+If you're having trouble connecting to Anchor Browser:
+
+1. Check your internet connection
+2. Verify that your firewall isn't blocking the connection
+3. Ensure you're using a compatible version of VSCode (1.60.0 or higher)
+
+### Extension Not Working
+
+If the extension isn't functioning properly:
+
+1. Check the VSCode output panel for any error messages (View > Output, then select "Anchor Browser" from the dropdown)
+2. Try reinstalling the extension
+3. Restart VSCode
+
+## Getting Help
+
+If you continue to experience issues with the Anchor Browser VSCode Extension, please contact our support team at support@anchorbrowser.io or visit our documentation at [docs.anchorbrowser.io](https://docs.anchorbrowser.io). 

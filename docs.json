@@ -69,6 +69,12 @@
             ]
           },
           {
+            "group": "Extension",
+            "pages": [
+              "advanced/vscode-extension"
+            ]
+          },
+          {
             "group": "Additional Details",
             "pages": [
               "pricing"
