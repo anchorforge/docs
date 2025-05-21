@@ -1255,7 +1255,11 @@ paths:
                 prompt:
                   type: string
                   description: The task to be autonomously completed.
-                  example: What is anchor browser?
+                  example: Collect the node names and their CPU average %
+                output_schema:
+                  type: object
+                  description: JSON Schema defining the expected structure of the output data.
+                  example: {"type":"object","properties":{"nodes_cpu_usage":{"type":"array","items":{"type":"object","properties":{"node":{"type":"string"},"cluster":{"type":"string"},"cpu_avg_percentage":{"type":"number"}},"required":["node","cluster","cpu_avg_percentage"]}}},"required":["nodes_cpu_usage"]}
       responses:
         '200':
           description: The result of the autonomous task.
