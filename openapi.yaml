@@ -23,6 +23,10 @@ components:
           enum:
             - anchor_residential
           default: anchor_residential
+        country_code:
+          type: string
+          description: Country code for residential proxy
+          example: uk
       required:
         - type
     AnchorMobileProxyType:
