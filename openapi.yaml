@@ -26,6 +26,16 @@ components:
         country_code:
           type: string
           description: Country code for residential proxy
+          enum:
+            - us
+            - uk
+            - fr
+            - it
+            - jp
+            - au
+            - de
+            - fi
+            - ca
           example: uk
       required:
         - type
@@ -41,6 +51,16 @@ components:
         country_code:
           type: string
           description: Country code for mobile proxy
+          enum:
+            - us
+            - uk
+            - fr
+            - it
+            - jp
+            - au
+            - de
+            - fi
+            - ca
           example: uk
       required:
         - type

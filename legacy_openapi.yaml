@@ -25,6 +25,20 @@ components:
           enum:
             - anchor_residential
           default: anchor_residential
+        country_code:
+          type: string
+          description: Country code for residential proxy. Supported countries are us, uk, fr, it, jp, au, de, fi, ca.
+          enum:
+            - us
+            - uk
+            - fr
+            - it
+            - jp
+            - au
+            - de
+            - fi
+            - ca
+          example: uk
       required:
         - type
     AnchorMobileProxyType:
@@ -38,7 +52,17 @@ components:
           default: anchor_mobile
         country_code:
           type: string
-          description: Country code for mobile proxy
+          description: Country code for mobile proxy. Supported countries are us, uk, fr, it, jp, au, de, fi, ca.
+          enum:
+            - us
+            - uk
+            - fr
+            - it
+            - jp
+            - au
+            - de
+            - fi
+            - ca
           example: uk
       required:
         - type
