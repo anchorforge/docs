@@ -2398,4 +2398,340 @@ paths:
                         type: string
                         example: Failed to navigate to URL
 
+  /v1/extensions:
+    post:
+      summary: Upload Extension
+      description: Upload a new browser extension as a ZIP file. The extension will be validated and stored for use in browser sessions.
+      security:
+        - api_key_header: []
+      tags:
+        - Extensions
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - name
+                - file
+              properties:
+                name:
+                  type: string
+                  description: User-friendly name for the extension (1-255 characters)
+                  example: "My Custom Extension"
+                file:
+                  type: string
+                  format: binary
+                  description: ZIP file containing the browser extension
+      responses:
+        '200':
+          description: Extension uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                        description: Unique identifier for the extension
+                        example: "550e8400-e29b-41d4-a716-446655440000"
+                      name:
+                        type: string
+                        description: Extension name
+                        example: "My Custom Extension"
+                      manifest:
+                        type: object
+                        description: Parsed manifest.json content
+                        properties:
+                          name:
+                            type: string
+                            example: "Extension Name"
+                          version:
+                            type: string
+                            example: "1.0.0"
+                          manifest_version:
+                            type: integer
+                            example: 3
+                        additionalProperties: true
+                      createdAt:
+                        type: string
+                        format: date-time
+                        description: Timestamp when the extension was created
+                        example: "2024-01-01T00:00:00.000Z"
+                      updatedAt:
+                        type: string
+                        format: date-time
+                        description: Timestamp when the extension was last updated
+                        example: "2024-01-01T00:00:00.000Z"
+        '400':
+          description: Invalid request or extension validation failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 400
+                      message:
+                        type: string
+                        example: "Extension zip must contain a manifest.json file"
+        '500':
+          description: Unable to upload extension
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 500
+                      message:
+                        type: string
+                        example: "Unable to upload extension"
+    get:
+      summary: List Extensions
+      description: Get all extensions for the authenticated user
+      security:
+        - api_key_header: []
+      tags:
+        - Extensions
+      responses:
+        '200':
+          description: List of user extensions retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          format: uuid
+                          description: Unique identifier for the extension
+                          example: "550e8400-e29b-41d4-a716-446655440000"
+                        name:
+                          type: string
+                          description: Extension name
+                          example: "My Custom Extension"
+                        manifest:
+                          type: object
+                          description: Extension manifest data
+                          properties:
+                            name:
+                              type: string
+                              example: "Extension Name"
+                            version:
+                              type: string
+                              example: "1.0.0"
+                            manifest_version:
+                              type: integer
+                              example: 3
+                          additionalProperties: true
+                        createdAt:
+                          type: string
+                          format: date-time
+                          description: Timestamp when the extension was created
+                          example: "2024-01-01T00:00:00.000Z"
+                        updatedAt:
+                          type: string
+                          format: date-time
+                          description: Timestamp when the extension was last updated
+                          example: "2024-01-01T00:00:00.000Z"
+        '500':
+          description: Unable to list extensions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 500
+                      message:
+                        type: string
+                        example: "Unable to list extensions"
+
+  /v1/extensions/{id}:
+    get:
+      summary: Get Extension Details
+      description: Get details of a specific extension by its ID
+      security:
+        - api_key_header: []
+      tags:
+        - Extensions
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the extension to retrieve
+          schema:
+            type: string
+            format: uuid
+            example: "550e8400-e29b-41d4-a716-446655440000"
+      responses:
+        '200':
+          description: Extension details retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                        description: Unique identifier for the extension
+                        example: "550e8400-e29b-41d4-a716-446655440000"
+                      name:
+                        type: string
+                        description: Extension name
+                        example: "My Custom Extension"
+                      manifest:
+                        type: object
+                        description: Complete extension manifest data
+                        properties:
+                          name:
+                            type: string
+                            example: "Extension Name"
+                          version:
+                            type: string
+                            example: "1.0.0"
+                          manifest_version:
+                            type: integer
+                            example: 3
+                          description:
+                            type: string
+                            example: "Extension description"
+                          permissions:
+                            type: array
+                            items:
+                              type: string
+                            example: ["activeTab", "storage"]
+                        additionalProperties: true
+                      createdAt:
+                        type: string
+                        format: date-time
+                        description: Timestamp when the extension was created
+                        example: "2024-01-01T00:00:00.000Z"
+                      updatedAt:
+                        type: string
+                        format: date-time
+                        description: Timestamp when the extension was last updated
+                        example: "2024-01-01T00:00:00.000Z"
+        '404':
+          description: Extension not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 404
+                      message:
+                        type: string
+                        example: "Extension not found"
+        '500':
+          description: Unable to get extension
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 500
+                      message:
+                        type: string
+                        example: "Unable to get extension"
+    delete:
+      summary: Delete Extension
+      description: Delete an extension and remove it from storage
+      security:
+        - api_key_header: []
+      tags:
+        - Extensions
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the extension to delete
+          schema:
+            type: string
+            format: uuid
+            example: "550e8400-e29b-41d4-a716-446655440000"
+      responses:
+        '200':
+          description: Extension deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        example: "success"
+        '404':
+          description: Extension not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 404
+                      message:
+                        type: string
+                        example: "Extension not found"
+        '500':
+          description: Unable to delete extension
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 500
+                      message:
+                        type: string
+                        example: "Unable to delete extension"
+
 tags: []

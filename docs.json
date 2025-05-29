@@ -54,6 +54,7 @@
                   "advanced/file-download"
                 ]
               },
+              "advanced/extensions",
               "advanced/browser-termination"
             ]
           },
