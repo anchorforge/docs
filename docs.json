@@ -51,7 +51,8 @@
                 "icon": "file",
                 "pages": [
                   "advanced/file-upload",
-                  "advanced/file-download"
+                  "advanced/file-download",
+                  "advanced/p2p-downloads"
                 ]
               },
               "advanced/extensions",

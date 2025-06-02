@@ -690,6 +690,14 @@ paths:
                           type: integer
                           description: Height of the viewport in pixels. Defaults to `900`.
                           example: 900
+                    p2p_download:
+                      type: object
+                      description: Configuration for peer-to-peer download capture functionality.
+                      properties:
+                        active:
+                          type: boolean
+                          description: Enable or disable P2P downloads. When enabled, the browser will capture downloads for direct data extraction, instead of uploading them on Anchor's storage. Defaults to `false`.
+                          example: false
       responses:
         '200':
           description: Successfully returned a browser object

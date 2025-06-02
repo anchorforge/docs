@@ -4,9 +4,14 @@ description: ''
 icon: 'download'
 ---
 
-Anchor Browser supports downloading files during your browser sessions.
+Anchor Browser supports two methods for downloading files during your browser sessions:
 
-The following examples demonstrate how to download a file and retrieve it from the browser session.
+1. **Traditional Downloads**: Files are downloaded to the browser instance and then uploaded to S3 for retrieval
+2. **P2P Downloads**: Files are captured directly in the browser using peer-to-peer technology, bypassing S3 storage
+
+## Traditional File Downloads
+
+The following examples demonstrate how to download a file using the traditional method and retrieve it from the browser session.
 
 <Steps>
 <Step title="Create a browser session">
@@ -37,3 +42,7 @@ download = await download_info.value
 You can retrieve the downloaded file from the browser session using the [get session downloads](/api-reference/browser-sessions/list-session-downloads) API
 </Step>
 </Steps>
+
+## P2P Downloads
+
+For enhanced performance and direct file capture without S3 storage, see our [P2P Download Guide](/advanced/p2p-downloads) which provides complete implementation examples and best practices.
