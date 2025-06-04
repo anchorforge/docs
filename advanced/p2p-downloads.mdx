@@ -28,35 +28,51 @@ import { chromium } from "playwright";
 
 const { ANCHOR_API_KEY } = process.env;
 
-async function saveDownload(src, filePath, page) {
-  if (src && typeof src.path === "function") {
+/**
+ * Save a download to disk.
+ * Handles three possible formats:
+ *   1. Playwright Download object
+ *   2. Base‑64 string
+ *   3. Fallback text scraped from the page
+ */
+async function saveDownload(download, filePath, page) {
+  // 1. Playwright Download object
+  if (download && typeof download.path === "function") {
     try {
-      const tmp = await src.path();
-      if (tmp && existsSync(tmp)) {
-        await src.saveAs(filePath);
+      const tmpPath = await download.path();
+      if (tmpPath && existsSync(tmpPath)) {
+        await download.saveAs(filePath);
         return filePath;
       }
-    } catch {}
+    } catch {
+      /* ignore and fall through */
+    }
   }
 
-  if (typeof src === "string") {
+  // 2. Raw base64 string
+  if (typeof download === "string") {
     try {
-      await fs.writeFile(filePath, Buffer.from(src, "base64"));
+      await fs.writeFile(filePath, Buffer.from(download, "base64"));
       return filePath;
-    } catch {}
+    } catch {
+      /* ignore and fall through */
+    }
   }
 
+  // 3. Fallback – ask the page for data or capture visible text
   if (page) {
     try {
       const blob = await page.evaluate(() => window._anchorExtractDownloadData());
       return saveDownload(blob, filePath);
-    } catch {}
+    } catch {
+      /* ignore and fall through */
+    }
 
-    const text = await page.evaluate(() => {
+    const fallbackText = await page.evaluate(() => {
       const el = document.querySelector("main") || document.body;
       return el.innerText || "";
     });
-    await fs.writeFile(filePath, text, "utf8");
+    await fs.writeFile(filePath, fallbackText, "utf8");
     return filePath;
   }
   throw new Error("Failed to save download");
@@ -66,7 +82,9 @@ const downloadHandler = (filePath) => async (page, info) => {
   if (info?.value) {
     try {
       return await saveDownload(info.value, filePath);
-    } catch {}
+    } catch {
+      /* ignore and fall through */
+    }
   }
   return saveDownload(null, filePath, page);
 };
@@ -145,7 +163,7 @@ def save_download(src, path, page=None):
             blob = page.evaluate("() => window._anchorExtractDownloadData()")
             return save_download(blob, path)
         except Exception:
-            # 4️⃣ As a last resort, dump visible page text
+            # As a last resort, dump visible page text
             text = page.evaluate(
                 "() => (document.querySelector('main')||document.body).innerText"
             )
