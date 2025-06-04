@@ -44,6 +44,7 @@
               "advanced/proxy",
               "advanced/captcha-solving",
               "advanced/ai-task-completion",
+              "advanced/event-coordination",
               "essentials/authentication-and-identity",
               "essentials/tool-building",
               {
