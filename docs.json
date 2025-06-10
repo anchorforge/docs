@@ -73,6 +73,7 @@
           {
             "group": "Additional Details",
             "pages": [
+              "security",
               "pricing"
             ]
           }
