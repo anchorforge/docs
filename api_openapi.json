@@ -928,7 +928,7 @@
                               "frontend_url": {
                                 "type": "string",
                                 "description": "The frontend URL for accessing developer tools for this page.",
-                                "example": "https://anchorforge.io/devtools-frontend/inspector.html?wss=connect.local.anchorbrowser.io/devtools/page/4471AF05DB5CB530971145A14848E5A7%3FsessionId=7d7b035c-d67e-4dfe-8c21-1af6a91b9dfc"
+                                "example": "https://anchorforge.io/devtools-frontend/inspector.html?wss=connect.anchorbrowser.io/devtools/page/4471AF05DB5CB530971145A14848E5A7%3FsessionId=7d7b035c-d67e-4dfe-8c21-1af6a91b9dfc"
                               },
                               "id": {
                                 "type": "string",

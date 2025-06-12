@@ -72,7 +72,7 @@ const downloadHandler = (filePath) => async (page, info) => {
 };
 
 async function createSession() {
-  const res = await fetch("https://api.local.anchorbrowser.io/v1/sessions", {
+  const res = await fetch("https://api.anchorbrowser.io/v1/sessions", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -169,7 +169,7 @@ def download_handler(path):
 
 def create_session():
     resp = requests.post(
-        "https://api.local.anchorbrowser.io/v1/sessions",
+        "https://api.anchorbrowser.io/v1/sessions",
         headers={
             "Content-Type": "application/json",
             "anchor-api-key": ANCHOR_API_KEY,
