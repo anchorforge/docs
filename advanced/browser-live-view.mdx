@@ -43,13 +43,15 @@ To prevent the end user from interacting with the browser embedding, use the `"r
 
 ### Headless
 
-To create a browser in headless mode, set the `headless` parameter to `false` when [creating a session](/api-reference/browser-sessions/start-browser-session).
+To create a browser in headless mode, set the `headless` parameter to `{"active": false}` when [creating a session](/api-reference/browser-sessions/start-browser-session).
 
 ```json
 {
   "browser": 
   {
-    "headless": true
+    "headless": {
+      "active": false
+    }
   }
 }
 ```
