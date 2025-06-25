@@ -31,29 +31,3 @@ input.set_input_files('/tmp/my-files/google.png') # Reference the local file pat
 ```
 
 </CodeGroup>  
-
-## Using a file downloaded during the session
-
-After performing a [file download](/advanced/file-download), you can use the downloaded file for file uploads. To do that, reference the downloaded file path in the file upload input.
-
-### Playwright example
-
-<CodeGroup>
-
-```tsx node.js
-await page.goto('https://browser-tests-alpha.vercel.app/api/upload-test')
-
-const input = await page.$("#fileUpload")
-
-await input.setInputFiles('downloads/google.png'); // Use the downloaded file path
-```
-
-```python python
-page.goto('https://browser-tests-alpha.vercel.app/api/upload-test')
-
-input = page.locator("#fileUpload")
-
-input.set_input_files('downloads/google.png') # Use the downloaded file path
-```
-
-</CodeGroup>  
