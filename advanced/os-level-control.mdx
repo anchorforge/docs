@@ -1,6 +1,7 @@
 ---
 title: 'OS-Level Control'
 description: 'Direct operating system control for precise browser automation and AI agent interactions'
+icon: 'computer-mouse'
 ---
 
 # OS-Level Control
@@ -13,19 +14,11 @@ OS-level control provides direct access to operating system primitives like mous
 
 **Vision-based AI models perform significantly better** when they can interact with the browser using the same primitives humans use:
 
-- **Visual Understanding**: AI agents that process screenshots can directly translate visual elements to precise coordinates
-- **Natural Interaction Patterns**: Mouse movements and keyboard input mirror human behavior more closely than DOM manipulation
-- **Complex UI Handling**: Works with dynamic content, canvas elements, and third-party widgets that are difficult to target with traditional selectors
-- **Cross-Platform Consistency**: OS-level operations work identically across different websites and applications
+- **Keyboard shortcuts work naturally**: `Ctrl+F` for searching, `Ctrl+L` for browser navbar interaction, `Ctrl+T` for new tabs
+- **OS-level UI elements**: Dropdowns, context menus, and system dialogs that aren't part of the webpage DOM
+- **Visual coordinate targeting**: AI agents can directly click on elements they see in screenshots
 
 ### Beyond Traditional Web Automation
-
-While CDP (Chrome DevTools Protocol) is excellent for many tasks, OS-level control excels when you need:
-
-- **Pixel-perfect positioning** for complex interfaces
-- **Interaction with non-standard elements** (Flash, WebGL, embedded applications)
-- **Simulation of human-like behavior** with realistic timing and movement patterns
-- **Screenshot-driven workflows** where AI agents analyze visual content
 
 ## Core Capabilities
 
@@ -96,7 +89,7 @@ await fetch(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/mouse/up`, {
 ### Drag and Drop
 
 Perform complex drag and drop operations in a single command:
-
+ 
 ```javascript
 // Drag file from desktop to upload area
 const response = await fetch(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/drag-and-drop`, {
@@ -155,8 +148,9 @@ const shortcuts = {
   copy: ['Ctrl', 'c'],
   paste: ['Ctrl', 'v'],
   undo: ['Ctrl', 'z'],
-  save: ['Ctrl', 's'],
-  refresh: ['F5']
+  undo: ['Ctrl', 'z'],
+  close_tab: ['Ctrl', 'w'],
+  focus_address_bar: ['Ctrl', 'l']
 };
 ```
 </CodeGroup>
@@ -174,10 +168,10 @@ const response = await fetch(`https://api.anchorbrowser.io/v1/sessions/${session
     'Content-Type': 'application/json'
   },
   body: JSON.stringify({
-    x: 400,           // Scroll position
-    y: 300,
-    deltaX: 0,        // Horizontal scroll amount
-    deltaY: 200,      // Vertical scroll amount (positive = down)
+    x: 400,           // Where to perform scroll (cursor position)
+    y: 300,           // Where to perform scroll (cursor position)
+    deltaX: 0,        // Horizontal scroll amount (does not correlate with pixels)
+    deltaY: 200,      // Vertical scroll amount (does not correlate with pixels, positive = down)
     steps: 5          // Number of steps for smooth scrolling
   })
 });
@@ -255,10 +249,10 @@ await fetch(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/paste`, {
 
 ### Navigation
 
-Direct URL navigation:
+Direct URL navigation at the OS level on the currently selected tab:
 
 ```javascript
-// Navigate to a specific URL
+// Navigate to a specific URL (completely OS-level, operates on selected tab)
 const response = await fetch(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/goto`, {
   method: 'POST',
   headers: {
@@ -273,104 +267,138 @@ const response = await fetch(`https://api.anchorbrowser.io/v1/sessions/${session
 
 ## AI Agent Integration Patterns
 
-### Vision-Based Workflow
+### OpenAI Computer Use Integration
 
-Here's how AI agents typically use OS-level control with vision models:
+AnchorBrowser includes an integrated **OpenAI Computer Use agent** that leverages OS-level control for enhanced AI interactions. This agent can perform complex tasks by combining vision models with precise OS-level operations.
 
-```javascript
-async function aiDrivenInteraction(sessionId, task) {
-  // 1. Take screenshot to analyze current state
-  const screenshot = await takeScreenshot(sessionId);
-  
-  // 2. Send to vision AI model
-  const analysis = await visionModel.analyze(screenshot, task);
-  
-  // 3. Execute recommended actions
-  for (const action of analysis.actions) {
-    switch(action.type) {
-      case 'click':
-        await click(sessionId, action.x, action.y);
-        break;
-      case 'type':
-        await type(sessionId, action.text);
-        break;
-      case 'scroll':
-        await scroll(sessionId, action.x, action.y, action.deltaY);
-        break;
-    }
-    
-    // Wait for page changes
-    await new Promise(resolve => setTimeout(resolve, 1000));
-  }
-  
-  // 4. Take new screenshot to verify results
-  const newScreenshot = await takeScreenshot(sessionId);
-  return visionModel.verifySuccess(newScreenshot, task);
-}
+```python
+class AnchorBrowser(BasePlaywrightComputer):
+    """
+    Computer implementation for Anchor browser (https://anchorbrowser.io)
+    Uses OS-level control endpoints for browser automation within the container.
+
+    IMPORTANT: The `goto` and navigation tools are already implemented and recommended
+    when using the Anchor computer to help the agent navigate more effectively.
+    """
+
+    def __init__(self, width: int = 1024, height: int = 900, session_id: str = None):
+        """Initialize the Anchor browser session"""
+        super().__init__()
+        self.dimensions = (width, height)
+        self.session_id = session_id
+        self.base_url = "http://localhost:8484/api/os-control"
+
+    def screenshot(self) -> str:
+        """
+        Capture a screenshot using OS-level control API.
+        
+        Returns:
+            str: A base64 encoded string of the screenshot for AI model consumption.
+        """
+        try:
+            response = requests.get(f"{self.base_url}/screenshot")
+            
+            if not response.ok:
+                print(f"OS-level screenshot failed, falling back to standard screenshot")
+                return super().screenshot()
+                
+            # OS-level API returns binary PNG data, encoded for AI models
+            return base64.b64encode(response.content).decode('utf-8')
+            
+        except Exception as error:
+            print(f"OS-level screenshot failed, falling back: {error}")
+            return super().screenshot()
+
+    def click(self, x: int, y: int, button: str = "left") -> None:
+        """
+        Click at the specified coordinates using OS-level control.
+        
+        Args:
+            x: The x-coordinate to click.
+            y: The y-coordinate to click.
+            button: The mouse button to use ('left', 'right').
+        """
+        try:
+            response = requests.post(
+                f"{self.base_url}/mouse/click",
+                json={"x": x, "y": y, "button": button}
+            )
+            
+            if not response.ok:
+                print(f"OS-level click failed, falling back to standard click")
+                super().click(x, y, button)
+                
+        except Exception as error:
+            print(f"OS-level click failed, falling back: {error}")
+            super().click(x, y, button)
+
+    def type(self, text: str) -> None:
+        """
+        Type text using OS-level control with realistic delays.
+        """
+        try:
+            response = requests.post(
+                f"{self.base_url}/keyboard/type",
+                json={"text": text, "delay": 30}
+            )
+            
+            if not response.ok:
+                print(f"OS-level type failed, falling back to standard type")
+                super().type(text)
+                
+        except Exception as error:
+            print(f"OS-level type failed, falling back: {error}")
+            super().type(text)
+
+    def keypress(self, keys: List[str]) -> None:
+        """
+        Press keyboard shortcut using OS-level control.
+        
+        Args:
+            keys: List of keys to press simultaneously (e.g., ['Ctrl', 'c']).
+        """
+        try:
+            response = requests.post(
+                f"{self.base_url}/keyboard/shortcut",
+                json={"keys": keys, "holdTime": 100}
+            )
+            
+            if not response.ok:
+                print(f"OS-level keyboard shortcut failed, falling back")
+                # Fallback to standard implementation
+                for key in keys:
+                    self._page.keyboard.down(key)
+                for key in reversed(keys):
+                    self._page.keyboard.up(key)
+                
+        except Exception as error:
+            print(f"OS-level keyboard shortcut failed: {error}")
 ```
 
-### Coordinate-Based Element Targeting
+### Usage with OpenAI Models
 
-Unlike traditional web automation that relies on CSS selectors, OS-level control uses visual coordinates:
+The integrated computer use agent works seamlessly with OpenAI's vision models:
 
-```javascript
-// Traditional approach (limited by DOM structure)
-// await page.click('#submit-button');
+```python
+# Initialize the agent with your session
+agent = AnchorBrowser(width=1440, height=900, session_id="your-session-id")
 
-// OS-level approach (works with any visual element)
-const coordinates = await findElementVisually(screenshot, 'submit button');
-await click(sessionId, coordinates.x, coordinates.y);
+# The agent can now:
+# 1. Take screenshots for AI analysis
+screenshot = agent.screenshot()
+
+# 2. Perform precise clicks based on AI vision
+agent.click(x=400, y=300)
+
+# 3. Type text naturally
+agent.type("Hello from AI agent!")
+
+# 4. Execute keyboard shortcuts
+agent.keypress(['Ctrl', 'l'])  # Focus address bar
+agent.keypress(['Ctrl', 'f'])  # Open search
 ```
 
-## Best Practices
-
-### Human-Like Interactions
-
-Simulate realistic user behavior for better success rates:
-
-```javascript
-// Add realistic delays
-await click(sessionId, x, y);
-await delay(randomBetween(100, 300));
-
-// Use gradual scrolling
-await scroll(sessionId, x, y, deltaY, { steps: 10 });
-
-// Vary typing speed
-await type(sessionId, text, { delay: randomBetween(50, 150) });
-```
-
-### Error Handling
-
-Always verify actions with screenshots:
-
-```javascript
-async function reliableClick(sessionId, x, y, expectedChange) {
-  const beforeScreenshot = await takeScreenshot(sessionId);
-  await click(sessionId, x, y);
-  await delay(1000);
-  
-  const afterScreenshot = await takeScreenshot(sessionId);
-  const changed = await compareScreenshots(beforeScreenshot, afterScreenshot);
-  
-  if (!changed) {
-    throw new Error('Click did not produce expected change');
-  }
-}
-```
-
-### Coordinate Accuracy
-
-When working with vision models, ensure coordinate precision:
-
-```javascript
-// Use device pixel ratio for high-DPI displays
-const devicePixelRatio = await getDevicePixelRatio(sessionId);
-const adjustedX = Math.round(x * devicePixelRatio);
-const adjustedY = Math.round(y * devicePixelRatio);
-
-await click(sessionId, adjustedX, adjustedY);
-```
+The computer use integration provides **automatic fallbacks** to standard browser automation if OS-level operations aren't available, ensuring reliability across different environments.
 
 ## Limitations and Considerations
 
@@ -378,27 +406,6 @@ await click(sessionId, adjustedX, adjustedY);
 
 - **Headful Sessions Only**: OS-level control requires a visible desktop environment
 - **Performance Impact**: Screenshots and precise positioning may be slower than DOM-based automation
-- **Coordinate Dependency**: Layout changes can break coordinate-based interactions
-
-### Security Considerations
-
-- OS-level control has the same permissions as the browser session
-- Screenshot data contains sensitive visual information
-- Always validate coordinates before executing actions
-
-### When to Use Traditional Automation
-
-Consider CDP/DOM-based automation when:
-- Working with known, stable web applications
-- Performance is critical
-- You need to extract structured data
-- Working in headless environments
-
-Use OS-level control when:
-- Building AI agents with vision capabilities
-- Dealing with complex, dynamic interfaces
-- Simulating realistic user behavior
-- Working with non-standard web elements
 
 ---
 

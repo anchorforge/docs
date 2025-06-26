@@ -44,6 +44,7 @@
               "advanced/captcha-solving",
               "advanced/ai-task-completion",
               "advanced/event-coordination",
+              "advanced/os-level-control",
               "essentials/authentication-and-identity",
               "essentials/tool-building",
               {
