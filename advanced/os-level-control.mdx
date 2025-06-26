@@ -29,59 +29,62 @@ Control mouse interactions with pixel-level precision:
 <CodeGroup>
 ```javascript Basic Click
 // Single click at coordinates
-const response = await fetch(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/mouse/click`, {
-  method: 'POST',
+const response = await axios.post(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/mouse/click`, {
+  x: 400,
+  y: 300,
+  button: 'left' // 'left', 'middle', 'right'
+}, {
   headers: {
     'anchor-api-key': 'your-api-key',
     'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({
-    x: 400,
-    y: 300,
-    button: 'left' // 'left', 'middle', 'right'
-  })
+  }
 });
 ```
 
 ```javascript Advanced Mouse Control
 // Double-click for text selection
-await fetch(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/mouse/doubleClick`, {
-  method: 'POST',
+await axios.post(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/mouse/doubleClick`, {
+  x: 500, 
+  y: 200
+}, {
   headers: {
     'anchor-api-key': 'your-api-key',
     'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({ x: 500, y: 200 })
+  }
 });
 
 // Mouse down and up for custom gestures
-await fetch(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/mouse/down`, {
-  method: 'POST',
+await axios.post(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/mouse/down`, {
+  x: 100, 
+  y: 100, 
+  button: 'left'
+}, {
   headers: {
     'anchor-api-key': 'your-api-key',
     'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({ x: 100, y: 100, button: 'left' })
+  }
 });
 
 // Move while holding down (drag)
-await fetch(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/mouse/move`, {
-  method: 'POST',
+await axios.post(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/mouse/move`, {
+  x: 300, 
+  y: 300
+}, {
   headers: {
     'anchor-api-key': 'your-api-key',
     'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({ x: 300, y: 300 })
+  }
 });
 
 // Release
-await fetch(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/mouse/up`, {
-  method: 'POST',
+await axios.post(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/mouse/up`, {
+  x: 300, 
+  y: 300
+}, {
   headers: {
     'anchor-api-key': 'your-api-key',
     'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({ x: 300, y: 300 })
+  }
 });
 ```
 </CodeGroup>
@@ -92,19 +95,17 @@ Perform complex drag and drop operations in a single command:
  
 ```javascript
 // Drag file from desktop to upload area
-const response = await fetch(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/drag-and-drop`, {
-  method: 'POST',
+const response = await axios.post(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/drag-and-drop`, {
+  startX: 200,
+  startY: 150,
+  endX: 600,
+  endY: 400,
+  button: 'left'
+}, {
   headers: {
     'anchor-api-key': 'your-api-key',
     'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({
-    startX: 200,
-    startY: 150,
-    endX: 600,
-    endY: 400,
-    button: 'left'
-  })
+  }
 });
 ```
 
@@ -115,31 +116,27 @@ Send text and keyboard shortcuts with human-like timing:
 <CodeGroup>
 ```javascript Text Input
 // Type text with optional delay between keystrokes
-const response = await fetch(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/keyboard/type`, {
-  method: 'POST',
+const response = await axios.post(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/keyboard/type`, {
+  text: "Hello, world!",
+  delay: 50 // milliseconds between keystrokes
+}, {
   headers: {
     'anchor-api-key': 'your-api-key',
     'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({
-    text: "Hello, world!",
-    delay: 50 // milliseconds between keystrokes
-  })
+  }
 });
 ```
 
 ```javascript Keyboard Shortcuts
 // Execute keyboard shortcuts
-const response = await fetch(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/keyboard/shortcut`, {
-  method: 'POST',
+const response = await axios.post(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/keyboard/shortcut`, {
+  keys: ['Ctrl', 'a'], // Select all
+  holdTime: 100 // Hold keys for 100ms
+}, {
   headers: {
     'anchor-api-key': 'your-api-key',
     'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({
-    keys: ['Ctrl', 'a'], // Select all
-    holdTime: 100 // Hold keys for 100ms
-  })
+  }
 });
 
 // Common shortcuts
@@ -148,9 +145,9 @@ const shortcuts = {
   copy: ['Ctrl', 'c'],
   paste: ['Ctrl', 'v'],
   undo: ['Ctrl', 'z'],
-  undo: ['Ctrl', 'z'],
-  close_tab: ['Ctrl', 'w'],
-  focus_address_bar: ['Ctrl', 'l']
+  newTab: ['Ctrl', 't'],
+  closeTab: ['Ctrl', 'w'],
+  focusAddressBar: ['Ctrl', 'l']
 };
 ```
 </CodeGroup>
@@ -161,19 +158,17 @@ Control page scrolling with precision:
 
 ```javascript
 // Scroll at specific coordinates
-const response = await fetch(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/scroll`, {
-  method: 'POST',
+const response = await axios.post(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/scroll`, {
+  x: 400,           // Where to perform scroll (cursor position)
+  y: 300,           // Where to perform scroll (cursor position)
+  deltaX: 0,        // Horizontal scroll amount (does not correlate with pixels)
+  deltaY: 200,      // Vertical scroll amount (does not correlate with pixels, positive = down)
+  steps: 5          // Number of steps for smooth scrolling
+}, {
   headers: {
     'anchor-api-key': 'your-api-key',
     'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({
-    x: 400,           // Where to perform scroll (cursor position)
-    y: 300,           // Where to perform scroll (cursor position)
-    deltaX: 0,        // Horizontal scroll amount (does not correlate with pixels)
-    deltaY: 200,      // Vertical scroll amount (does not correlate with pixels, positive = down)
-    steps: 5          // Number of steps for smooth scrolling
-  })
+  }
 });
 ```
 
@@ -183,14 +178,14 @@ Capture visual state for AI analysis:
 
 ```javascript
 // Take screenshot of current browser state
-const response = await fetch(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/screenshot`, {
-  method: 'GET',
+const response = await axios.get(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/screenshot`, {
   headers: {
     'anchor-api-key': 'your-api-key'
-  }
+  },
+  responseType: 'arraybuffer'
 });
 
-const imageBuffer = await response.arrayBuffer();
+const imageBuffer = response.data;
 // Process screenshot with vision AI model
 ```
 
@@ -201,48 +196,42 @@ Manage clipboard content programmatically:
 <CodeGroup>
 ```javascript Reading Clipboard
 // Get current clipboard content
-const response = await fetch(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/clipboard`, {
-  method: 'GET',
+const response = await axios.get(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/clipboard`, {
   headers: {
     'anchor-api-key': 'your-api-key'
   }
 });
 
-const { data } = await response.json();
+const { data } = response.data;
 console.log('Clipboard content:', data.text);
 ```
 
 ```javascript Setting Clipboard
 // Set clipboard content
-await fetch(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/clipboard`, {
-  method: 'POST',
+await axios.post(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/clipboard`, {
+  text: "Content to copy"
+}, {
   headers: {
     'anchor-api-key': 'your-api-key',
     'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({
-    text: "Content to copy"
-  })
+  }
 });
 
 // Trigger copy operation (copies selected text)
-const copyResponse = await fetch(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/copy`, {
-  method: 'POST',
+const copyResponse = await axios.post(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/copy`, {}, {
   headers: {
     'anchor-api-key': 'your-api-key'
   }
 });
 
 // Trigger paste operation
-await fetch(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/paste`, {
-  method: 'POST',
+await axios.post(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/paste`, {
+  text: "Text to paste"
+}, {
   headers: {
     'anchor-api-key': 'your-api-key',
     'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({
-    text: "Text to paste"
-  })
+  }
 });
 ```
 </CodeGroup>
@@ -253,15 +242,13 @@ Direct URL navigation at the OS level on the currently selected tab:
 
 ```javascript
 // Navigate to a specific URL (completely OS-level, operates on selected tab)
-const response = await fetch(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/goto`, {
-  method: 'POST',
+const response = await axios.post(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/goto`, {
+  url: "https://example.com"
+}, {
   headers: {
     'anchor-api-key': 'your-api-key',
     'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({
-    url: "https://example.com"
-  })
+  }
 });
 ```
 
