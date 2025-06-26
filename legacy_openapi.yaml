@@ -144,10 +144,6 @@ paths:
                   format: uuid
                   description: The session ID is required if the source is set to `session`. The session must be running, and the profile will be stored once the session terminates.
                   example: 550e8400-e29b-41d4-a716-446655440000
-                store_cache:
-                  type: boolean
-                  description: Indicates whether the session cache should be saved when the session ends. Defaults to `false`.
-                  example: true
       responses:
         '200':
           description: Profile created successfully.
@@ -312,10 +308,6 @@ paths:
                   format: uuid
                   description: The session ID is required if the source is set to `session`. The session must belong to the user and be active.
                   example: 550e8400-e29b-41d4-a716-446655440000
-                store_cache:
-                  type: boolean
-                  description: Indicates whether the session cache should be saved when the session ends. Defaults to `false`.
-                  example: true
       responses:
         '200':
           description: Profile updated successfully.
@@ -549,10 +541,6 @@ paths:
                     persist:
                       type: boolean
                       description: Indicates whether the session profile data should be saved when the session ends.
-                      example: true
-                    store_cache:
-                      type: boolean
-                      description: Indicates whether the session cache should be saved when the session ends. Defaults to `false`.
                       example: true
                 viewport:
                   type: object

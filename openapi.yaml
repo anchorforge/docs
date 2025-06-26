@@ -163,10 +163,6 @@ components:
           format: uuid
           description: The browser session ID is required if the source is set to `session`. The browser session must be running, and the profile will be stored once the browser session terminates.
           example: 550e8400-e29b-41d4-a716-446655440000
-        store_cache:
-          type: boolean
-          description: Indicates whether the browser session cache should be saved when the browser session ends. Defaults to `false`.
-          example: true
 
     ProfileUpdateRequestSchema:
       type: object
@@ -186,10 +182,6 @@ components:
           format: uuid
           description: The browser session ID is required if the source is set to `session`. The browser session must belong to the user and be active.
           example: 550e8400-e29b-41d4-a716-446655440000
-        store_cache:
-          type: boolean
-          description: Indicates whether the browser session cache should be saved when the browser session ends. Defaults to `false`.
-          example: true
 
     ProfileResponseSchema:
       type: object
@@ -213,11 +205,6 @@ components:
           format: uuid
           description: The browser session ID used to create this profile, if applicable.
           example: 550e8400-e29b-41d4-a716-446655440000
-        store_cache:
-          type: boolean
-          description: Whether the profile stores browser cache.
-          example: true
-          default: false
         status:
           type: string
           description: The current status of the profile.
@@ -301,10 +288,6 @@ components:
             persist:
               type: boolean
               description: Indicates whether the browser session profile data should be saved when the browser session ends. Defaults to `false`.
-              example: true
-            store_cache:
-              type: boolean
-              description: Indicates whether the browser session cache should be saved when the browser session ends. Defaults to `false`.
               example: true
         adblock:
           type: object
