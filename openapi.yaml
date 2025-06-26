@@ -14,6 +14,34 @@ components:
       name: anchor-api-key
       description: API key passed in the header
   schemas:
+    # ==============================
+    # SHARED RESPONSE SCHEMAS
+    # ==============================
+    # These schemas are used across multiple resources
+    SuccessResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            status:
+              type: string
+              example: "success"
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: integer
+            message:
+              type: string
+
+    # ==============================
+    # PROXY CONFIGURATION SCHEMAS
+    # ==============================
     AnchorResidentialProxyType:
       type: object
       title: Anchor Residential Proxy
@@ -39,6 +67,7 @@ components:
           example: uk
       required:
         - type
+
     AnchorMobileProxyType:
       type: object
       title: Anchor Mobile Proxy
@@ -64,6 +93,7 @@ components:
           example: uk
       required:
         - type
+
     CustomProxyType:
       type: object
       title: Custom Proxy
@@ -90,6 +120,7 @@ components:
         - server
         - username
         - password
+
     ProxyConfig:
       type: object
       description: Configuration options for proxy usage.
@@ -104,6 +135,749 @@ components:
         - $ref: '#/components/schemas/AnchorResidentialProxyType'
         - $ref: '#/components/schemas/AnchorMobileProxyType'
         - $ref: '#/components/schemas/CustomProxyType'
+
+    # ==============================
+    # PROFILE SCHEMAS
+    # ==============================
+    ProfileRequestSchema:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: The name of the profile.
+          example: my-profile
+        description:
+          type: string
+          description: A description of the profile.
+          example: This is my profile description.
+        source:
+          type: string
+          description: The source of the profile data. currently only `session` is supported.
+          example: session
+          enum:
+            - session
+        session_id:
+          type: string
+          format: uuid
+          description: The browser session ID is required if the source is set to `session`. The browser session must be running, and the profile will be stored once the browser session terminates.
+          example: 550e8400-e29b-41d4-a716-446655440000
+        store_cache:
+          type: boolean
+          description: Indicates whether the browser session cache should be saved when the browser session ends. Defaults to `false`.
+          example: true
+
+    ProfileUpdateRequestSchema:
+      type: object
+      properties:
+        description:
+          type: string
+          description: The new description for the profile.
+          example: Updated profile description.
+        source:
+          type: string
+          description: The source of the profile data. Currently, only `session` is supported.
+          example: session
+          enum:
+            - session
+        session_id:
+          type: string
+          format: uuid
+          description: The browser session ID is required if the source is set to `session`. The browser session must belong to the user and be active.
+          example: 550e8400-e29b-41d4-a716-446655440000
+        store_cache:
+          type: boolean
+          description: Indicates whether the browser session cache should be saved when the browser session ends. Defaults to `false`.
+          example: true
+
+    ProfileResponseSchema:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the profile.
+          example: my-profile
+        description:
+          type: string
+          description: A description of the profile.
+          example: This is my profile description.
+        source:
+          type: string
+          description: The source of the profile data.
+          example: session
+          enum:
+            - session
+        session_id:
+          type: string
+          format: uuid
+          description: The browser session ID used to create this profile, if applicable.
+          example: 550e8400-e29b-41d4-a716-446655440000
+        store_cache:
+          type: boolean
+          description: Whether the profile stores browser cache.
+          example: true
+          default: false
+        status:
+          type: string
+          description: The current status of the profile.
+          example: active
+        created_at:
+          type: string
+          format: date-time
+          description: The timestamp when the profile was created.
+          example: '2024-01-01T12:00:00Z'
+
+    ProfileListResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            count:
+              type: integer
+              description: Total number of profiles
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProfileResponseSchema'
+
+    ProfileResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ProfileResponseSchema'
+
+    # ==============================
+    # BROWSER SESSION SCHEMAS
+    # ==============================
+    SessionConfig:
+      type: object
+      description: Session-related configurations.
+      properties:
+        recording:
+          type: object
+          description: Configuration for session recording.
+          properties:
+            active:
+              type: boolean
+              description: Enable or disable video recording of the browser session. Defaults to `true`.
+              example: false
+        proxy:
+          $ref: '#/components/schemas/ProxyConfig'
+        timeout:
+          type: object
+          description: Timeout configurations for the browser session.
+          properties:
+            max_duration:
+              type: integer
+              description: Maximum amount of time (in minutes) for the browser to run before terminating. Defaults to `20`.
+              example: 10
+            idle_timeout:
+              type: integer
+              description: The amount of time (in minutes) the browser session waits for new connections after all others are closed before stopping. Defaults to `5`.
+              example: 3
+        live_view:
+          type: object
+          description: Configuration for live viewing the browser session.
+          properties:
+            read_only:
+              type: boolean
+              description: Enable or disable read-only mode for live viewing. Defaults to `false`.
+              example: false
+
+    BrowserConfig:
+      type: object
+      description: Browser-specific configurations.
+      properties:
+        profile:
+          type: object
+          description: Options for managing and persisting browser session profiles.
+          properties:
+            name:
+              type: string
+              description: The name of the profile to be used during the browser session.
+              example: my-profile
+            persist:
+              type: boolean
+              description: Indicates whether the browser session profile data should be saved when the browser session ends. Defaults to `false`.
+              example: true
+            store_cache:
+              type: boolean
+              description: Indicates whether the browser session cache should be saved when the browser session ends. Defaults to `false`.
+              example: true
+        adblock:
+          type: object
+          description: Configuration for ad-blocking.
+          properties:
+            active:
+              type: boolean
+              description: Enable or disable ad-blocking. Defaults to `true`.
+              example: false
+        popup_blocker:
+          type: object
+          description: Configuration for popup blocking.
+          properties:
+            active:
+              type: boolean
+              description: Blocks popups, including ads and CAPTCHA consent banners. Requires adblock to be active. Defaults to `true`.
+              example: false
+        captcha_solver:
+          type: object
+          description: Configuration for captcha-solving.
+          properties:
+            active:
+              type: boolean
+              description: Enable or disable captcha-solving. Requires proxy to be active. Defaults to `false`.
+              example: false
+        headless:
+          type: object
+          description: Configuration for headless mode.
+          properties:
+            active:
+              type: boolean
+              description: Whether browser should be headless or headful. Defaults to `false`.
+              example: true
+        viewport:
+          type: object
+          description: Configuration for the browser's viewport size.
+          properties:
+            width:
+              type: integer
+              description: Width of the viewport in pixels. Defaults to `1440`.
+              example: 1440
+            height:
+              type: integer
+              description: Height of the viewport in pixels. Defaults to `900`.
+              example: 900
+        p2p_download:
+          type: object
+          description: Configuration for peer-to-peer download capture functionality.
+          properties:
+            active:
+              type: boolean
+              description: Enable or disable P2P downloads. When enabled, the browser will capture downloads for direct data extraction, instead of uploading them on Anchor's storage. Defaults to `false`.
+              example: false
+        extensions:
+          type: array
+          description: Array of extension IDs to load in the browser session. Extensions must be previously uploaded using the Extensions API.
+          items:
+            type: string
+            format: uuid
+          example: ["550e8400-e29b-41d4-a716-446655440000", "6ba7b810-9dad-11d1-80b4-00c04fd430c8"]
+
+    SessionCreateRequestSchema:
+      type: object
+      properties:
+        session:
+          $ref: '#/components/schemas/SessionConfig'
+        browser:
+          $ref: '#/components/schemas/BrowserConfig'
+
+    SessionCreateResponseSchema:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            id:
+              type: string
+              description: Unique identifier for the browser session
+            cdp_url:
+              type: string
+              description: The CDP websocket connection string
+            live_view_url:
+              type: string
+              description: The browser session live view url
+
+    SessionStatus:
+      type: object
+      properties:
+        session_id:
+          type: string
+          description: Unique identifier for the browser session
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        status:
+          type: string
+          description: Current status of the browser session
+          example: "running"
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp when the browser session was created
+          example: "2024-01-01T12:00:00Z"
+      required:
+        - session_id
+        - status
+        - created_at
+
+    SessionListResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            count:
+              type: integer
+              description: Total number of browser sessions
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/SessionStatus'
+
+    # ==============================
+    # RECORDING SCHEMAS
+    # ==============================
+    RecordingItem:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the recording
+        is_primary:
+          type: boolean
+          description: Indicates if this is the primary recording
+        file_link:
+          type: string
+          description: URL to access the recording file
+        suggested_file_name:
+          type: string
+          description: Suggested filename for the recording
+        duration:
+          type: string
+          description: Duration of the recording
+        size:
+          type: number
+          description: Size of the recording file in bytes
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp when the recording was created
+
+    RecordingListResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            count:
+              type: integer
+              description: Total number of video recordings
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/RecordingItem'
+
+    # ==============================
+    # DOWNLOAD SCHEMAS
+    # ==============================
+    DownloadItem:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The unique ID of the download record.
+        file_link:
+          type: string
+          format: uri
+          description: The URL to download the file from anchorbrowser servers. Requires api key authentication.
+          example: https://api.anchorbrowser.io/sessions/42b60264-c48a-4ded-aa54-e4a83a710ee5/downloads/6daab24f-0853-44e6-abb0-618565a7244a/fetch
+        original_download_url:
+          type: string
+          format: uri
+          description: The URL used to download the file.
+          example: https://example.com/files/document.doc
+        origin_url:
+          type: string
+          format: uri
+          description: The original URL where the file was found.
+          example: https://example.com/files/
+        suggested_file_name:
+          type: string
+          description: The suggested file name for saving the file.
+          example: document (2).doc
+        original_file_name:
+          type: string
+          description: The original file name before any modification.
+          example: document.doc
+        duration:
+          type: integer
+          description: The time it took to process or download the file, in milliseconds.
+          example: 2025
+        size:
+          type: integer
+          description: The size of the file in bytes.
+          example: 177152
+        created_at:
+          type: string
+          format: date-time
+          description: The timestamp when the file record was created.
+          example: '2025-01-18T03:34:56.043Z'
+
+    DownloadListResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            count:
+              type: integer
+              description: Total number of downloads
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/DownloadItem'
+
+    # ==============================
+    # TOOL SCHEMAS
+    # ==============================
+    FetchWebpageRequestSchema:
+      type: object
+      properties:
+        url:
+          type: string
+          description: The URL of the webpage to fetch content from. When left empty, the current webpage is used.
+          example: https://anchorbrowser.io
+        format:
+          type: string
+          description: The output format of the content.
+          enum:
+            - html
+            - markdown
+          default: markdown
+          example: markdown
+
+    PerformWebTaskRequestSchema:
+      type: object
+      required:
+        - prompt
+      properties:
+        url:
+          type: string
+          description: The URL of the webpage. If not provided, the tool will use the current page in the session.
+          example: https://anchorbrowser.io
+        prompt:
+          type: string
+          description: The task to be autonomously completed.
+          example: Collect the node names and their CPU average %
+        output_schema:
+          type: object
+          description: JSON Schema defining the expected structure of the output data.
+          example: {"type":"object","properties":{"nodes_cpu_usage":{"type":"array","items":{"type":"object","properties":{"node":{"type":"string"},"cluster":{"type":"string"},"cpu_avg_percentage":{"type":"number"}},"required":["node","cluster","cpu_avg_percentage"]}}},"required":["nodes_cpu_usage"]}
+
+    PerformWebTaskResponseSchema:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            result:
+              type: string
+              description: The outcome or answer produced by the autonomous task.
+              example: The article discusses various secure browsers...
+
+    ScreenshotRequestSchema:
+      type: object
+      properties:
+        url:
+          type: string
+          description: The URL of the webpage to capture.
+          example: https://anchorbrowser.io
+        width:
+          type: integer
+          description: The width of the browser viewport in pixels.
+          example: 1280
+        height:
+          type: integer
+          description: The height of the browser viewport in pixels.
+          example: 720
+        image_quality:
+          type: integer
+          description: Quality of the output image, on the range 1-100. 100 will not perform any compression.
+          example: 70
+        wait:
+          type: integer
+          description: Duration in milliseconds to wait after page has loaded, mainly used for sites with JS animations.
+          example: 200
+        scroll_all_content:
+          type: boolean
+          description: If true, scrolls the page and captures all visible content.
+          example: true
+        capture_full_height:
+          type: boolean
+          description: If true, captures the entire height of the page, ignoring the viewport height.
+          example: true
+        s3_target_address:
+          type: string
+          description: Presigned S3 url target to upload the image to.
+          example: https://your-bucket.s3.amazonaws.com/your/object/key?X-Amz-Signature=...
+
+    # ==============================
+    # OS LEVEL CONTROL SCHEMAS
+    # ==============================
+    CoordinatesRequestSchema:
+      type: object
+      required:
+        - x
+        - y
+      properties:
+        x:
+          type: integer
+          description: X coordinate
+        y:
+          type: integer
+          description: Y coordinate
+
+    MouseClickRequestSchema:
+      allOf:
+        - $ref: '#/components/schemas/CoordinatesRequestSchema'
+        - type: object
+          properties:
+            button:
+              type: string
+              description: Mouse button to use
+              enum: [left, middle, right]
+              default: left
+              example: left
+
+    DragDropRequestSchema:
+      type: object
+      required:
+        - startX
+        - startY
+        - endX
+        - endY
+      properties:
+        startX:
+          type: integer
+          description: Starting X coordinate
+          example: 400
+        startY:
+          type: integer
+          description: Starting Y coordinate
+          example: 200
+        endX:
+          type: integer
+          description: Ending X coordinate
+          example: 500
+        endY:
+          type: integer
+          description: Ending Y coordinate
+          example: 300
+        button:
+          type: string
+          description: Mouse button to use
+          enum: [left, middle, right]
+          default: left
+          example: left
+
+    ScrollRequestSchema:
+      allOf:
+        - $ref: '#/components/schemas/CoordinatesRequestSchema'
+        - type: object
+          required:
+            - deltaY
+          properties:
+            deltaX:
+              type: integer
+              description: Horizontal scroll amount (positive is right, negative is left)
+              default: 0
+              example: 0
+            deltaY:
+              type: integer
+              description: Vertical scroll amount (positive is down, negative is up)
+              example: 100
+            steps:
+              type: integer
+              description: Number of steps to break the scroll into for smoother scrolling
+              default: 1
+              example: 10
+
+    TypeTextRequestSchema:
+      type: object
+      required:
+        - text
+      properties:
+        text:
+          type: string
+          description: Text to type
+          example: "Hello from Session Manager VNC API test!"
+        delay:
+          type: integer
+          description: Delay between keystrokes in milliseconds
+          default: 0
+          example: 30
+
+    KeyboardShortcutRequestSchema:
+      type: object
+      required:
+        - keys
+      properties:
+        keys:
+          type: array
+          description: Array of keys to press simultaneously
+          items:
+            type: string
+          example: ["Ctrl", "a"]
+        holdTime:
+          type: integer
+          description: Time to hold the keys down in milliseconds
+          default: 0
+          example: 100
+
+    ClipboardResponseSchema:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            text:
+              type: string
+              description: Text content of the clipboard
+              example: "Clipboard content"
+
+    ClipboardRequestSchema:
+      type: object
+      required:
+        - text
+      properties:
+        text:
+          type: string
+          description: Text to set in the clipboard
+          example: "Text from clipboard API"
+
+    CopyResponseSchema:
+      type: object
+      properties:
+        text:
+          type: string
+          description: The text that was copied
+          example: "Selected text"
+
+    PasteRequestSchema:
+      type: object
+      required:
+        - text
+      properties:
+        text:
+          type: string
+          description: Text to paste
+          example: "Text pasted via API"
+
+    NavigateRequestSchema:
+      type: object
+      required:
+        - url
+      properties:
+        url:
+          type: string
+          description: The URL to navigate to
+          example: "https://www.google.com"
+
+    # ==============================
+    # EVENT COORDINATION SCHEMAS
+    # ==============================
+    # Schemas related to event signaling and coordination between workflows/sessions
+    WaitForEventRequestSchema:
+      type: object
+      properties:
+        timeoutMs:
+          type: integer
+          description: Timeout in milliseconds to wait for the event. Defaults to 60000ms (1 minute).
+          example: 30000
+          default: 60000
+
+    SignalEventRequestSchema:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: object
+          description: Event data to be passed to waiting clients
+          additionalProperties: true
+          example:
+            message: "Task completed"
+            result: "success"
+            timestamp: "2024-01-01T12:00:00Z"
+
+    EventResponseSchema:
+      type: object
+      properties:
+        data:
+          type: object
+          description: The event data that was signaled
+          additionalProperties: true
+          example:
+            message: "Task completed"
+            result: "success"
+            timestamp: "2024-01-01T12:00:00Z"
+
+    # ==============================
+    # EXTENSION SCHEMAS
+    # ==============================
+    # Schemas related to browser extension management
+    ExtensionManifest:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Extension Name"
+        version:
+          type: string
+          example: "1.0.0"
+        manifest_version:
+          type: integer
+          example: 3
+        description:
+          type: string
+          example: "Extension description"
+        permissions:
+          type: array
+          items:
+            type: string
+          example: ["activeTab", "storage"]
+      additionalProperties: true
+
+    ExtensionResponseSchema:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the extension
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        name:
+          type: string
+          description: Extension name
+          example: "My Custom Extension"
+        manifest:
+          $ref: '#/components/schemas/ExtensionManifest'
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when the extension was created
+          example: "2024-01-01T00:00:00.000Z"
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the extension was last updated
+          example: "2024-01-01T00:00:00.000Z"
+
+    ExtensionListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExtensionResponseSchema'
+
+    ExtensionResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ExtensionResponseSchema'
+
 paths:
   /v1/profiles:
     post:
@@ -118,112 +892,38 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - name
-              properties:
-                name:
-                  type: string
-                  description: The name of the profile.
-                  example: my-profile
-                description:
-                  type: string
-                  description: A description of the profile.
-                  example: This is my profile description.
-                source:
-                  type: string
-                  description: The source of the profile data. currently only `session` is supported.
-                  example: session
-                  enum:
-                    - session
-                session_id:
-                  type: string
-                  format: uuid
-                  description: The browser session ID is required if the source is set to `session`. The browser session must be running, and the profile will be stored once the browser session terminates.
-                  example: 550e8400-e29b-41d4-a716-446655440000
-                store_cache:
-                  type: boolean
-                  description: Indicates whether the browser session cache should be saved when the browser session ends. Defaults to `false`.
-                  example: true
+              $ref: '#/components/schemas/ProfileRequestSchema'
       responses:
         '200':
           description: Profile created successfully.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      status:
-                        type: string
-                        example: "success"
-                    description: Details of the created profile.
+                $ref: '#/components/schemas/SuccessResponse'
         '400':
           description: Invalid request or input.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        example: 400
-                      message:
-                        type: string
-                        example: Invalid source type
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Session not found or unreachable.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        example: 404
-                      message:
-                        type: string
-                        example: Session does not exist or not reachable
+                $ref: '#/components/schemas/ErrorResponse'
         '409':
           description: Profile name already exists.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        example: 409
-                      message:
-                        type: string
-                        example: Profile name already exists
+                $ref: '#/components/schemas/ErrorResponse'
         '501':
           description: Feature not implemented.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        example: 501
-                      message:
-                        type: string
-                        example: Not implemented
+                $ref: '#/components/schemas/ErrorResponse'
     get:
       summary: List Profiles
       description: Fetches all stored profiles.
@@ -237,58 +937,13 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      count:
-                        type: integer
-                        description: Total number of profiles
-                      items:
-                        type: array
-                        items:
-                          type: object
-                          properties:
-                            name:
-                              type: string
-                              description: The name of the profile.
-                              example: my-profile
-                            description:
-                              type: string
-                              description: A brief description of the profile.
-                              example: This is a profile description.
-                            source:
-                              type: string
-                              description: The source of the profile data.
-                              example: session
-                              enum:
-                                - session
-                            store_cache:
-                              type: boolean
-                              description: Whether the profile stores browser cache.
-                              example: true
-                            created_at:
-                              type: string
-                              format: date-time
-                              description: The timestamp when the profile was created.
-                              example: '2024-01-01T12:00:00Z'
+                $ref: '#/components/schemas/ProfileListResponse'
         '500':
           description: Unable to list user profiles due to an unexpected error.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        example: 500
-                      message:
-                        type: string
-                        example: Unable to list profiles
+                $ref: '#/components/schemas/ErrorResponse'
   /v1/profiles/{name}:
     get:
       summary: Get Profile
@@ -311,92 +966,25 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      name:
-                        type: string
-                        description: The name of the profile.
-                        example: my-profile
-                      description:
-                        type: string
-                        description: A description of the profile.
-                        example: This is my profile description.
-                      source:
-                        type: string
-                        description: The source of the profile data.
-                        example: session
-                        enum:
-                          - session
-                      session_id:
-                        type: string
-                        format: uuid
-                        description: The browser session ID used to create this profile, if applicable.
-                        example: 550e8400-e29b-41d4-a716-446655440000
-                      store_cache:
-                        type: boolean
-                        description: Whether the profile stores browser cache.
-                        example: true
-                        default: false
-                      status:
-                        type: string
-                        description: The current status of the profile.
-                        example: active
-                      created_at:
-                        type: string
-                        format: date-time
-                        description: The timestamp when the profile was created.
-                        example: '2024-01-01T12:00:00Z'
+                $ref: '#/components/schemas/ProfileResponse'
         '401':
           description: Invalid API Key.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        example: 401
-                      message:
-                        type: string
-                        example: Invalid API key
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Profile not found.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        example: 404
-                      message:
-                        type: string
-                        example: Profile not found
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
           description: Unable to retrieve profile due to an unexpected error.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        example: 500
-                      message:
-                        type: string
-                        example: Unable to retrieve profile
+                $ref: '#/components/schemas/ErrorResponse'
     put:
       summary: Update Profile
       description: Updates the description or data of an existing profile using a browser session.
@@ -417,105 +1005,38 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                description:
-                  type: string
-                  description: The new description for the profile.
-                  example: Updated profile description.
-                source:
-                  type: string
-                  description: The source of the profile data. Currently, only `session` is supported.
-                  example: session
-                  enum:
-                    - session
-                session_id:
-                  type: string
-                  format: uuid
-                  description: The browser session ID is required if the source is set to `session`. The browser session must belong to the user and be active.
-                  example: 550e8400-e29b-41d4-a716-446655440000
-                store_cache:
-                  type: boolean
-                  description: Indicates whether the browser session cache should be saved when the browser session ends. Defaults to `false`.
-                  example: true
+              $ref: '#/components/schemas/ProfileUpdateRequestSchema'
       responses:
         '200':
           description: Profile updated successfully.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      status:
-                        type: string
-                        example: "success"
+                $ref: '#/components/schemas/SuccessResponse'
         '400':
           description: Invalid request or input.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        example: 400
-                      message:
-                        type: string
-                        example: Invalid source type
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Profile or session not found or unreachable.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        example: 404
-                      message:
-                        type: string
-                        example: Profile does not exist
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
           description: Unable to update profile due to an unexpected error.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        example: 500
-                      message:
-                        type: string
-                        example: Unable to update profile
+                $ref: '#/components/schemas/ErrorResponse'
         '501':
           description: Feature not implemented.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        example: 501
-                      message:
-                        type: string
-                        example: Not implemented
+                $ref: '#/components/schemas/ErrorResponse'
     delete:
       summary: Delete Profile
       description: Deletes an existing profile by its name.
@@ -537,46 +1058,19 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      status:
-                        type: string
-                        example: "success"
+                $ref: '#/components/schemas/SuccessResponse'
         '404':
           description: Profile not found.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        example: 404
-                      message:
-                        type: string
-                        example: Profile does not exist
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
           description: Unable to delete the profile due to an unexpected error.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        example: 500
-                      message:
-                        type: string
-                        example: Unable to delete profile
+                $ref: '#/components/schemas/ErrorResponse'
   /v1/sessions:
     post:
       summary: Start Browser Session
@@ -590,150 +1084,20 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                session:
-                  type: object
-                  description: Session-related configurations.
-                  properties:
-                    recording:
-                      type: object
-                      description: Configuration for session recording.
-                      properties:
-                        active:
-                          type: boolean
-                          description: Enable or disable video recording of the browser session. Defaults to `true`.
-                          example: false
-                    proxy:
-                      $ref: '#/components/schemas/ProxyConfig'
-                    timeout:
-                      type: object
-                      description: Timeout configurations for the browser session.
-                      properties:
-                        max_duration:
-                          type: integer
-                          description: Maximum amount of time (in minutes) for the browser to run before terminating. Defaults to `20`.
-                          example: 10
-                        idle_timeout:
-                          type: integer
-                          description: The amount of time (in minutes) the browser session waits for new connections after all others are closed before stopping. Defaults to `5`.
-                          example: 3
-                    live_view:
-                      type: object
-                      description: Configuration for live viewing the browser session.
-                      properties:
-                        read_only:
-                          type: boolean
-                          description: Enable or disable read-only mode for live viewing. Defaults to `false`.
-                          example: false
-                browser:
-                  type: object
-                  description: Browser-specific configurations.
-                  properties:
-                    profile:
-                      type: object
-                      description: Options for managing and persisting browser session profiles.
-                      properties:
-                        name:
-                          type: string
-                          description: The name of the profile to be used during the browser session.
-                          example: my-profile
-                        persist:
-                          type: boolean
-                          description: Indicates whether the browser session profile data should be saved when the browser session ends. Defaults to `false`.
-                          example: true
-                        store_cache:
-                          type: boolean
-                          description: Indicates whether the browser session cache should be saved when the browser session ends. Defaults to `false`.
-                          example: true
-                    adblock:
-                      type: object
-                      description: Configuration for ad-blocking.
-                      properties:
-                        active:
-                          type: boolean
-                          description: Enable or disable ad-blocking. Defaults to `true`.
-                          example: false
-                    popup_blocker:
-                      type: object
-                      description: Configuration for popup blocking.
-                      properties:
-                        active:
-                          type: boolean
-                          description: Blocks popups, including ads and CAPTCHA consent banners. Requires adblock to be active. Defaults to `true`.
-                          example: false
-                    captcha_solver:
-                      type: object
-                      description: Configuration for captcha-solving.
-                      properties:
-                        active:
-                          type: boolean
-                          description: Enable or disable captcha-solving. Requires proxy to be active. Defaults to `false`.
-                          example: false
-                    headless:
-                      type: object
-                      description: Configuration for headless mode.
-                      properties:
-                        active:
-                          type: boolean
-                          description: Whether browser should be headless or headful. Defaults to `false`.
-                          example: true
-                    viewport:
-                      type: object
-                      description: Configuration for the browser's viewport size.
-                      properties:
-                        width:
-                          type: integer
-                          description: Width of the viewport in pixels. Defaults to `1440`.
-                          example: 1440
-                        height:
-                          type: integer
-                          description: Height of the viewport in pixels. Defaults to `900`.
-                          example: 900
-                    p2p_download:
-                      type: object
-                      description: Configuration for peer-to-peer download capture functionality.
-                      properties:
-                        active:
-                          type: boolean
-                          description: Enable or disable P2P downloads. When enabled, the browser will capture downloads for direct data extraction, instead of uploading them on Anchor's storage. Defaults to `false`.
-                          example: false
+              $ref: '#/components/schemas/SessionCreateRequestSchema'
       responses:
         '200':
           description: Successfully returned a browser object
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      id:
-                        type: string
-                        description: Unique identifier for the browser session
-                      cdp_url:
-                        type: string
-                        description: The CDP websocket connection string
-                      live_view_url:
-                        type: string
-                        description: The browser session live view url
+                $ref: '#/components/schemas/SessionCreateResponseSchema'
         '400':
           description: Bad Request - Invalid request parameters or configuration.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        example: 400
-                      message:
-                        type: string
-                        example: Invalid request parameters
+                $ref: '#/components/schemas/ErrorResponse'
               examples:
                 captchaSolverRequiresProxy:
                   summary: CAPTCHA solver requires proxy to be active.
@@ -746,17 +1110,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        example: 402
-                      message:
-                        type: string
-                        example: Insufficient credits to allocate a new browser
+                $ref: '#/components/schemas/ErrorResponse'
   /v1/sessions/all:
     delete:
       summary: End All Sessions
@@ -771,14 +1125,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      status:
-                        type: string
-                        example: "success"
+                $ref: '#/components/schemas/SuccessResponse'
   /v1/sessions/all/status:
     get:
       summary: List All Sessions Status
@@ -793,68 +1140,19 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      count:
-                        type: integer
-                        description: Total number of browser sessions
-                      items:
-                        type: array
-                        items:
-                          type: object
-                          properties:
-                            session_id:
-                              type: string
-                              description: Unique identifier for the browser session
-                              example: "550e8400-e29b-41d4-a716-446655440000"
-                            status:
-                              type: string
-                              description: Current status of the browser session
-                              example: "running"
-                            created_at:
-                              type: string
-                              format: date-time
-                              description: Timestamp when the browser session was created
-                              example: "2024-01-01T12:00:00Z"
-                          required:
-                            - session_id
-                            - status
-                            - created_at
+                $ref: '#/components/schemas/SessionListResponse'
         '401':
           description: Invalid API Key
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        example: 401
-                      message:
-                        type: string
-                        example: Invalid API key
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
           description: Internal Server Error
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        example: 500
-                      message:
-                        type: string
-                        example: Internal server error
+                $ref: '#/components/schemas/ErrorResponse'
   /v1/sessions/{session_id}:
     delete:
       summary: End Browser Session
@@ -876,46 +1174,19 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      status:
-                        type: string
-                        example: "success"
+                $ref: '#/components/schemas/SuccessResponse'
         '401':
           description: Invalid API Key or browser session ID
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        example: 401
-                      message:
-                        type: string
-                        example: Invalid API key
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
           description: Internal Server Error
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        example: 500
-                      message:
-                        type: string
-                        example: Internal server error
+                $ref: '#/components/schemas/ErrorResponse'
   /v1/sessions/{session_id}/recordings:
     get:
       summary: List Session Recordings
@@ -940,70 +1211,19 @@ paths:
                 type: object
                 properties:
                   data:
-                    type: object
-                    properties:
-                      count:
-                        type: integer
-                        description: Total number of video recordings
-                      items:
-                        type: array
-                        items:
-                          type: object
-                          properties:
-                            id:
-                              type: string
-                              description: Unique identifier for the recording
-                            is_primary:
-                              type: boolean
-                              description: Indicates if this is the primary recording
-                            file_link:
-                              type: string
-                              description: URL to access the recording file
-                            suggested_file_name:
-                              type: string
-                              description: Suggested filename for the recording
-                            duration:
-                              type: string
-                              description: Duration of the recording
-                            size:
-                              type: number
-                              description: Size of the recording file in bytes
-                            created_at:
-                              type: string
-                              format: date-time
-                              description: Timestamp when the recording was created
+                    $ref: '#/components/schemas/RecordingListResponse'
         '401':
           description: Invalid API Key.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        example: 401
-                      message:
-                        type: string
-                        example: Invalid API key
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Session recordings not found.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        example: 404
-                      message:
-                        type: string
-                        example: Session recordings not found
+                $ref: '#/components/schemas/ErrorResponse'
   /v1/sessions/{session_id}/downloads:
     get:
       summary: List Session Downloads
@@ -1025,90 +1245,19 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      count:
-                        type: integer
-                        description: Total number of downloads
-                      items:
-                        type: array
-                        items:
-                          type: object
-                          properties:
-                            id:
-                              type: string
-                              description: The unique ID of the download record.
-                            file_link:
-                              type: string
-                              format: uri
-                              description: The URL to download the file from anchorbrowser servers. Requires api key authentication.
-                              example: https://api.anchorbrowser.io/sessions/42b60264-c48a-4ded-aa54-e4a83a710ee5/downloads/6daab24f-0853-44e6-abb0-618565a7244a/fetch
-                            original_download_url:
-                              type: string
-                              format: uri
-                              description: The URL used to download the file.
-                              example: https://example.com/files/document.doc
-                            origin_url:
-                              type: string
-                              format: uri
-                              description: The original URL where the file was found.
-                              example: https://example.com/files/
-                            suggested_file_name:
-                              type: string
-                              description: The suggested file name for saving the file.
-                              example: document (2).doc
-                            original_file_name:
-                              type: string
-                              description: The original file name before any modification.
-                              example: document.doc
-                            duration:
-                              type: integer
-                              description: The time it took to process or download the file, in milliseconds.
-                              example: 2025
-                            size:
-                              type: integer
-                              description: The size of the file in bytes.
-                              example: 177152
-                            created_at:
-                              type: string
-                              format: date-time
-                              description: The timestamp when the file record was created.
-                              example: '2025-01-18T03:34:56.043Z'
+                $ref: '#/components/schemas/DownloadListResponse'
         '401':
           description: Invalid or missing API key.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        example: 401
-                      message:
-                        type: string
-                        example: Invalid API key
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: The browser session or its downloads metadata could not be found.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        example: 404
-                      message:
-                        type: string
-                        example: Session downloads not found
+                $ref: '#/components/schemas/ErrorResponse'
   /v1/sessions/{session_id}/recordings/primary/fetch:
     get:
       summary: Get Session Recording
@@ -1137,49 +1286,19 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        example: 401
-                      message:
-                        type: string
-                        example: Invalid API key
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Recording not found
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        example: 404
-                      message:
-                        type: string
-                        example: Recording not found
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
           description: Internal Server Error
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        example: 500
-                      message:
-                        type: string
-                        example: Internal server error
+                $ref: '#/components/schemas/ErrorResponse'
   /v1/tools/fetch-webpage:
     post:
       summary: Get Webpage Content
@@ -1200,20 +1319,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                url:
-                  type: string
-                  description: The URL of the webpage to fetch content from. When left empty, the current webpage is used.
-                  example: https://anchorbrowser.io
-                format:
-                  type: string
-                  description: The output format of the content.
-                  enum:
-                    - html
-                    - markdown
-                  default: markdown
-                  example: markdown
+              $ref: '#/components/schemas/FetchWebpageRequestSchema'
       responses:
         '200':
           description: The fetched webpage content in the specified format.
@@ -1228,33 +1334,13 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        example: 400
-                      message:
-                        type: string
-                        example: URL is required
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
           description: Internal server error while processing the request.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        example: 500
-                      message:
-                        type: string
-                        example: Failed to fetch webpage
+                $ref: '#/components/schemas/ErrorResponse'
   /v1/tools/perform-web-task:
     post:
       summary: Perform Web Task
@@ -1276,69 +1362,26 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - prompt
-              properties:
-                url:
-                  type: string
-                  description: The URL of the webpage. If not provided, the tool will use the current page in the session.
-                  example: https://anchorbrowser.io
-                prompt:
-                  type: string
-                  description: The task to be autonomously completed.
-                  example: Collect the node names and their CPU average %
-                output_schema:
-                  type: object
-                  description: JSON Schema defining the expected structure of the output data.
-                  example: {"type":"object","properties":{"nodes_cpu_usage":{"type":"array","items":{"type":"object","properties":{"node":{"type":"string"},"cluster":{"type":"string"},"cpu_avg_percentage":{"type":"number"}},"required":["node","cluster","cpu_avg_percentage"]}}},"required":["nodes_cpu_usage"]}
+              $ref: '#/components/schemas/PerformWebTaskRequestSchema'
       responses:
         '200':
           description: The result of the autonomous task.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      result:
-                        type: string
-                        description: The outcome or answer produced by the autonomous task.
-                        example: The article discusses various secure browsers...
+                $ref: '#/components/schemas/PerformWebTaskResponseSchema'
         '400':
           description: Invalid request.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        example: 400
-                      message:
-                        type: string
-                        example: Task is required
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
           description: Internal server error.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        example: 500
-                      message:
-                        type: string
-                        example: Failed to complete the autonomous task
+                $ref: '#/components/schemas/ErrorResponse'
   /v1/tools/screenshot:
     post:
       summary: Screenshot Webpage
@@ -1359,40 +1402,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                url:
-                  type: string
-                  description: The URL of the webpage to capture.
-                  example: https://anchorbrowser.io
-                width:
-                  type: integer
-                  description: The width of the browser viewport in pixels.
-                  example: 1280
-                height:
-                  type: integer
-                  description: The height of the browser viewport in pixels.
-                  example: 720
-                image_quality:
-                  type: integer
-                  description: Quality of the output image, on the range 1-100. 100 will not perform any compression.
-                  example: 70
-                wait:
-                  type: integer
-                  description: Duration in milliseconds to wait after page has loaded, mainly used for sites with JS animations.
-                  example: 200
-                scroll_all_content:
-                  type: boolean
-                  description: If true, scrolls the page and captures all visible content.
-                  example: true
-                capture_full_height:
-                  type: boolean
-                  description: If true, captures the entire height of the page, ignoring the viewport height.
-                  example: true
-                s3_target_address:
-                  type: string
-                  description: Presigned S3 url target to upload the image to.
-                  example: https://your-bucket.s3.amazonaws.com/your/object/key?X-Amz-Signature=...
+              $ref: '#/components/schemas/ScreenshotRequestSchema'
       responses:
         '200':
           description: Screenshot successfully captured.
@@ -1406,33 +1416,13 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        example: 400
-                      message:
-                        type: string
-                        example: Invalid input parameters
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
           description: Failed to take screenshot.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        example: 500
-                      message:
-                        type: string
-                        example: Failed to take screenshot
+                $ref: '#/components/schemas/ErrorResponse'
   /v1/sessions/{sessionId}/screenshot:
     get:
       summary: Take Screenshot
@@ -1499,25 +1489,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                x:
-                  type: integer
-                  description: X coordinate for the click
-                  example: 200
-                y:
-                  type: integer
-                  description: Y coordinate for the click
-                  example: 150
-                button:
-                  type: string
-                  description: Mouse button to use
-                  enum: [left, middle, right]
-                  default: left
-                  example: left
-              required:
-                - x
-                - y
+              $ref: '#/components/schemas/MouseClickRequestSchema'
       responses:
         '200':
           description: Click performed successfully
@@ -1557,25 +1529,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                x:
-                  type: integer
-                  description: X coordinate for the double click
-                  example: 250
-                y:
-                  type: integer
-                  description: Y coordinate for the double click
-                  example: 150
-                button:
-                  type: string
-                  description: Mouse button to use
-                  enum: [left, middle, right]
-                  default: left
-                  example: left
-              required:
-                - x
-                - y
+              $ref: '#/components/schemas/MouseClickRequestSchema'
       responses:
         '200':
           description: Double click performed successfully
@@ -1615,25 +1569,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                x:
-                  type: integer
-                  description: X coordinate for the mouse down
-                  example: 300
-                y:
-                  type: integer
-                  description: Y coordinate for the mouse down
-                  example: 200
-                button:
-                  type: string
-                  description: Mouse button to use
-                  enum: [left, middle, right]
-                  default: left
-                  example: left
-              required:
-                - x
-                - y
+              $ref: '#/components/schemas/MouseClickRequestSchema'
       responses:
         '200':
           description: Mouse down performed successfully
@@ -1673,25 +1609,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                x:
-                  type: integer
-                  description: X coordinate for the mouse up
-                  example: 350
-                y:
-                  type: integer
-                  description: Y coordinate for the mouse up
-                  example: 250
-                button:
-                  type: string
-                  description: Mouse button to use
-                  enum: [left, middle, right]
-                  default: left
-                  example: left
-              required:
-                - x
-                - y
+              $ref: '#/components/schemas/MouseClickRequestSchema'
       responses:
         '200':
           description: Mouse up performed successfully
@@ -1731,19 +1649,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                x:
-                  type: integer
-                  description: X coordinate to move to
-                  example: 350
-                y:
-                  type: integer
-                  description: Y coordinate to move to
-                  example: 250
-              required:
-                - x
-                - y
+              $ref: '#/components/schemas/CoordinatesRequestSchema'
       responses:
         '200':
           description: Mouse move performed successfully
@@ -1783,35 +1689,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                startX:
-                  type: integer
-                  description: Starting X coordinate
-                  example: 400
-                startY:
-                  type: integer
-                  description: Starting Y coordinate
-                  example: 200
-                endX:
-                  type: integer
-                  description: Ending X coordinate
-                  example: 500
-                endY:
-                  type: integer
-                  description: Ending Y coordinate
-                  example: 300
-                button:
-                  type: string
-                  description: Mouse button to use
-                  enum: [left, middle, right]
-                  default: left
-                  example: left
-              required:
-                - startX
-                - startY
-                - endX
-                - endY
+              $ref: '#/components/schemas/DragDropRequestSchema'
       responses:
         '200':
           description: Drag and drop performed successfully
@@ -1851,34 +1729,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                x:
-                  type: integer
-                  description: X coordinate for the scroll
-                  example: 350
-                y:
-                  type: integer
-                  description: Y coordinate for the scroll
-                  example: 250
-                deltaX:
-                  type: integer
-                  description: Horizontal scroll amount (positive is right, negative is left)
-                  default: 0
-                  example: 0
-                deltaY:
-                  type: integer
-                  description: Vertical scroll amount (positive is down, negative is up)
-                  example: 100
-                steps:
-                  type: integer
-                  description: Number of steps to break the scroll into for smoother scrolling
-                  default: 1
-                  example: 10
-              required:
-                - x
-                - y
-                - deltaY
+              $ref: '#/components/schemas/ScrollRequestSchema'
       responses:
         '200':
           description: Scroll performed successfully
@@ -1918,19 +1769,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                text:
-                  type: string
-                  description: Text to type
-                  example: "Hello from Session Manager VNC API test!"
-                delay:
-                  type: integer
-                  description: Delay between keystrokes in milliseconds
-                  default: 0
-                  example: 30
-              required:
-                - text
+              $ref: '#/components/schemas/TypeTextRequestSchema'
       responses:
         '200':
           description: Text typed successfully
@@ -1970,21 +1809,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                keys:
-                  type: array
-                  description: Array of keys to press simultaneously
-                  items:
-                    type: string
-                  example: ["Ctrl", "a"]
-                holdTime:
-                  type: integer
-                  description: Time to hold the keys down in milliseconds
-                  default: 0
-                  example: 100
-              required:
-                - keys
+              $ref: '#/components/schemas/KeyboardShortcutRequestSchema'
       responses:
         '200':
           description: Shortcut performed successfully
@@ -2025,12 +1850,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  text:
-                    type: string
-                    description: Text content of the clipboard
-                    example: "Clipboard content"
+                $ref: '#/components/schemas/ClipboardResponseSchema'
         '404':
           description: Session not found
         '500':
@@ -2055,14 +1875,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                text:
-                  type: string
-                  description: Text to set in the clipboard
-                  example: "Text from clipboard API"
-              required:
-                - text
+              $ref: '#/components/schemas/ClipboardRequestSchema'
       responses:
         '200':
           description: Clipboard content set successfully
@@ -2103,12 +1916,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  text:
-                    type: string
-                    description: The text that was copied
-                    example: "Selected text"
+                $ref: '#/components/schemas/CopyResponseSchema'
         '404':
           description: Session not found
         '500':
@@ -2135,14 +1943,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                text:
-                  type: string
-                  description: Text to paste
-                  example: "Text pasted via API"
-              required:
-                - text
+              $ref: '#/components/schemas/PasteRequestSchema'
       responses:
         '200':
           description: Text pasted successfully
@@ -2185,11 +1986,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    type: object
-                    properties:
-                      status:
-                        type: string
-                        example: "success"
+                    $ref: '#/components/schemas/SuccessResponse'
         '401':
           description: Invalid API Key.
           content:
@@ -2198,14 +1995,7 @@ paths:
                 type: object
                 properties:
                   error:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        example: 401
-                      message:
-                        type: string
-                        example: Invalid API key
+                    $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Session not found.
           content:
@@ -2214,14 +2004,7 @@ paths:
                 type: object
                 properties:
                   error:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        example: 404
-                      message:
-                        type: string
-                        example: Session not found
+                    $ref: '#/components/schemas/ErrorResponse'
         '500':
           description: Failed to pause recording.
           content:
@@ -2230,14 +2013,7 @@ paths:
                 type: object
                 properties:
                   error:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        example: 500
-                      message:
-                        type: string
-                        example: Failed to pause recording
+                    $ref: '#/components/schemas/ErrorResponse'
 
   /v1/sessions/{session_id}/recordings/resume:
     post:
@@ -2263,11 +2039,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    type: object
-                    properties:
-                      status:
-                        type: string
-                        example: "success"
+                    $ref: '#/components/schemas/SuccessResponse'
         '401':
           description: Invalid API Key.
           content:
@@ -2276,14 +2048,7 @@ paths:
                 type: object
                 properties:
                   error:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        example: 401
-                      message:
-                        type: string
-                        example: Invalid API key
+                    $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Session not found.
           content:
@@ -2292,14 +2057,7 @@ paths:
                 type: object
                 properties:
                   error:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        example: 404
-                      message:
-                        type: string
-                        example: Session not found
+                    $ref: '#/components/schemas/ErrorResponse'
         '500':
           description: Failed to resume recording.
           content:
@@ -2308,14 +2066,7 @@ paths:
                 type: object
                 properties:
                   error:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        example: 500
-                      message:
-                        type: string
-                        example: Failed to resume recording
+                    $ref: '#/components/schemas/ErrorResponse'
 
   /v1/sessions/{sessionId}/goto:
     post:
@@ -2338,14 +2089,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                url:
-                  type: string
-                  description: The URL to navigate to
-                  example: "https://www.google.com"
-              required:
-                - url
+              $ref: '#/components/schemas/NavigateRequestSchema'
       responses:
         '200':
           description: Navigation successful
@@ -2362,17 +2106,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        example: 400
-                      message:
-                        type: string
-                        example: Invalid URL format
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Session not found
           content:
@@ -2381,14 +2115,7 @@ paths:
                 type: object
                 properties:
                   error:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        example: 404
-                      message:
-                        type: string
-                        example: Session not found
+                    $ref: '#/components/schemas/ErrorResponse'
         '500':
           description: Failed to navigate to URL
           content:
@@ -2397,14 +2124,7 @@ paths:
                 type: object
                 properties:
                   error:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        example: 500
-                      message:
-                        type: string
-                        example: Failed to navigate to URL
+                    $ref: '#/components/schemas/ErrorResponse'
 
   /v1/extensions:
     post:
@@ -2441,73 +2161,19 @@ paths:
                 type: object
                 properties:
                   data:
-                    type: object
-                    properties:
-                      id:
-                        type: string
-                        format: uuid
-                        description: Unique identifier for the extension
-                        example: "550e8400-e29b-41d4-a716-446655440000"
-                      name:
-                        type: string
-                        description: Extension name
-                        example: "My Custom Extension"
-                      manifest:
-                        type: object
-                        description: Parsed manifest.json content
-                        properties:
-                          name:
-                            type: string
-                            example: "Extension Name"
-                          version:
-                            type: string
-                            example: "1.0.0"
-                          manifest_version:
-                            type: integer
-                            example: 3
-                        additionalProperties: true
-                      createdAt:
-                        type: string
-                        format: date-time
-                        description: Timestamp when the extension was created
-                        example: "2024-01-01T00:00:00.000Z"
-                      updatedAt:
-                        type: string
-                        format: date-time
-                        description: Timestamp when the extension was last updated
-                        example: "2024-01-01T00:00:00.000Z"
+                    $ref: '#/components/schemas/ExtensionResponseSchema'
         '400':
           description: Invalid request or extension validation failed
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        example: 400
-                      message:
-                        type: string
-                        example: "Extension zip must contain a manifest.json file"
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
           description: Unable to upload extension
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        example: 500
-                      message:
-                        type: string
-                        example: "Unable to upload extension"
+                $ref: '#/components/schemas/ErrorResponse'
     get:
       summary: List Extensions
       description: Get all extensions for the authenticated user
@@ -2521,62 +2187,13 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        id:
-                          type: string
-                          format: uuid
-                          description: Unique identifier for the extension
-                          example: "550e8400-e29b-41d4-a716-446655440000"
-                        name:
-                          type: string
-                          description: Extension name
-                          example: "My Custom Extension"
-                        manifest:
-                          type: object
-                          description: Extension manifest data
-                          properties:
-                            name:
-                              type: string
-                              example: "Extension Name"
-                            version:
-                              type: string
-                              example: "1.0.0"
-                            manifest_version:
-                              type: integer
-                              example: 3
-                          additionalProperties: true
-                        createdAt:
-                          type: string
-                          format: date-time
-                          description: Timestamp when the extension was created
-                          example: "2024-01-01T00:00:00.000Z"
-                        updatedAt:
-                          type: string
-                          format: date-time
-                          description: Timestamp when the extension was last updated
-                          example: "2024-01-01T00:00:00.000Z"
+                $ref: '#/components/schemas/ExtensionListResponse'
         '500':
           description: Unable to list extensions
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        example: 500
-                      message:
-                        type: string
-                        example: "Unable to list extensions"
+                $ref: '#/components/schemas/ErrorResponse'
 
   /v1/extensions/{id}:
     get:
@@ -2601,84 +2218,19 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      id:
-                        type: string
-                        format: uuid
-                        description: Unique identifier for the extension
-                        example: "550e8400-e29b-41d4-a716-446655440000"
-                      name:
-                        type: string
-                        description: Extension name
-                        example: "My Custom Extension"
-                      manifest:
-                        type: object
-                        description: Complete extension manifest data
-                        properties:
-                          name:
-                            type: string
-                            example: "Extension Name"
-                          version:
-                            type: string
-                            example: "1.0.0"
-                          manifest_version:
-                            type: integer
-                            example: 3
-                          description:
-                            type: string
-                            example: "Extension description"
-                          permissions:
-                            type: array
-                            items:
-                              type: string
-                            example: ["activeTab", "storage"]
-                        additionalProperties: true
-                      createdAt:
-                        type: string
-                        format: date-time
-                        description: Timestamp when the extension was created
-                        example: "2024-01-01T00:00:00.000Z"
-                      updatedAt:
-                        type: string
-                        format: date-time
-                        description: Timestamp when the extension was last updated
-                        example: "2024-01-01T00:00:00.000Z"
+                $ref: '#/components/schemas/ExtensionResponseSchema'
         '404':
           description: Extension not found
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        example: 404
-                      message:
-                        type: string
-                        example: "Extension not found"
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
           description: Unable to get extension
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        example: 500
-                      message:
-                        type: string
-                        example: "Unable to get extension"
+                $ref: '#/components/schemas/ErrorResponse'
     delete:
       summary: Delete Extension
       description: Delete an extension and remove it from storage
@@ -2704,42 +2256,119 @@ paths:
                 type: object
                 properties:
                   data:
-                    type: object
-                    properties:
-                      status:
-                        type: string
-                        example: "success"
+                    $ref: '#/components/schemas/SuccessResponse'
         '404':
           description: Extension not found
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        example: 404
-                      message:
-                        type: string
-                        example: "Extension not found"
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
           description: Unable to delete extension
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: object
-                    properties:
-                      code:
-                        type: integer
-                        example: 500
-                      message:
-                        type: string
-                        example: "Unable to delete extension"
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/events/{event_name}/wait:
+    post:
+      summary: Wait for Event
+      description: |
+        Waits for a specific event to be signaled by another process, workflow, or session. 
+        This endpoint blocks until the event is signaled or the timeout is reached.
+        Useful for coordinating between multiple browser sessions or workflows.
+      security:
+        - api_key_header: []
+      tags:
+        - Event Coordination
+      parameters:
+        - name: event_name
+          in: path
+          required: true
+          description: The name of the event to wait for
+          schema:
+            type: string
+            example: "workflow_completed"
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WaitForEventRequestSchema'
+      responses:
+        '200':
+          description: Event was signaled successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventResponseSchema'
+        '401':
+          description: Unauthorized - Invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '408':
+          description: Timeout - Event was not signaled within the specified timeout
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Failed to wait for event
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/events/{event_name}:
+    post:
+      summary: Signal Event
+      description: |
+        Signals an event with associated data, unblocking any clients waiting for this event.
+        This enables coordination between different browser sessions, workflows, or external processes.
+      security:
+        - api_key_header: []
+      tags:
+        - Event Coordination
+      parameters:
+        - name: event_name
+          in: path
+          required: true
+          description: The name of the event to signal
+          schema:
+            type: string
+            example: "workflow_completed"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignalEventRequestSchema'
+      responses:
+        '200':
+          description: Event signaled successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Invalid request - Event data is required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - Invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Failed to signal event
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
 tags: []
