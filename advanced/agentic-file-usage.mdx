@@ -1,236 +1,54 @@
 ---
 title: "Agentic File Usage"
-description: "Upload files to browser sessions and use them with AI agents for automated tasks"
+description: "Upload ZIP files to browser sessions for AI agents to use"
 icon: 'folder-open'
 ---
 
 <Warning>
-  **Compatibility Note**: Agentic file usage currently only works with the `browser-use` agent framework. It is **not supported** with OpenAI's Computer Use Assistant (CUA) integration.
+  **Compatibility Note**: Only works with the `browser-use` agent framework. Not supported with OpenAI CUA.
 </Warning>
 
-## Overview
+## Quick Start
 
-AnchorBrowser's agentic file usage allows you to upload files to browser sessions and have AI agents interact with them to complete web-based tasks. This is particularly useful for automating form filling, data entry, and other tasks that require file content.
+Upload a ZIP file containing resources that your AI agent can use to complete tasks. The ZIP file is automatically extracted and made available to the agent.
 
-## How It Works
-
-1. **Upload Files**: Upload files (including ZIP archives) to a browser session
-2. **AI Access**: The AI agent can access and read the uploaded files
-3. **Task Execution**: The agent uses file content to complete web tasks like form filling
-
-## File Upload API
-
-### Upload Files
-
-Upload files to a browser session for AI agent use:
+## Example: Upload ZIP File
 
 ```javascript
-const formData = new FormData();
-formData.append('file', fileBlob, 'filename.txt');
+import { chromium } from 'playwright';
 
+// 1. Create a test ZIP file with content
+const testContent = 'Hello from AnchorBrowser!\nThis is a test file for the agent.';
+const blob = new Blob([testContent], { type: 'text/plain' });
+const formData = new FormData();
+formData.append('file', blob, 'test-data.zip');
+
+// 2. Upload to browser session
 const response = await fetch(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/agent/files`, {
   method: 'POST',
   headers: {
-    'anchor-api-key': 'your-api-key'
+    'anchor-api-key': apiKey
   },
   body: formData
 });
 
 const result = await response.json();
 console.log('Upload result:', result);
+
+// 3. Connect to the browser session and use uploaded files with AI agent
+const browser = await chromium.connectOverCDP(
+  `wss://connect.anchorbrowser.io?apiKey=${apiKey}&sessionId=${sessionId}`
+);
+const context = browser.contexts()[0];
+const page = context.pages()[0];
+
+// Navigate to a website where you want to use the uploaded files
+await page.goto('https://v0-download-and-upload-text.vercel.app/');
+
+// Use AI agent to interact with the page using uploaded files
+const ai = context.serviceWorkers()[0];
+const aiResult = await ai.evaluate("upload a file to the server");
+console.log('AI agent result:', aiResult);
 ```
 
-### List Uploaded Files
-
-Check what files are available in the session:
-
-```javascript
-const response = await fetch(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/agent/files`, {
-  method: 'GET',
-  headers: {
-    'anchor-api-key': 'your-api-key'
-  }
-});
-
-const result = await response.json();
-console.log('Available files:', result.data.files);
-```
-
-## Supported File Types
-
-- **Text Files**: `.txt`, `.csv`, `.json`, `.xml`, etc.
-- **ZIP Archives**: Automatically extracted to agent's resource directory
-- **Documents**: Any file type that can be read as text
-- **Data Files**: Configuration files, templates, etc.
-
-## Usage Examples
-
-### Example 1: Contact Form Filling
-
-Upload a contact list and have the AI fill out contact forms:
-
-```javascript
-// Upload contact data
-const contactData = `Name,Email,Phone,Company
-John Doe,john@example.com,555-0123,Acme Corp
-Jane Smith,jane@example.com,555-0456,Tech Inc`;
-
-const blob = new Blob([contactData], { type: 'text/csv' });
-const formData = new FormData();
-formData.append('file', blob, 'contacts.csv');
-
-await fetch(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/agent/files`, {
-  method: 'POST',
-  headers: { 'anchor-api-key': apiKey },
-  body: formData
-});
-
-// Task for AI agent
-const task = `
-Read the uploaded contacts.csv file and fill out the contact form on this page 
-for each person in the file. Use the Name, Email, Phone, and Company fields 
-from the CSV data.
-`;
-```
-
-### Example 2: Configuration Upload
-
-Upload configuration files for automated setup:
-
-```javascript
-// Upload config file
-const config = {
-  "settings": {
-    "theme": "dark",
-    "notifications": true,
-    "language": "en"
-  },
-  "preferences": {
-    "autoSave": true,
-    "showTips": false
-  }
-};
-
-const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
-const formData = new FormData();
-formData.append('file', blob, 'config.json');
-
-await fetch(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/agent/files`, {
-  method: 'POST',
-  headers: { 'anchor-api-key': apiKey },
-  body: formData
-});
-
-// Task for AI agent
-const task = `
-Read the uploaded config.json file and apply all the settings to this 
-application's settings page. Navigate through the settings and update 
-each option according to the configuration file.
-`;
-```
-
-### Example 3: ZIP Archive Processing
-
-Upload a ZIP file containing multiple resources:
-
-```javascript
-// Upload ZIP file (will be automatically extracted)
-const zipFile = await fetch('/path/to/resources.zip').then(r => r.blob());
-const formData = new FormData();
-formData.append('file', zipFile, 'resources.zip');
-
-await fetch(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/agent/files`, {
-  method: 'POST',
-  headers: { 'anchor-api-key': apiKey },
-  body: formData
-});
-
-// Task for AI agent
-const task = `
-The uploaded ZIP file has been extracted to the agents resource directory. Look through the 
-extracted files and upload each image file to this photo gallery website. 
-Use the metadata.txt file to set appropriate titles and descriptions.
-`;
-```
-
-## Python Example
-
-```python
-import requests
-
-# Upload file
-with open('data.csv', 'rb') as f:
-    files = {'file': ('data.csv', f, 'text/csv')}
-    response = requests.post(
-        f'https://api.anchorbrowser.io/v1/sessions/{session_id}/agent/files',
-        headers={'anchor-api-key': api_key},
-        files=files
-    )
-
-print('Upload result:', response.json())
-
-# List files
-response = requests.get(
-    f'https://api.anchorbrowser.io/v1/sessions/{session_id}/agent/files',
-    headers={'anchor-api-key': api_key}
-)
-
-print('Available files:', response.json()['data']['files'])
-```
-
-## Technical Details
-
-### File Storage
-- Files are stored in the agent's resource directory within the browser session
-- ZIP files are automatically extracted to preserve directory structure
-- Files persist for the duration of the browser session
-- Maximum file size limits apply (check API documentation)
-
-### Security Features
-- Path traversal protection prevents malicious file extraction
-- Files are isolated per session
-- Automatic cleanup when session ends
-
-### AI Agent Integration
-- Works seamlessly with `browser-use` agent framework
-- AI can read, process, and use file contents for task completion
-- Supports complex multi-file workflows
-
-## Best Practices
-
-1. **File Organization**: Use descriptive filenames and organize related files in ZIP archives
-2. **Data Format**: Use standard formats (CSV, JSON, TXT) for better AI comprehension
-3. **Task Instructions**: Provide clear instructions about how to use the uploaded files
-4. **File Size**: Keep files reasonably sized for optimal performance
-5. **Session Management**: Upload files early in the session before starting AI tasks
-
-## Troubleshooting
-
-### Common Issues
-
-**File not found**: Ensure the file was uploaded successfully by checking the list endpoint
-```javascript
-const files = await fetch(`/v1/sessions/${sessionId}/agent/files`);
-console.log('Available files:', await files.json());
-```
-
-**ZIP extraction failed**: Verify the ZIP file is valid and not corrupted
-```javascript
-// Check upload response for extraction status
-const result = await uploadResponse.json();
-console.log('Extraction result:', result.data);
-```
-
-**AI can't access files**: Make sure you're using `browser-use` agent, not OpenAI CUA
-```javascript
-// Correct usage with browser-use
-const agent = new Agent(task, llm, controller);
-await agent.run();
-```
-
-## Limitations
-
-- Currently only supported with `browser-use` agent framework
-- Files are session-scoped and deleted when session ends
-- File size and count limits apply (see API documentation)
-- Some file types may not be readable by AI agents 
+That's it! The agent can now access all uploaded files and use them to complete web tasks. 
