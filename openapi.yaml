@@ -543,6 +543,14 @@ components:
           type: string
           description: The task to be autonomously completed.
           example: Collect the node names and their CPU average %
+        agent:
+          type: string
+          description: The AI agent to use for task completion. Defaults to browser-use.
+          enum:
+            - browser-use
+            - openai-cua
+          default: browser-use
+          example: openai-cua
         output_schema:
           type: object
           description: JSON Schema defining the expected structure of the output data.
