@@ -43,6 +43,7 @@
               "advanced/proxy",
               "advanced/captcha-solving",
               "advanced/ai-task-completion",
+              "advanced/agentic-file-usage",
               "advanced/event-coordination",
               "advanced/os-level-control",
               "essentials/authentication-and-identity",

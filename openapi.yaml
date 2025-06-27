@@ -2109,6 +2109,172 @@ paths:
                   error:
                     $ref: '#/components/schemas/ErrorResponse'
 
+  /v1/sessions/{sessionId}/agent/files:
+    post:
+      summary: Upload Files
+      description: |
+        Upload files to a browser session using multipart/form-data. 
+        If you upload a ZIP file, it will be automatically extracted and the files will be placed in the session's upload directory.
+        If you upload a single file, it will be saved directly to the upload directory.
+        Files are then available for agent operations or browser downloads.
+      security:
+        - api_key_header: []
+      tags:
+        - Browser Sessions
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          description: The browser session ID
+          schema:
+            type: string
+            format: uuid
+            example: "550e8400-e29b-41d4-a716-446655440000"
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: File to upload (ZIP files will be extracted automatically)
+      responses:
+        '200':
+          description: Files uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        example: "success"
+                      message:
+                        type: string
+                        example: "Successfully extracted 3 files to /uploads"
+        '400':
+          description: Invalid request (no file uploaded or file too large)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 400
+                      message:
+                        type: string
+                        example: "No file uploaded"
+        '404':
+          description: Session not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Failed to upload or process files
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/ErrorResponse'
+    get:
+      summary: List Agent Files
+      description: |
+        List all files that have been uploaded to the browser session's upload directory.
+        Returns file metadata including name, size, type, and last modified timestamp.
+      security:
+        - api_key_header: []
+      tags:
+        - Browser Sessions
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          description: The browser session ID
+          schema:
+            type: string
+            format: uuid
+            example: "550e8400-e29b-41d4-a716-446655440000"
+      responses:
+        '200':
+          description: Files listed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      files:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                              description: The file name
+                              example: "document.pdf"
+                            size:
+                              type: integer
+                              description: File size in bytes
+                              example: 1024000
+                            type:
+                              type: string
+                              description: File extension/type
+                              example: ".pdf"
+                            lastModified:
+                              type: string
+                              format: date-time
+                              description: When the file was last modified
+                              example: "2024-01-01T12:00:00.000Z"
+        '400':
+          description: Session is not running
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Session not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Failed to list files
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/ErrorResponse'
+
+
+
   /v1/extensions:
     post:
       summary: Upload Extension
