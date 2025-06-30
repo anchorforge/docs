@@ -1199,10 +1199,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/RecordingListResponse'
+                $ref: '#/components/schemas/RecordingListResponse'
         '401':
           description: Invalid API Key.
           content:
