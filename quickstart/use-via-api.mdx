@@ -1,16 +1,112 @@
 ---
-title: 'No-code Quick Start (API)'
+title: 'API Quick Start'
 ---
 
-### Method 1 - Single Step Browser Tool Call (API Call)
+Our APIs can be used directly (See our [API Reference](/api-reference)) or through integrations to automation platforms. We've created modules for our most commonly used API routes in each of the supported platforms.
 
-The easiest way to utilze Anchor Browser is through browser tools. Browser tools are API endpoints that wrap end-to-end browser functionality in a single API call.
+Pick your preferred platform to view a quick-start for its usage:
 
-Use the [interactive tools API](/api-reference/ai-tools/perform-web-task), which can easily integrate to no-code automation platforms like n8n, Zapier, Make and more.
+<CardGroup cols={2}>
+  <Card
+    title="Direct API Usage"
+    icon="code"
+    href="/api-reference"
+  >
+    Use the API directly as you like, See our [API Reference](/api-reference) for more details.
+  </Card>
+  <Card
+    title="Browser-use Integration"
+    icon="atom-simple"
+    href="/integrations/browser-use"
+  >
+    Enhance Browser-Use capabilities with Anchor tools and cloud-based browser sessions
+  </Card>
+  {/* <Card
+    title="Make Integration"
+    icon="grid-round-2-plus"
+    href="/integrations/make"
+  >
+    Integrate with Make (formerly Integromat) for no-code automation
+  </Card> */}
+  <Card
+    title="CrewAI Integration"
+    icon="people-group"
+    href="/integrations/crewai"
+  >
+    Integrate with CrewAI to gain robust qualities of Anchor Browser implementing no-code automation.
+  </Card>
+   <Card
+    title="Langchain Integration"
+    icon="crow"
+    href="/integrations/langchain"
+  >
+    Integrate with Langchain to leverage Anchor Browser's browser tools in your LLM workflows.
+  </Card>
+  <Card
+    title="Custom Integration"
+    icon="palette"
+    href="/integrations/custom"
+  >
+    Integrate with your own platform to leverage Anchor Browser's in your automations.
+  </Card>
+</CardGroup>
 
-### Method 2 - Multi-Step Browser flow & Browser Configuration
+## Quick API Examples
 
-For use cases where a custom browser configuration is required, or a multi-step browser flow is needed, perform the following steps:
+### Single Step Browser Tool Call
+
+The easiest way to utilize Anchor Browser is through browser tools. Browser tools are API endpoints that wrap end-to-end browser functionality in a single API call.
+
+<CodeGroup>
+
+```bash curl
+curl -X POST "https://api.anchorbrowser.io/v1/tools/perform-web-task" \
+  -H "anchor-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "task": "Go to anchorbrowser.io and click the Get Started button",
+    "headless": false
+  }'
+```
+
+```javascript node.js
+const axios = require('axios');
+
+const response = await axios.post('https://api.anchorbrowser.io/v1/tools/perform-web-task', {
+  task: 'Go to anchorbrowser.io and click the Get Started button',
+  headless: false
+}, {
+  headers: {
+    'anchor-api-key': process.env.ANCHOR_API_KEY,
+    'Content-Type': 'application/json'
+  }
+});
+
+console.log(response.data);
+```
+
+```python python
+import requests
+
+response = requests.post('https://api.anchorbrowser.io/v1/tools/perform-web-task', 
+  json={
+    'task': 'Go to anchorbrowser.io and click the Get Started button',
+    'headless': False
+  },
+  headers={
+    'anchor-api-key': os.getenv('ANCHOR_API_KEY'),
+    'Content-Type': 'application/json'
+  }
+)
+
+print(response.json())
+```
+
+</CodeGroup>
+
+### Multi-Step Browser Flow
+
+For use cases where a custom browser configuration is required, or a multi-step browser flow is needed:
 
 <Steps>
 <Step title="Fetch API Key">

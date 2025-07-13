@@ -39,12 +39,19 @@
           {
             "group": "Capabilities",
             "pages": [
-              "essentials/browser-configuration",
+              "essentials/recording",
+              "advanced/session-termination",
               "advanced/proxy",
               "advanced/captcha-solving",
-              "advanced/ai-task-completion",
-              "advanced/agentic-file-usage",
               "advanced/event-coordination",
+              {
+                "group": "Agentic",
+                "icon": "robot",
+                "pages": [
+                  "agentic/ai-task-completion",
+                  "agentic/agentic-file-usage"
+                ]
+              },
               "advanced/os-level-control",
               "essentials/authentication-and-identity",
               "essentials/tool-building",
@@ -57,16 +64,16 @@
                   "advanced/p2p-downloads"
                 ]
               },
-              "advanced/extensions",
-              "advanced/browser-termination"
+              "advanced/extensions"
+              
             ]
           },
           {
-            "group": "Integrate",
+            "group": "Integrations",
             "pages": [
               "advanced/browser-live-view",
-              "integrate/browseruse-deployment",
-              "integrate/openai-cua",
+              "integrations/browseruse-deployment",
+              "integrations/openai-cua",
               "agent-frameworks/crewai",
               "agent-frameworks/langchain",
               "agent-frameworks/custom-agent-framework"

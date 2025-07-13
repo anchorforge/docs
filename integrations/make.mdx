@@ -1,0 +1,215 @@
+---
+title: 'Make'
+description: 'Integrate Anchor Browser with Make (formerly Integromat) for no-code automation workflows'
+icon: 'bolt'
+---
+
+## About Make
+
+Make (from Make.com) is a no-code automation platform that lets you connect apps and services together to build powerful workflows — without writing code.
+
+You can think of it like a visual programming tool:
+
+- You drag and drop modules (like Gmail, Slack, or your own API)
+- Set up triggers and actions
+- And let Make automatically move data and perform tasks across tools
+
+<img
+  className="mx-auto"
+  src="/images/make-workflow-example.png"
+  alt="Make workflow example showing connected modules"
+  width="600"
+/>
+
+The modules are represented by circles in different colors. They are connected by dotted lines. We can see how one event triggers 3 different tasks.
+
+## Quick Start
+
+
+<img
+  className="mx-auto"
+  src="/images/make-screenshot-output.png"
+  alt="Complex screenshot output example"
+  width="400"
+/>
+
+## Screenshots & Demo Videos
+
+### Our Custom App
+
+<img
+  className="mx-auto"
+  src="/images/make-custom-app.png"
+  alt="Our Custom App with all currently existing modules"
+  width="600"
+/>
+
+### Module Selection
+
+<img
+  className="mx-auto"
+  src="/images/make-modules.png"
+  alt="Our Modules when creating a new scenario"
+  width="500"
+/>
+
+A general scenario for previewing some of our modules.
+
+## Implementation
+
+### Basic Implementation
+
+There are a few routes integrated into Make with simple, human-understandable parameters:
+
+#### Create Session
+
+<CodeGroup>
+
+```json node.js
+{
+  "session": {
+    "recording": true,
+    "active": true
+  },
+  "proxy": {
+    "active": true,
+    "type": "anchor_residential", // without custom proxy
+    "country_code": "US"
+  }
+}
+```
+
+```python python
+{
+    "session": {
+        "recording": True,
+        "active": True
+    },
+    "proxy": {
+        "active": True,
+        "type": "anchor_residential",  # without custom proxy
+        "country_code": "US"
+    }
+}
+```
+
+</CodeGroup>
+
+#### Screenshot Webpage
+
+- `sessionId` (query parameter)
+- `url`
+
+#### Get Webpage Content
+
+- `sessionId` (query parameter)
+- `format` (text, html, markdown)
+
+#### Perform Web Task
+
+- `sessionId` (query parameter)
+- `prompt` (the task description)
+
+#### Navigate to URL
+
+- `sessionId` (path parameter)
+- `url`
+
+#### Keyboard Shortcut
+
+- `sessionId` (path parameter)
+- `keys` (e.g., "Ctrl+A", "Enter", "Tab")
+
+#### Scroll
+
+- `sessionId` (path parameter)
+- `x` (horizontal scroll)
+- `y` (vertical scroll)
+- `deltaY` (scroll amount)
+
+#### Mouse Click
+
+- `sessionId` (path parameter)
+- `x` (x coordinate)
+- `y` (y coordinate)
+- `button` (left / middle / right)
+
+#### Mouse Double Click
+
+- `sessionId` (path parameter)
+- `x` (x coordinate)
+- `y` (y coordinate)
+
+#### Mouse Move
+
+- `sessionId` (path parameter)
+- `x` (x coordinate)
+- `y` (y coordinate)
+
+#### Type Text
+
+- `sessionId` (path parameter)
+- `text` (text to type)
+
+### Advanced Implementation
+
+<Collapsible title="Advanced Implementation (Full API Alignment)">
+
+For advanced users who need full API functionality, the integration provides access to all Anchor Browser API endpoints with complete parameter support.
+
+#### Available Advanced Modules
+
+- **Session Management**: Full session configuration options
+- **Browser Control**: Advanced browser manipulation capabilities
+- **File Operations**: Upload, download, and file management
+- **Event Coordination**: Complex event handling and coordination
+- **OS-Level Control**: System-level automation capabilities
+- **Custom Extensions**: Browser extension management
+- **Profile Management**: Advanced authentication and identity management
+
+#### Configuration Options
+
+Advanced implementation includes all API parameters:
+
+- Custom proxy configurations
+- Advanced session lifecycle management
+- Complex browser configurations
+- Event listeners and handlers
+- Custom extension support
+- Advanced authentication flows
+
+</Collapsible>
+
+### Won't be Implemented
+
+The following features are not planned for Make integration:
+
+- Real-time browser debugging tools
+- Advanced CDP (Chrome DevTools Protocol) features
+- Custom browser extension development
+- Complex multi-session orchestration
+- Advanced network traffic analysis
+
+## Getting Started
+
+1. **Access the Integration**: Look for "Anchor Browser" in the Make module library
+2. **Create a Session**: Start with the "Create Session" module
+3. **Add Browser Actions**: Use the various browser control modules
+4. **Test Your Workflow**: Run a test scenario to verify functionality
+5. **Deploy**: Activate your workflow for production use
+
+## Best Practices
+
+- **Session Management**: Always close sessions when done to free up resources
+- **Error Handling**: Use Make's error handling features to manage failures
+- **Rate Limiting**: Be mindful of API rate limits in your workflows
+- **Testing**: Test workflows thoroughly before deploying to production
+- **Documentation**: Document your workflows for team collaboration
+
+## Support
+
+For issues with the Make integration:
+
+- Check the [Make documentation](https://www.make.com/en/help)
+- Review our [API Reference](/api-reference) for endpoint details
+- Contact our support team for integration-specific issues 
