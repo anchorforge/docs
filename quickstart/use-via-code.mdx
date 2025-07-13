@@ -2,6 +2,8 @@
 title: 'Code Quick Start'
 ---
 
+This page is a quick start using code. If you want a quick start using an Integration (CrewAI, Make, Langchain, etc.) [click here](/quickstart/use-via-api).
+
 <Steps>
 <Step title="Fetch API Key">
 In [Anchor UI](https://app.anchorbrowser.io/api-key), copy your API key
@@ -28,19 +30,21 @@ The following example demonstrates how to start the browser and navigate to a we
 
 <CodeGroup>
 
-```tsx node.js
-import { chromium } from "playwright-core";
+```javascript node.js
+const { chromium } = require("playwright-core");
 
-const ANCHOR_API_KEY = process.env.ANCHOR_API_KEY;
+(async () => {
+    const ANCHOR_API_KEY = process.env.ANCHOR_API_KEY;
 
-const browser = await chromium.connectOverCDP(`wss://connect.anchorbrowser.io?apiKey=${ANCHOR_API_KEY}`);
-const page = await browser.newPage();
+    const browser = await chromium.connectOverCDP(`wss://connect.anchorbrowser.io?apiKey=${ANCHOR_API_KEY}`);
+    const page = await browser.newPage();
 
-// Navigate to Anchor Browser's website
-await page.goto("https://anchorbrowser.io");
-console.log("Page title:", await page.title());
+    // Navigate to Anchor Browser's website
+    await page.goto("https://anchorbrowser.io");
+    console.log("Page title:", await page.title());
 
-await browser.close();
+    await browser.close();
+})().catch(console.error);
 ```
 
 ```python python
@@ -49,22 +53,9 @@ from playwright.sync_api import sync_playwright
 
 ANCHOR_API_KEY = os.getenv("ANCHOR_API_KEY")
 
-browser_configuration = {}
-
-response = requests.post(
-    "https://api.anchorbrowser.io/v1/sessions",
-    headers={
-        "anchor-api-key": ANCHOR_API_KEY,
-        "Content-Type": "application/json",
-    },
-    json=browser_configuration
-)
-response.raise_for_status()
-session = response.json()["data"]
-
 with sync_playwright() as p:
     browser = p.chromium.connect_over_cdp(
-        f"wss://connect.anchorbrowser.io?apiKey={ANCHOR_API_KEY}&sessionId={session['id']}"
+        f"wss://connect.anchorbrowser.io?apiKey={ANCHOR_API_KEY}"
     )
     page = browser.new_page()
     
@@ -80,70 +71,126 @@ with sync_playwright() as p:
 
 <Step title="Alter the browser configuration">
 
-Anchor Browser supports different configurations of the browser session, such as [network configuration](/advanced/proxy), [identity profiles](/essentials/authentication-and-identity), [termination](/advanced/browser-termination) and more.
+Anchor Browser supports different configurations of the browser session, such as [proxy configuration](/advanced/proxy), [profiles to store authenticated sessions](/essentials/authentication-and-identity), [session termination](/advanced/session-termination) and more.
 
-To use a browser with a specific configuration, first create a browser session with the desired configuration, then connect to the session using the session URL.
+To use a browser with a specific configuration, first create a browser session with the desired configuration.
 
 <CodeGroup>
 
-```tsx node.js
-import { chromium } from "playwright-core";
-import axios from "axios";
+```javascript node.js
+const axios = require("axios");
 
-const ANCHOR_API_KEY = process.env.ANCHOR_API_KEY;
+(async () => {
+    const ANCHOR_API_KEY = process.env.ANCHOR_API_KEY;
+    const browserConfiguration = {
+    session: {
+        // Proxy configuration
+    proxy: {
+        active: true,
+        type: "anchor_residential",
+        country_code: "it"
+    },
+    // Session lifetime management
+        max_duration: 1, // 1 minute
+        idle_timeout: 1   // 1 minute
+    }
+    };
 
-const browserConfiguration = {};
+    const response = await axios.post("https://api.anchorbrowser.io/v1/sessions", browserConfiguration, {
+    headers: {
+        "anchor-api-key": ANCHOR_API_KEY,
+        "Content-Type": "application/json",
+    },
+    });
 
-const response = await axios.post("https://api.anchorbrowser.io/v1/sessions", browserConfiguration, {
-  headers: {
-    "anchor-api-key": ANCHOR_API_KEY,
-    "Content-Type": "application/json",
-  },
-});
-
-const session = response.data.data;
-
-const browser = await chromium.connectOverCDP(`wss://connect.anchorbrowser.io?apiKey=${ANCHOR_API_KEY}&sessionId=${session.id}`);
-const page = await browser.newPage();
-
-// Navigate to Anchor Browser's website
-await page.goto("https://anchorbrowser.io");
-console.log("Page title:", await page.title());
-
-await browser.close();
+    const session = response.data.data;
+    console.log("Session created:", session.id); // Keep this ID for later use
+})().catch(console.error);
 ```
 
 ```python python
 import os
-import requests
+import requests # `pip3 install requests` if needed.
 from playwright.sync_api import sync_playwright
 
 ANCHOR_API_KEY = os.getenv("ANCHOR_API_KEY")
-
-browser_configuration = {}
+browserConfiguration = {
+    "session": {
+        "recording": False, # Default is True
+        # Proxy configuration
+        "proxy": {
+            "active": True,
+            "type": "anchor_residential",
+            "country_code": "it"
+        },
+        # Session lifetime management
+        "max_duration": 1, # 1 minute
+        "idle_timeout": 1   # 1 minute
+    },
+}
 
 response = requests.post(
     "https://api.anchorbrowser.io/v1/sessions",
     headers={
         "anchor-api-key": ANCHOR_API_KEY,
         "Content-Type": "application/json",
-    },
-    json=browser_configuration
+    }, json=browserConfiguration
 )
+
 response.raise_for_status()
 session = response.json()["data"]
+print("Session created:", session["id"]) # Keep this ID for later use
 
+```
+
+</CodeGroup>
+</Step>
+
+<Step title="Session generation and reconnection">
+
+You can create sessions and reconnect to them later using the session ID. This is useful for maintaining state across multiple browser sessions.
+
+<CodeGroup>
+
+```javascript node.js
+const { chromium } = require("playwright-core");
+const ANCHOR_API_KEY = process.env.ANCHOR_API_KEY;
+
+(async () => {
+const browser = await chromium.connectOverCDP(`wss://connect.anchorbrowser.io?apiKey=${ANCHOR_API_KEY}&sessionId=${sessionId}`);
+const page = await browser.newPage();
+
+// Check the IP address
+await page.goto("https://www.whatismyip.com/");
+await page.waitForTimeout(10000)
+console.log(await page.textContent('#region-state'))
+
+// Close browser but session remains active
+await browser.close();
+})().catch(console.error); 
+```
+
+```python python
+import os
+from playwright.sync_api import sync_playwright
+
+ANCHOR_API_KEY = os.getenv("ANCHOR_API_KEY")
+
+# Connect to the session
 with sync_playwright() as p:
     browser = p.chromium.connect_over_cdp(
         f"wss://connect.anchorbrowser.io?apiKey={ANCHOR_API_KEY}&sessionId={session['id']}"
     )
     page = browser.new_page()
     
-    # Navigate to Anchor Browser's website
-    page.goto("https://anchorbrowser.io")
-    print("Page title:", page.title())
-    
+    # Check the IP address
+    page.goto("https://www.whatismyip.com/")
+    page.wait_for_timeout(10000)
+    print(page.text_content('#region-state'))
+
+    # Close browser but session remains active
     browser.close()
+
 ```
 
 </CodeGroup>

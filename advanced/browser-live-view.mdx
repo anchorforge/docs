@@ -1,78 +1,67 @@
 ---
 title: 'Embed Browser Live UI'
-description: ''
-icon: 'check-to-slot'
+description: 'Embed interactive browser sessions directly into your application'
 ---
 
-## Obtaining the Live View URL
+## Overview
 
-Anchor Browser offers a live view feature that allows you to embed an interactive frame of a website as a web element.
+Anchor Browser offers a live view feature that allows you to embed an interactive frame of a website as a web element. The `live_view_url` is received when creating a session with `headless: false` (which is the default mode).
 
-### Headful (Recommended) 
+## Headful Mode (Default)
 
-Headful mode provides a single URL to view the full chrome view, including the address bar. This also ensures the presented tab is always the active tab.
+Headful mode provides a single URL to view the full chrome view, including the address bar. This ensures the presented tab is always the active tab and provides the best user experience.
 
 <img
-  className="mx-auto"
+  className="hidden dark:block mx-auto"
   src="/images/vnc-live-view.png"
-  alt="Browser Use Graph"
+  alt="Browser Live View in Headful Mode"
   width="560"
 />
 
-Browsers are headful by default.
+To create a browser in headful mode, set the `headless` parameter to `false` when [creating a session](/api-reference/sessions/create-session):
 
-Then, use the **create-session** response to embed the live view URL directly into an iframe:
+<CodeGroup>
+
+```javascript node.js
+const response = await axios.post("https://api.anchorbrowser.io/v1/sessions", {
+  headless: false
+}, {
+  headers: {
+    "anchor-api-key": ANCHOR_API_KEY,
+    "Content-Type": "application/json",
+  },
+});
+
+const session = response.data.data;
+const liveViewUrl = session.live_view_url;
+```
+
+```python python
+response = requests.post(
+    "https://api.anchorbrowser.io/v1/sessions",
+    json={"headless": False},
+    headers={
+        "anchor-api-key": ANCHOR_API_KEY,
+        "Content-Type": "application/json",
+    },
+)
+response.raise_for_status()
+session = response.json()["data"]
+live_view_url = session["live_view_url"]
+```
+
+</CodeGroup>
+
+Then, use the `live_view_url` from the response to embed the live view directly into an iframe:
 
 ```html
-<iframe src="{{live_view_url}}" sandbox="allow-same-origin allow-scripts" allow="clipboard-read; clipboard-write" style="border: 0px; display: block; width: 100%; height: 100%; position: absolute; top: 0px; left: 0px;"></iframe>
+<iframe 
+  src="{{live_view_url}}" 
+  sandbox="allow-same-origin allow-scripts" 
+  allow="clipboard-read; clipboard-write" 
+  style="border: 0px; display: block; width: 100%; height: 100%; position: absolute; top: 0px; left: 0px;">
+</iframe>
 ```
-
-#### Disable browser interactivity
-
-To prevent the end user from interacting with the browser embedding, use the `"read_only": true"` when [creating a session](/api-reference/sessions/create-session).
-
-```json
-{
-  "session": {
-    "live_view": {
-      "read_only": true
-    }
-  }
-}
-```
-
-### Headless
-
-To create a browser in headless mode, set the `headless` parameter to `{"active": false}` when [creating a session](/api-reference/browser-sessions/start-browser-session).
-
-```json
-{
-  "browser": 
-  {
-    "headless": {
-      "active": false
-    }
-  }
-}
-```
-
-To obtain the browser live session URL, start by [creating a session](/api-reference/browser-sessions/start-browser-session)
-
-<img
-  className="mx-auto"
-  src="/images/cdp-live-view.png"
-  alt="Browser Use Graph"
-  width="560"
-/>
-
-<Warning>The live_view_url points to the browser default first page. If your browser proccess involves creating a **new page**, collect the corresponding URL by using the [live view URLs](/api-reference/browser-sessions/get-live-view-urls) endpoint.</Warning>
-
-Then, use the **create-session** response to embed the live view URL directly into an iframe:
-
-```html
-<iframe src="{{live_view_url}}" sandbox="allow-same-origin allow-scripts" allow="clipboard-read; clipboard-write" style="border: 0px; display: block; width: 100%; height: 100%; position: absolute; top: 0px; left: 0px;"></iframe>
-```
-
 
 ## Advanced Embedding Configuration
 
@@ -81,13 +70,47 @@ Then, use the **create-session** response to embed the live view URL directly in
 To use the fullscreen view, replace the live view URL with the following:
 
 ```html
-<iframe src="https://anchorforge.io/devtools-frontend/inspector-fullscreen.html?wss={{live_view_url}}" ...></iframe>
+<iframe src="https://anchorforge.io/devtools-frontend/inspector-fullscreen.html?wss={{session_url}}" ...></iframe>
 ```
 
-### Disable browser interactivity
+### Disable Browser Interactivity
 
 To prevent the end user from interacting with the browser, add the `style="pointer-events: none;"` attribute to the iframe:
 
 ```html
-<iframe ... style="... pointer-events: none;"></iframe>
+<iframe 
+  src="{{live_view_url}}" 
+  sandbox="allow-same-origin allow-scripts" 
+  allow="clipboard-read; clipboard-write" 
+  style="border: 0px; display: block; width: 100%; height: 100%; position: absolute; top: 0px; left: 0px; pointer-events: none;">
+</iframe>
 ```
+
+<Info>
+This feature is available for both headful and headless modes. In headless mode, you would use the `session_url` instead of `live_view_url`.
+</Info>
+
+## Headless Mode (Legacy)
+
+<Collapsible title="Headless Mode (Deprecated)">
+<Warning>
+Headless mode is being deprecated and will be removed in a future version. We recommend using headful mode for all new implementations.
+</Warning>
+
+To obtain the browser live session URL in headless mode, start by [creating a session](/api-reference/sessions/create-session) with `headless: true`:
+
+<img
+  className="hidden dark:block mx-auto"
+  src="/images/cdp-live-view.png"
+  alt="Browser Live View in Headless Mode"
+  width="560"
+/>
+
+<Warning>The session_url points to the browser default first page. If your browser process involves creating a **new page**, collect the corresponding URL by using the [live view URLs](/api-reference/sessions/get-pages-for-a-session) endpoint.</Warning>
+
+Then, use the **create-session** response to embed the live view URL directly into an iframe:
+
+```html
+<iframe src="https://anchorforge.io/devtools-frontend/inspector.html?wss={{session_url}}" sandbox="allow-same-origin allow-scripts" allow="clipboard-read; clipboard-write" style="border: 0px; display: block; width: 100%; height: 100%; position: absolute; top: 0px; left: 0px;"></iframe>
+```
+</Collapsible>
