@@ -38,22 +38,21 @@
           {
             "group": "Capabilities",
             "pages": [
-              "essentials/recording",
+              {
+                "group": "Agentic Browser Control",
+                "icon": "robot",
+                "pages": [
+                  "agentic-browser-control/ai-task-completion",
+                  "agentic-browser-control/agentic-file-usage"
+                ]
+              },
+              "essentials/authentication-and-identity",
               "advanced/session-termination",
               "advanced/proxy",
+              "essentials/recording",
               "advanced/captcha-solving",
               "advanced/event-coordination",
               "advanced/browser-live-view",
-              {
-                "group": "Agentic",
-                "icon": "robot",
-                "pages": [
-                  "agentic/ai-task-completion",
-                  "agentic/agentic-file-usage"
-                ]
-              },
-              "advanced/os-level-control",
-              "essentials/authentication-and-identity",
               "essentials/tool-building",
               {
                 "group": "Files Upload / Download",
@@ -64,8 +63,8 @@
                   "advanced/p2p-downloads"
                 ]
               },
-              "advanced/extensions"
-              
+              "advanced/extensions",
+              "advanced/os-level-control"
             ]
           },
           {
