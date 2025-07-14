@@ -21,8 +21,7 @@
                 "group": "Quickstart",
                 "pages": [
                   "quickstart/use-via-code",
-                  "quickstart/use-via-api",
-                  "quickstart/embed-browser-in-your-product"
+                  "quickstart/use-via-api"
                 ]
               },
               {
@@ -44,6 +43,7 @@
               "advanced/proxy",
               "advanced/captcha-solving",
               "advanced/event-coordination",
+              "advanced/browser-live-view",
               {
                 "group": "Agentic",
                 "icon": "robot",
@@ -71,9 +71,9 @@
           {
             "group": "Integrations",
             "pages": [
-              "advanced/browser-live-view",
               "integrations/browseruse-deployment",
               "integrations/openai-cua",
+              "integrations/make",
               "agent-frameworks/crewai",
               "agent-frameworks/langchain",
               "agent-frameworks/custom-agent-framework"
