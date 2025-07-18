@@ -163,6 +163,10 @@ components:
           format: uuid
           description: The browser session ID is required if the source is set to `session`. The browser session must be running, and the profile will be stored once the browser session terminates.
           example: 550e8400-e29b-41d4-a716-446655440000
+        dedicated_sticky_ip:
+          type: boolean
+          description: Whether to use a dedicated sticky IP for this profile. Defaults to false.
+          example: false
 
     ProfileUpdateRequestSchema:
       type: object
