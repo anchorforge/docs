@@ -49,6 +49,7 @@
               "essentials/authentication-and-identity",
               "advanced/session-termination",
               "advanced/proxy",
+              "advanced/dedicated-sticky-ip",
               "essentials/recording",
               "advanced/captcha-solving",
               "advanced/event-coordination",
@@ -72,6 +73,7 @@
             "pages": [
               "integrations/browseruse-deployment",
               "integrations/openai-cua",
+              "integrations/mcp",
               "integrations/make",
               "agent-frameworks/crewai",
               "agent-frameworks/langchain",
