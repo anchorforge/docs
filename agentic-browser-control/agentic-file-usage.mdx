@@ -18,7 +18,7 @@ Upload a ZIP file containing resources that your AI agent can use to complete ta
 import { chromium } from 'playwright';
 
 // 1. Create a test ZIP file with content
-const testContent = 'Hello from AnchorBrowser!\nThis is a test file for the agent.';
+const testContent = 'Hello from Anchor!\nThis is a test file for the agent.';
 const blob = new Blob([testContent], { type: 'text/plain' });
 const formData = new FormData();
 formData.append('file', blob, 'test-data.zip');
