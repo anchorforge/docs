@@ -1,12 +1,12 @@
 ---
-title: "Event Coordination"
+title: "MFA"
 description: "Real-time event signaling and coordination between external systems and browser instances"
 icon: "comments"
 ---
 
 # Event Coordination
 
-Event coordination allows you to send real-time messages between external systems and active browser instances. This is particularly useful for multi-factor authentication (MFA) where you need to inject authentication codes during browser automation.
+Event coordination allows you to send real-time messages between external systems and active browser instances. This is particularly useful for **multi-factor authentication (MFA)** where you need to inject authentication codes during browser automation.
 
 ## Overview
 
@@ -16,8 +16,8 @@ The system provides two operations:
 
 Events are user-scoped and work across multiple browser instances.
 
+<Expandable title="API Endpoints">
 ## API Endpoints
-
 ### Signal an Event
 ```http
 POST https://api.anchorbrowser.io/api/v1/events/{eventName}
@@ -29,6 +29,7 @@ POST https://api.anchorbrowser.io/api/v1/events/{eventName}/wait
 ```
 
 Both endpoints require `anchor-api-key` header and accept JSON payloads.
+</Expandable>
 
 ## MFA Use Case
 
