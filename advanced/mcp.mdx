@@ -1,0 +1,106 @@
+---
+title: 'Model Context Protocol (MCP)'
+description: 'Connect AnchorBrowser to AI assistants via MCP for seamless browser automation'
+icon: 'plug'
+---
+
+### What is MCP?
+
+The **Model Context Protocol (MCP)** is an open standard that enables AI assistants like Claude Desktop, VS Code, Cursor, and other compatible tools to connect with external services. MCP allows your AI assistant to control AnchorBrowser's real browser sessions through natural language commands.
+
+### Step-by-Step Setup for Cursor
+
+#### Step 1: Get Your AnchorBrowser API Key
+
+1. Go to [app.anchorbrowser.io](https://app.anchorbrowser.io)
+2. Sign up or log in to your account
+3. Navigate to your dashboard
+4. Copy your API key (starts with `sk-`)
+
+#### Step 2: Open MCP Settings in Cursor
+
+1. Open Cursor
+2. Go to **Settings** (Cmd/Ctrl + ,)
+3. Navigate to **MCP** section in the settings
+4. Click **"Add Custom MCP Server"** or **"New MCP Server"**
+
+#### Step 3: Add AnchorBrowser as Custom Tool
+
+1. In the MCP settings interface:
+   - **Name**: `anchorbrowser`
+   - **URL**: `http://api.anchorbrowser.io/mcp`
+   
+2. Add the header for authentication:
+   - **Header Name**: `anchor-api-key`
+   - **Header Value**: `sk-your-actual-api-key-here`
+
+<Warning>
+  Replace `sk-your-actual-api-key-here` with your real API key from Step 1.
+</Warning>
+
+#### Step 4: Alternative - Manual JSON Configuration
+
+If you prefer to edit the configuration file directly:
+
+**On macOS:** `~/.cursor/mcp.json`
+**On Windows:** `%APPDATA%\Cursor\mcp.json`
+
+```json
+{
+  "mcpServers": {
+    "anchorbrowser": {
+      "url": "http://api.anchorbrowser.io/mcp",
+      "headers": {
+        "anchor-api-key": "sk-your-actual-api-key-here"
+      }
+    }
+  }
+}
+```
+
+#### Step 5: Save and Restart Cursor
+
+1. Save the `mcp.json` file
+2. **Completely quit Cursor** (not just close the window)
+3. **Restart Cursor**
+
+#### Step 6: Validate MCP Tools Are Accessible
+
+1. Open Cursor and look for the **MCP Tools** section in the sidebar or settings
+2. You should see "anchorbrowser" listed as a connected server
+3. Verify that all AnchorBrowser tools are visible and accessible
+
+![MCP Tools in Cursor](/images/mcp.png)
+
+The interface should show all available AnchorBrowser tools with the `anchor_` prefix, including:
+- `anchor_navigate`, `anchor_click`, `anchor_type`
+- `anchor_take_screenshot`, `anchor_snapshot`
+- `anchor_tab_new`, `anchor_tab_select`, `anchor_tab_close`
+- And many more automation tools
+
+### Available Tools
+
+#### **Navigation & Interaction**
+- Navigate to URLs, go back/forward
+- Click elements, type text, select options
+- Upload/download files, handle dialogs
+- Take screenshots, generate PDFs
+- Generate playwright tests
+- Extract page content and data
+- Monitor console messages
+
+### Usage Examples
+
+```
+"Navigate to google.com and search for 'web automation'"
+"Fill out this contact form with my details"
+"Extract all product prices from this e-commerce page"
+"Take a screenshot of the current page"
+"Generate a Playwright test for this user flow"
+```
+
+### See Also
+
+- [API Reference](/api-reference) - Direct API usage
+- [Proxy Integration](/advanced/proxy) - Proxy configuration
+- [CAPTCHA Solving](/advanced/captcha-solving) - CAPTCHA handling
