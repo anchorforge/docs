@@ -1,106 +1,142 @@
 ---
-title: 'Model Context Protocol (MCP)'
-description: 'Connect Anchor Browser to AI assistants via MCP for seamless browser automation'
-icon: 'plug'
+title: 'MCP'
+icon: 'stars'
+description: 'Use Anchor with Model Context Protocol (MCP) in your preferred agentic tools'
 ---
 
-### What is MCP?
+## Overview
 
-The **Model Context Protocol (MCP)** is an open standard that enables AI assistants like Claude Desktop, VS Code, Cursor, and other compatible tools to connect with external services. MCP allows your AI assistant to control Anchor Browser's real browser sessions through natural language commands.
+Anchor provides Model Context Protocol (MCP) integration, allowing you to use browser automation directly by your preferred agent. This enables seamless browser control from Cursor, VS Code, Claude, ChatGPT, and other MCP-compatible tools.
 
-### Step-by-Step Setup for Cursor
+## What is MCP?
 
-#### Step 1: Get Your Anchor Browser API Key
+Model Context Protocol (MCP) is an open standard that allows AI assistants to interact with external tools and data sources.
 
-1. Go to [app.anchorbrowser.io](https://app.anchorbrowser.io)
-2. Sign up or log in to your account
-3. Navigate to your dashboard
-4. Copy your API key (starts with `sk-`)
+In our case, it enables AI-powered tools to access and control our browser automation capabilities directly within your IDE or agent apps.
 
-#### Step 2: Open MCP Settings in Cursor
 
-1. Open Cursor
-2. Go to **Settings** (Cmd/Ctrl + ,)
-3. Navigate to **MCP** section in the settings
-4. Click **"Add Custom MCP Server"** or **"New MCP Server"**
+<Expandable title="Setup in Cursor">
+## Setup in cursor
+Other MCP-compatible tools follow about the same pattern.
 
-#### Step 3: Add Anchor Browser as Custom Tool
+The MCP server runs on our servers (https://api.anchorbrowser.io/mcp), and is available to all users providing their Anchor API Key.
+### Configure MCP in Cursor
 
-1. In the MCP settings interface:
-   - **Name**: `anchorbrowser`
-   - **URL**: `http://api.anchorbrowser.io/mcp`
-   
-2. Add the header for authentication:
-   - **Header Name**: `anchor-api-key`
-   - **Header Value**: `sk-your-actual-api-key-here`
+Alternatively, edit `~/.cursor/mcp.json` file directly.
 
-<Warning>
-  Replace `sk-your-actual-api-key-here` with your real API key from Step 1.
-</Warning>
 
-#### Step 4: Alternative - Manual JSON Configuration
-
-If you prefer to edit the configuration file directly:
-
-**On macOS:** `~/.cursor/mcp.json`
-**On Windows:** `%APPDATA%\Cursor\mcp.json`
+<Steps>
+<Step title="Open Command Palette">
+Press Command+Shift+P (Mac) or Ctrl+Shift+P (Linux/Windows) and select "Open MCP Configuration File"
+<img src="/images/mcp-get-settings.png" alt="Get Cursor MCP Settings" />
+</Step>
+<Step title="Open MCP Configurations">
+Click on "Add Custom MCP" or "New MCP Server" if you already have some preconfigured.
+<img src="/images/mcp-add-custom.png" alt="Add Custom MCP Server" />
+</Step>
+<Step title="Add MCP Server">
+Add inside the `mcpServers` object the following:
 
 ```json
-{
-  "mcpServers": {
-    "anchorbrowser": {
-      "url": "http://api.anchorbrowser.io/mcp",
-      "headers": {
-        "anchor-api-key": "sk-your-actual-api-key-here"
-      }
+"Anchor Browser Agent": {
+    "url": "https://api.anchorbrowser.io/mcp",
+    "headers": {
+    "anchor-api-key": "YOUR_ANCHOR_API_KEY"
     }
-  }
 }
 ```
+<Info>
+  If you don't have your Anchor API key yet, you can get it from [Anchor UI](https://app.anchorbrowser.io/api-key).
+</Info>
 
-#### Step 5: Save and Restart Cursor
+You should now see Anchor MCP server in the list of MCP servers in Cursor. It should say '24 tools enabled'. If you don't see it, disable and re-enable Anchor MCP server, or wait a little longer.
+That's it! You can now use Anchor directly in your conversations with Cursor's AI assistant.
+</Step>
+</Steps>
+</Expandable>
 
-1. Save the `mcp.json` file
-2. **Completely quit Cursor** (not just close the window)
-3. **Restart Cursor**
+# Usage
 
-#### Step 6: Validate MCP Tools Are Accessible
+Once configured, you can use Anchor Browser directly in your conversations with Cursor's AI assistant.
+Currently, Cursor needs you to actively approve its steps.
 
-1. Open Cursor and look for the **MCP Tools** section in the sidebar or settings
-2. You should see "anchorbrowser" listed as a connected server
-3. Verify that all Anchor Browser tools are visible and accessible
+## Available Commands
 
-![MCP Tools in Cursor](/images/mcp.png)
+The MCP integration provides access to most main Anchor capabilities:
+<img src="/images/mcp-available-tools.png" alt="MCP Tools" />
+Of course they can be reached using free language, as shown in the examples below.
 
-The interface should show all available Anchor Browser tools with the `anchor_` prefix, including:
-- `anchor_navigate`, `anchor_click`, `anchor_type`
-- `anchor_take_screenshot`, `anchor_snapshot`
-- `anchor_tab_new`, `anchor_tab_select`, `anchor_tab_close`
-- And many more automation tools
-
-### Available Tools
-
-#### **Navigation & Interaction**
-- Navigate to URLs, go back/forward
-- Click elements, type text, select options
-- Upload/download files, handle dialogs
-- Take screenshots, generate PDFs
-- Generate playwright tests
-- Extract page content and data
-- Monitor console messages
-
-### Usage Examples
-
+### Test Generator Example
 ```
-"Navigate to google.com and search for 'web automation'"
-"Fill out this contact form with my details"
-"Extract all product prices from this e-commerce page"
-"Take a screenshot of the current page"
-"Generate a Playwright test for this user flow"
+- You are a playwright test generator.
+- You are given a scenario and you need to generate a playwright test for it.
+- DO NOT generate test code based on the scenario alone. 
+- DO run steps one by one using the tools provided by the Anchor Browser Agent MCP.
+- Only after all steps are completed, emit a Playwright TypeScript test that uses @playwright/test based on message history
+- Save generated test file in the tests directory
+- Execute the test file and iterate until the test passes
+Generate a Playwright test for the following scenario:
+1. Navigate to https://www.imdb.com/
+2. search for 'Garfield'
+3. return  the director of the last movie
 ```
+<video   autoPlay
+  muted
+  loop
+  playsInline src="/images/garfield-test-generator.mp4" alt="Test Generator" />
+<Expandable title="garfield-test.spec.ts File">
+That is the generated test file:
+```js
+import { test, expect } from '@playwright/test';
+test('Find director of the last Garfield movie', async ({ page }) => {
+  // Step 1: Navigate to IMDB
+  await page.goto('https://www.imdb.com/');
+  
+  // Verify we're on the IMDB homepage
+  await expect(page).toHaveTitle(/IMDb/);
+  
+  // Step 2: Search for 'Garfield'
+  // Click on the search box
+  await page.getByTestId('suggestion-search').click();
+  
+  // Type 'Garfield' into the search box
+  await page.getByTestId('suggestion-search').fill('Garfield');
+  
+  // Submit the search
+  await page.getByRole('button', { name: 'Submit search' }).click();
+  
+  // Verify we're on the search results page
+  await expect(page).toHaveURL(/\/find\/\?q=Garfield/);
+  await expect(page).toHaveTitle(/Find - IMDb/);
+  
+  // Step 3: Click on the most recent Garfield movie (The Garfield Movie 2024)
+  await page.getByRole('link', { name: 'The Garfield Movie' }).click();
+  
+  // Verify we're on the movie page
+  await expect(page).toHaveURL(/\/title\/tt5779228/);
+  await expect(page).toHaveTitle(/The Garfield Movie \(2024\)/);
+  
+  // Step 4: Extract the director information
+  // The director information is displayed in the main content area
+  const directorElement = page.locator('text=Director').locator('..').locator('a').first();
+  
+  // Verify the director is Mark Dindal
+  await expect(directorElement).toHaveText('Mark Dindal');
+  
+  // Log the director name for verification
+  const directorName = await directorElement.textContent();
+  console.log(`Director of The Garfield Movie (2024): ${directorName}`);
+  
+  // Assert the expected result
+  expect(directorName).toBe('Mark Dindal');
+});
+```
+</Expandable>
 
-### See Also
+### Getting Help
 
-- [API Reference](/api-reference) - Direct API usage
-- [Proxy Integration](/advanced/proxy) - Proxy configuration
-- [CAPTCHA Solving](/advanced/captcha-solving) - CAPTCHA handling
+If you encounter issues with the MCP integration:
+
+1. Disable and re-enable the MCP server. (Might need a few seconds to reconnect)
+2. Review your MCP prompt.
+3. Contact support at [support@anchorbrowser.io](mailto:support@anchorbrowser.io)

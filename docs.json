@@ -43,7 +43,8 @@
                 "icon": "robot",
                 "pages": [
                   "agentic-browser-control/ai-task-completion",
-                  "agentic-browser-control/agentic-file-usage"
+                  "agentic-browser-control/agentic-file-usage",
+                  "advanced/mcp"
                 ]
               },
               "essentials/authentication-and-identity",
