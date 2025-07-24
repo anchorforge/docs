@@ -27,61 +27,77 @@ This capability allows to use the browser without any coding.
 
 #### Available Models
 <Expandable title="Available Models" defaultOpen>
-<Tabs>
-<Tab title="OpenAI">
+  <Tabs>
+    <Tab title="OpenAI">
+      <div className="grid grid-cols-3 gap-2">
 
-| Model Names | | |
-|---|---|---|
-| gpt-4o | gpt-4o-mini | gpt-4.1 |
-| gpt-4.1-mini | o4-mini | o3 |
-| o1-mini | | |
+        <div>gpt-4o</div>
+        <div>gpt-4o-mini</div>
+        <div>gpt-4.1</div>
+        <div>gpt-4.1-mini</div>
+        <div>o4-mini</div>
+        <div>o3</div>
+        <div>o1-mini</div>
+      </div>
+    </Tab>
 
-</Tab>
-<Tab title="Gemini">
+    <Tab title="Gemini">
+      <div className="grid grid-cols-3 gap-2">
 
-| Model Names | | |
-|---|---|---|
-| gemini-2.5-flash | gemini-2.5-pro | gemini-2.5-flash-lite |
-| gemini-2.0-flash | gemini-1.5-flash | gemini-1.5-flash-8b |
-| gemini-1.5-pro | | |
+        <div>gemini-2.5-flash</div>
+        <div>gemini-2.5-pro</div>
+        <div>gemini-2.5-flash-lite</div>
+        <div>gemini-2.0-flash</div>
+        <div>gemini-1.5-flash</div>
+        <div>gemini-1.5-flash-8b</div>
+        <div>gemini-1.5-pro</div>
+      </div>
+    </Tab>
 
-</Tab>
-<Tab title="Groq">
+    <Tab title="Groq">
+      <div className="grid grid-cols-3 gap-2">
 
-| Model Names | | |
-|---|---|---|
-| llama-3.3-70b-versatile | | |
+        <div>llama-3.3-70b-versatile</div>
+      </div>
+    </Tab>
 
-</Tab>
-<Tab title="Azure">
+    <Tab title="Azure">
+      <div className="grid grid-cols-3 gap-2">
 
-| Model Names | | |
-|---|---|---|
-| o3-pro | codex-mini | deepseek-r1-0528 |
-| sora | grok-3 | grok-3-mini |
-| model-router | o3 | o4-mini |
-| mai-ds-r1 | gpt-image-1 | gpt-4.1 |
-| gpt-4.1-mini | gpt-4.1-nano | mistral-medium-2505 |
-| evodiff | phi-4-reasoning | phi-4-mini-reasoning |
-| llama-4-scout-17b-16e-instruct | llama-4-maverick-17b-128e-instruct-fp8 | cohere-command-a |
-| embed-v-4-0 | gpt-4.5-preview | o3-mini |
-| deepseek-v3-0324 | llama-4-scout-17b-16e | gpt-4o-mini-tts |
-| gpt-4o-transcribe | gpt-4o-mini-transcribe | deepseek-v3 |
-| deepseek-r1 | computer-use-preview | phi-4-mini-instruct |
-| phi-4-multimodal-instruct | phi-4 | mistral-small-2503 |
-| gpt-4o-mini-audio-preview | gpt-4o-mini-realtime-preview | o1 |
-| o1-mini | gpt-4o | gpt-4o-mini |
-| gpt-4o-audio-preview | gpt-4o-realtime-preview | financial-reports-analysis-v2 |
-| supply-chain-trade-regulations-v2 | muse | cohere-rerank-v3.5 |
-| stable-diffusion-3.5-large | stable-image-ultra | stable-image-core |
-</Tab>
-<Tab title="Xai">
-| Model Names | | |
-|---|---|---|
-| grok-4-0709 | grok-4 | grok-3 |
-| grok-3-mini | grok-3-mini-fast |
-</Tab>
-</Tabs>
+        {[
+          "o3-pro", "codex-mini", "deepseek-r1-0528",
+          "sora", "grok-3", "grok-3-mini",
+          "model-router", "o3", "o4-mini",
+          "mai-ds-r1", "gpt-image-1", "gpt-4.1",
+          "gpt-4.1-mini", "gpt-4.1-nano", "mistral-medium-2505",
+          "evodiff", "phi-4-reasoning", "phi-4-mini-reasoning",
+          "llama-4-scout-17b-16e-instruct", "llama-4-maverick-17b-128e-instruct-fp8", "cohere-command-a",
+          "embed-v-4-0", "gpt-4.5-preview", "o3-mini",
+          "deepseek-v3-0324", "llama-4-scout-17b-16e", "gpt-4o-mini-tts",
+          "gpt-4o-transcribe", "gpt-4o-mini-transcribe", "deepseek-v3",
+          "deepseek-r1", "computer-use-preview", "phi-4-mini-instruct",
+          "phi-4-multimodal-instruct", "phi-4", "mistral-small-2503",
+          "gpt-4o-mini-audio-preview", "gpt-4o-mini-realtime-preview", "o1",
+          "o1-mini", "gpt-4o", "gpt-4o-mini",
+          "gpt-4o-audio-preview", "gpt-4o-realtime-preview", "financial-reports-analysis-v2",
+          "supply-chain-trade-regulations-v2", "muse", "cohere-rerank-v3.5",
+          "stable-diffusion-3.5-large", "stable-image-ultra", "stable-image-core"
+        ].map((model, idx) => (
+          <div key={idx}>{model}</div>
+        ))}
+      </div>
+    </Tab>
+
+    <Tab title="Xai">
+      <div className="grid grid-cols-3 gap-2">
+        <div>grok-4-0709</div>
+        <div>grok-4</div>
+        <div>grok-3</div>
+        <div>grok-3-mini</div>
+        <div>grok-3-mini-fast</div>
+      </div>
+    </Tab>
+  </Tabs>
 </Expandable>
 
 ### Code Example
