@@ -246,6 +246,11 @@ components:
       type: object
       description: Session-related configurations.
       properties:
+        initial_url:
+          type: string
+          format: uri
+          description: The URL to navigate to when the browser session starts. If not provided, the browser will load an empty page.
+          example: "https://anchorbrowser.io"
         recording:
           type: object
           description: Configuration for session recording.
