@@ -342,6 +342,14 @@ components:
               type: integer
               description: Height of the viewport in pixels. Defaults to `900`.
               example: 900
+        fullscreen:
+          type: object
+          description: Configuration for fullscreen mode.
+          properties:
+            active:
+              type: boolean
+              description: Enable or disable fullscreen mode. When enabled, the browser will start in fullscreen mode. Defaults to `false`.
+              example: false
         p2p_download:
           type: object
           description: Configuration for peer-to-peer download capture functionality.
