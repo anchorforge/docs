@@ -43,8 +43,15 @@
                 "icon": "robot",
                 "pages": [
                   "agentic-browser-control/ai-task-completion",
-                  "agentic-browser-control/agentic-file-usage",
-                  "advanced/mcp"
+                  "agentic-browser-control/agentic-file-usage"
+                ]
+              },
+              {
+                "group": "Model Context Protocol (MCP)",
+                "icon": "stars",
+                "pages": [
+                  "advanced/mcp",
+                  "advanced/mcp-open-source"
                 ]
               },
               "essentials/authentication-and-identity",

@@ -1,29 +1,42 @@
 ---
-title: 'MCP'
-icon: 'stars'
-description: 'Use Anchor with Model Context Protocol (MCP) in your preferred agentic tools'
+title: 'MCP - Hosted Version'
+icon: 'cloud'
+description: 'Use Anchor with Model Context Protocol (MCP) in your preferred agentic tools via our hosted service'
 ---
+<img src="/images/mcp_logo.png" alt="Model Context Protocol" style={{width: "200px", margin: "20px 0"}} />
 
 ## Overview
 
-Anchor provides Model Context Protocol (MCP) integration, allowing you to use browser automation directly by your preferred agent. This enables seamless browser control from Cursor, VS Code, Claude, ChatGPT, and other MCP-compatible tools.
+Anchor provides a **hosted** Model Context Protocol (MCP) integration, allowing you to use browser automation directly from your preferred AI tools without any local setup. Our hosted MCP server runs on our infrastructure and is available to all users with an Anchor API key.
+
+This enables seamless browser control from Cursor, VS Code, Claude, ChatGPT, and other MCP-compatible tools without managing any local dependencies.
 
 ## What is MCP?
 
 Model Context Protocol (MCP) is an open standard that allows AI assistants to interact with external tools and data sources.
 
-In our case, it enables AI-powered tools to access and control our browser automation capabilities directly within your IDE or agent apps.
+In our case, it enables AI-powered tools to access and control our browser automation capabilities directly within your IDE, agent apps, or CI/CD pipelines.
+
+## Hosted vs Self-Hosted
+
+Our **hosted MCP service** provides:
+- ✅ Zero setup - just add your API key
+- ✅ Always up-to-date with latest features
+- ✅ Managed infrastructure and updates
+- ✅ Built-in scaling and reliability
+- ✅ Direct integration with Anchor's cloud browsers
+
+For advanced customization needs, see our [Open Source MCP Server](/advanced/mcp-open-source) documentation.
+
 
 
 <Expandable title="Setup in Cursor">
-## Setup in cursor
+## Setup in Cursor
 Other MCP-compatible tools follow about the same pattern.
 
 The MCP server runs on our servers (https://api.anchorbrowser.io/mcp), and is available to all users providing their Anchor API Key.
+
 ### Configure MCP in Cursor
-
-Alternatively, edit `~/.cursor/mcp.json` file directly.
-
 
 <Steps>
 <Step title="Open Command Palette">
@@ -41,7 +54,7 @@ Add inside the `mcpServers` object the following:
 "Anchor Browser Agent": {
     "url": "https://api.anchorbrowser.io/mcp",
     "headers": {
-    "anchor-api-key": "YOUR_ANCHOR_API_KEY"
+        "anchor-api-key": "YOUR_ANCHOR_API_KEY"
     }
 }
 ```
@@ -50,22 +63,80 @@ Add inside the `mcpServers` object the following:
 </Info>
 
 You should now see Anchor MCP server in the list of MCP servers in Cursor. It should say '24 tools enabled'. If you don't see it, disable and re-enable Anchor MCP server, or wait a little longer.
-That's it! You can now use Anchor directly in your conversations with Cursor's AI assistant.
 </Step>
 </Steps>
 </Expandable>
 
+<Expandable title="Setup in VS Code">
+## Setup in VS Code
+
+<Steps>
+<Step title="Install MCP Extension">
+Install the MCP extension for VS Code from the marketplace.
+</Step>
+<Step title="Configure MCP Server">
+Add to your VS Code MCP configuration file:
+
+```json
+{
+  "mcpServers": {
+    "anchor-browser": {
+      "url": "https://api.anchorbrowser.io/mcp",
+      "headers": {
+        "anchor-api-key": "YOUR_ANCHOR_API_KEY"
+      }
+    }
+  }
+}
+```
+</Step>
+<Step title="Restart VS Code">
+Restart VS Code to load the new MCP server configuration.
+</Step>
+</Steps>
+</Expandable>
+
+<Expandable title="Setup in Claude Desktop">
+## Setup in Claude Desktop
+
+<Steps>
+<Step title="Open Configuration">
+Open Claude Desktop's configuration file (`claude_desktop_config.json`).
+</Step>
+<Step title="Add Anchor MCP">
+Add the following to your configuration:
+
+```json
+{
+  "mcpServers": {
+    "anchor-browser": {
+      "url": "https://api.anchorbrowser.io/mcp",
+      "headers": {
+        "anchor-api-key": "YOUR_ANCHOR_API_KEY"
+      }
+    }
+  }
+}
+```
+</Step>
+<Step title="Restart Claude">
+Restart Claude Desktop to apply the configuration.
+</Step>
+</Steps>
+</Expandable>
+
+
+
 # Usage
 
-Once configured, you can use Anchor Browser directly in your conversations with Cursor's AI assistant.
-Currently, Cursor needs you to actively approve its steps.
+Once configured, you can use Anchor Browser directly in your conversations with your AI assistant.
 
-## Available Commands
+## Available Tools
 
-The MCP integration provides access to most main Anchor capabilities:
+The hosted MCP integration provides access to all main Anchor capabilities:
 <img src="/images/mcp-available-tools.png" alt="MCP Tools" />
-Of course they can be reached using free language, as shown in the examples below.
 
+<Expandable title="Test Generator Example">
 ### Test Generator Example
 ```
 - You are a playwright test generator.
@@ -75,19 +146,20 @@ Of course they can be reached using free language, as shown in the examples belo
 - Only after all steps are completed, emit a Playwright TypeScript test that uses @playwright/test based on message history
 - Save generated test file in the tests directory
 - Execute the test file and iterate until the test passes
+
 Generate a Playwright test for the following scenario:
 1. Navigate to https://www.imdb.com/
 2. search for 'Garfield'
-3. return  the director of the last movie
+3. return the director of the last movie
 ```
-<video   autoPlay
-  muted
-  loop
-  playsInline src="/images/garfield-test-generator.mp4" alt="Test Generator" />
+
+<video autoPlay muted loop playsInline src="/images/garfield-test-generator.mp4" alt="Test Generator" />
+
 <Expandable title="garfield-test.spec.ts File">
 That is the generated test file:
 ```js
 import { test, expect } from '@playwright/test';
+
 test('Find director of the last Garfield movie', async ({ page }) => {
   // Step 1: Navigate to IMDB
   await page.goto('https://www.imdb.com/');
@@ -132,11 +204,79 @@ test('Find director of the last Garfield movie', async ({ page }) => {
 });
 ```
 </Expandable>
+</Expandable>
 
-### Getting Help
 
-If you encounter issues with the MCP integration:
 
-1. Disable and re-enable the MCP server. (Might need a few seconds to reconnect)
-2. Review your MCP prompt.
-3. Contact support at [support@anchorbrowser.io](mailto:support@anchorbrowser.io)
+## Programmatic Usage (Python SDK)
+
+You can also use the hosted MCP service programmatically in your Python applications using the MCP client library:
+
+### Installation
+
+```bash
+pip install mcp
+```
+
+### Basic Example
+
+```python
+import asyncio
+from mcp.client.streamable_http import streamablehttp_client
+from mcp import ClientSession
+
+async def list_tools():
+    async with streamablehttp_client(
+        url="https://api.anchorbrowser.io/mcp",
+        headers={"anchor-api-key": "sk-your-key"}
+    ) as (
+        read_stream,
+        write_stream,
+        _,
+    ):
+        async with ClientSession(read_stream, write_stream) as session:
+            await session.initialize()
+            tools = await session.list_tools()
+            for tool in tools.tools:
+                print(f"{tool.name}: {getattr(tool, 'description', '')}")
+
+asyncio.run(list_tools()) 
+```
+
+## CI/CD Integration
+
+The hosted MCP service works in CI/CD environments without requiring local browser installations:
+
+```yaml
+# GitHub Actions example
+name: AI Browser Testing
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run AI tests
+        env:
+          ANCHOR_API_KEY: ${{ secrets.ANCHOR_API_KEY }}
+        run: |
+          python ai_test_runner.py
+```
+
+## Getting Help
+
+If you encounter issues with the hosted MCP integration:
+
+1. **Check API Key**: Ensure your API key is valid
+2. **Restart MCP Client**: Disable and re-enable the MCP server in your client
+3. **Contact Support**: Reach out at [support@anchorbrowser.io](mailto:support@anchorbrowser.io)
+
+## Migration from Self-Hosted
+
+Moving from a self-hosted MCP server to our hosted service:
+
+1. **Update Configuration**: Change your MCP client to use `https://api.anchorbrowser.io/mcp`
+2. **Add API Key**: Include your Anchor API key in the headers
+3. **Remove Local Dependencies**: Uninstall local MCP server and dependencies
+4. **Test Integration**: Verify all your existing MCP workflows still work
