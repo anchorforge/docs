@@ -47,20 +47,24 @@
                 ]
               },
               {
-                "group": "Model Context Protocol (MCP)",
-                "icon": "stars",
+                "group": "Authentication and Identity",
+                "icon": "fingerprint",
                 "pages": [
-                  "advanced/mcp",
-                  "advanced/mcp-open-source"
+                  "essentials/authentication-and-identity",
+                  "advanced/mfa"
                 ]
               },
-              "essentials/authentication-and-identity",
-              "advanced/session-termination",
-              "advanced/proxy",
-              "advanced/dedicated-sticky-ip",
+              {
+                "group": "Proxy and IP Management",
+                "icon": "globe",
+                "pages": [
+                  "advanced/proxy",
+                  "advanced/dedicated-sticky-ip"
+                ]
+              },
+              "advanced/session-timeout",
               "essentials/recording",
               "advanced/captcha-solving",
-              "advanced/mfa",
               "advanced/browser-live-view",
               "essentials/tool-building",
               {
@@ -79,6 +83,14 @@
           {
             "group": "Integrations",
             "pages": [
+              {
+                "group": "Model Context Protocol (MCP)",
+                "icon": "stars",
+                "pages": [
+                  "advanced/mcp",
+                  "advanced/mcp-open-source"
+                ]
+              },
               "integrations/browseruse-deployment",
               "integrations/openai-cua",
               "integrations/make",

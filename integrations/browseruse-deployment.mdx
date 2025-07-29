@@ -11,23 +11,32 @@ icon: 'stars'
 
 ```python
 import requests
+import os
 
 ANCHOR_API_KEY = "YOUR_ANCHOR_API_KEY"
 
+browser_configuration = {
+    "adblock_config": {"active": True},
+    "captcha_config": {"active": False},
+    "proxy_config": {
+        "active": True,
+        "type": "anchor_mobile",
+        "country_code": "uk"
+    },
+    "headless": False
+}
+
 response = requests.post(
-    "https://api.anchorbrowser.io/v1/sessions",
+    "https://api.anchorbrowser.io/api/sessions",
     headers={
         "anchor-api-key": ANCHOR_API_KEY,
         "Content-Type": "application/json",
     },
-    json={
-      "browser": {
-        "headless": {"active": False} # Use headless false to view the browser when combining with browser-use
-      }
-    }).json()
+    json=browser_configuration
+)
 
-# Access the data object from the response
-session_data = response["data"]
+session_data = response.json()
+session_id = session_data["data"]["id"]
 ```
 
 Returns:
@@ -42,14 +51,43 @@ Returns:
 }
 ```
 </Step>
-<Step title="Point browser-use to the Anchor browser instance">
-```python
-from browser_use import BrowserConfig
+<Step title="Initialize browser-use with Anchor browser">
 
-config = BrowserConfig(
-    cdp_url=f"wss://connect.anchorbrowser.io?apiKey={ANCHOR_API_KEY}&sessionId={session_data['id']}"
-    # Use the session ID returned from the first step
+```python
+from browser_use import Agent, Controller
+from browser_use.browser import BrowserProfile, BrowserSession
+from browser_use.llm import ChatOpenAI
+
+# Configure your LLM (example with OpenAI)
+llm = ChatOpenAI(
+    model='gpt-4o',
+    api_key=os.getenv('OPENAI_API_KEY'),
 )
+
+# Create CDP connection URL
+cdp_url = f'wss://connect.anchorbrowser.io?sessionId={session_id}'
+
+# Initialize browser session with Anchor
+profile = BrowserProfile(keep_alive=True)
+browser_session = BrowserSession(
+    headless=False, 
+    cdp_url=cdp_url, 
+    browser_profile=profile
+)
+
+# Create controller and agent
+controller = Controller()
+agent = Agent(
+    task="Your task description here",
+    llm=llm,
+    enable_memory=False,
+    use_vision=False,
+    controller=controller,
+    browser_session=browser_session,
+)
+
+# Run the agent
+result = await agent.run(max_steps=40)
 ```
 </Step>
 <Step title="Optional - Live view the browser">
