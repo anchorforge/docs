@@ -53,7 +53,7 @@ components:
           default: anchor_residential
         country_code:
           type: string
-          description: Country code for residential proxy
+          description: Country code for residential proxy, see [the full list of supported countries](/advanced/proxy#supported-countries-with-their-country-codes)
           enum:
             - us
             - uk
@@ -79,7 +79,35 @@ components:
           default: anchor_mobile
         country_code:
           type: string
-          description: Country code for mobile proxy
+          description: Country code for mobile proxy, see [the full list of supported countries](/advanced/proxy#supported-countries-with-their-country-codes)
+          enum:
+            - us
+            - uk
+            - fr
+            - it
+            - jp
+            - au
+            - de
+            - fi
+            - ca
+          example: uk
+      required:
+        - type
+
+    AnchorProxyType:
+      type: object
+      title: Anchor Proxy
+      description: Configuration options for proxy usage.
+      properties:
+        type:
+          enum:
+            - anchor_residential
+            - anchor_mobile
+            - anchor_gov
+          default: anchor_residential
+        country_code:
+          type: string
+          description: Country code for proxy, see [the full list of supported countries](/advanced/proxy#supported-countries-with-their-country-codes)
           enum:
             - us
             - uk
@@ -132,8 +160,7 @@ components:
       required:
         - active
       oneOf:
-        - $ref: '#/components/schemas/AnchorResidentialProxyType'
-        - $ref: '#/components/schemas/AnchorMobileProxyType'
+        - $ref: '#/components/schemas/AnchorProxyType'
         - $ref: '#/components/schemas/CustomProxyType'
 
     # ==============================
