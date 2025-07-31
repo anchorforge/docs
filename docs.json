@@ -112,8 +112,15 @@
         "tab": "API Reference",
         "versions": [
           {
-            "version": "Latest - v1",
+            "version": "Anchor Browser SDK",
             "default": true,
+            "openapi": {
+              "source": "https://app.stainless.com/api/spec/documented/anchorbrowser/openapi.documented.yml",
+              "directory": "sdk-reference"
+            }
+          },
+          {
+            "version": "Latest - v1",
             "openapi": {
               "source": "/openapi.yaml",
               "directory": "api-reference"
