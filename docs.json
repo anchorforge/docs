@@ -20,6 +20,7 @@
               {
                 "group": "Quickstart",
                 "pages": [
+                  "quickstart/use-via-sdk",
                   "quickstart/use-via-code",
                   "quickstart/use-via-api"
                 ]
