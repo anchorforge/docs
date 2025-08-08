@@ -94,6 +94,7 @@
               },
               "integrations/browseruse-deployment",
               "integrations/openai-cua",
+              "integrations/groq",
               "integrations/make",
               "agent-frameworks/crewai",
               "agent-frameworks/langchain",
