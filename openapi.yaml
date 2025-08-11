@@ -2568,4 +2568,90 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /v1/sessions/{session_id}/agent/pause:
+    post:
+      summary: Pause Agent
+      description: Pauses the AI agent for the specified browser session.
+      security:
+        - api_key_header: []
+      tags:
+        - Agentic capabilities
+      parameters:
+        - name: session_id
+          in: path
+          required: true
+          description: The ID of the browser session
+          schema:
+            type: string
+            format: uuid
+            example: "550e8400-e29b-41d4-a716-446655440000"
+      responses:
+        '200':
+          description: Agent paused successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Session is not running
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Session not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Failed to pause agent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/sessions/{session_id}/agent/resume:
+    post:
+      summary: Resume Agent
+      description: Resumes the AI agent for the specified browser session.
+      security:
+        - api_key_header: []
+      tags:
+        - Agentic capabilities
+      parameters:
+        - name: session_id
+          in: path
+          required: true
+          description: The ID of the browser session
+          schema:
+            type: string
+            format: uuid
+            example: "550e8400-e29b-41d4-a716-446655440000"
+      responses:
+        '200':
+          description: Agent resumed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Session is not running
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Session not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Failed to resume agent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
 tags: []
