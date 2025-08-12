@@ -1,0 +1,71 @@
+---
+title: X402 Payment Integration
+description: Pay for sessions with X402 Protocol
+
+---
+
+Anchor Browser supports X402 cryptocurrency payments for browser sessions when you have insufficient credits. This allows you to pay for sessions using cryptocurrency wallets.
+
+<video autoPlay muted loop playsInline src="/images/X402.mp4" alt="X402 use in the Playground" />
+
+## How It Works
+
+1. **Attempt Session Creation**: Try to create a browser session
+2. **Credit Check**: System checks if you have sufficient credits
+3. **Payment Prompt**: If Error 402 is returned, you're prompted to connect a wallet
+4. **Automatic Payment**: Payment is processed automatically through your wallet
+5. **Session Creation**: Session is created immediately after successful payment
+
+## Using X402 Payments via API
+
+### Prerequisites
+
+1. **Install Coinbase Wallet**: Currently only Coinbase Wallet is supported
+2. **Get Funds**: Ensure your wallet has USDC on the Base mainnet network
+3. **Set Up WalletConnect**: Configure WalletConnect for wallet connection
+
+### API Usage Example
+
+When you make a session creation request without sufficient credits, the system will:
+
+1. Return a 402 (Payment Required) status
+2. Include payment details in the response
+3. Your client can automatically handle the payment using X402
+4. Retry the request with payment headers
+
+Here's a Python example using the x402 library:
+
+```python
+import os, json, requests
+from eth_account import Account
+from x402.clients.requests import x402_requests
+
+ENDPOINT = "https://api.anchorbrowser.io/v1/sessions"
+BODY = {}
+
+key = os.getenv("PRIVATE_KEY") or exit("Set PRIVATE_KEY=0x...")
+pre = requests.post(ENDPOINT, json=BODY, timeout=30)
+if pre.status_code == 200:
+    print(json.dumps(pre.json(), indent=2))
+    exit()
+
+price = int(pre.json()["accepts"][0]["maxAmountRequired"])
+
+res = x402_requests(Account.from_key(key)).post(ENDPOINT, json=BODY, timeout=60)
+print(json.dumps(res.json(), indent=2))
+```
+
+
+## Pricing
+
+- **Price per Session**: $0.50 USDC
+- **Network**: Base mainnet only
+- **Payment Method**: USDC via X402 protocol
+---
+
+## Read More
+
+- [X402 Protocol Specification](https://www.x402.org/)
+- [X402 GitHub Repository](https://github.com/coinbase/x402)
+- [X402 NPM package](https://www.npmjs.com/package/x402)
+- [X402 Python Library](https://pypi.org/project/x402/)
