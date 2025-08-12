@@ -1,243 +1,47 @@
 ---
-title: 'Langchain'
+title: 'LangChain'
 description: ''
 icon: 'bolt'
 ---
 
-AI agents can leverage browser sessions to complete tasks on the web using Langchain, a framework that provides easy integration for AI-driven workflows. The ways to use Anchor Browser in the Langchain platform are:
+AI agents can leverage browser sessions to complete tasks on the web using LangChain, a framework that provides easy integration for AI-driven workflows.
 
-- **As a Flexible Browser Tool**: Enable the Langchain agent to explore the web freely using a general-purpose browser tool.
-- **As a Specific-Flow Tool Defined in Langchain**: Create custom tools by writing Langchain code to define specific workflows tailored to your needs.
-- **As a Specific-Flow Tool Defined in Anchor Browser**: Define tools using the Anchor platform, which Langchain agents can then use through the Official Anchor Tool.
+Anchor provides [LangChain tools](https://python.langchain.com/docs/integrations/tools/anchor_browser/) that allows you to use Anchor Browser as a tool in your LangChain workflows.
+The package contains the following tools:
 
-## Quick Start - Use Anchor Browser as a Flexible Browser Tool
+- `AnchorContentTool`: Get the content of a web page in markdown format.
+- `AnchorScreenshotTool`: Take a screenshot of a web page.
+- `AnchorWebTaskTools`: Perform intelligent web tasks using AI:
+  - Simple - `SimpleAnchorWebTaskTool`
+  - Advanced - `AdvancedAnchorWebTaskTool`
 
-You can connect your Langchain agent directly to Anchor Browser, allowing it to use browser sessions for various tasks, leveraging the power of browser automation without the need for complex integration code. Below is a quick guide to setting up and using Anchor Browser as a tool for your Langchain agent.
+See Anchor Browser package for LangChain on [PyPi](https://pypi.org/project/langchain-anchorbrowser/) for more information.
 
-<Accordion title="Code example - Use Anchor Browser as a flexible browser tool">
-<CodeGroup>
+## Quickstart
 
-```python python
-from langchain.tools import Tool
-from playwright.sync_api import sync_playwright
+### Installation
 
-ANCHOR_API_KEY = "YOUR_ANCHOR_API_KEY"  # Replace with your actual API key
+Install the `langchain-anchorbrowser` package:
 
-# Register Anchor Browser as a tool in Langchain
-class AnchorBrowserTool(Tool):
-    name = "AnchorBrowser"
-    description = "Use Anchor Browser to perform web-based tasks."
-
-    def __init__(self):
-        super().__init__()
-
-    def _run(self, command):
-        with sync_playwright() as p:
-            # Connect to Anchor Browser session
-            browser = p.chromium.connect_over_cdp(
-                f"wss://connect.anchorbrowser.io?apiKey={ANCHOR_API_KEY}"
-            )
-            page = browser.new_page()
-            page.goto(command['url'])
-            
-            # Perform specific actions as needed
-            if command.get('action') == 'search':
-                page.fill(command['search_box'], command['search_text'])
-                page.click(command['search_button'])
-
-            # Extract and return data if needed
-            result = page.content()
-
-            browser.close()
-
-            return result
-
-# Use the AnchorBrowserTool in a Langchain agent
-my_agent = LangchainAgent()
-my_agent.add_tool(AnchorBrowserTool())
-
-# Use the agent to perform actions on the web
-result = my_agent.run({
-    'tool': 'AnchorBrowser',
-    'command': {
-        'url': 'https://example.com',
-        'action': 'search',
-        'search_box': 'input[name="q"]',
-        'search_text': 'Anchor Browser',
-        'search_button': 'button[type="submit"]'
-    }
-})
-
-print(result)
+```bash
+pip install langchain-anchorbrowser
 ```
 
-```jsx node.js
-import { Tool } from 'langchain';
-import { chromium } from 'playwright-core';
+### Usage
 
-const ANCHOR_API_KEY = process.env.ANCHOR_API_KEY;  // Replace with your actual API key stored in environment variables
+Import and utilize your intended tool. The full list of Anchor Browser available tools see **Tool Features** table in [Anchor Browser tool page](/docs/integrations/tools/anchor_browser)
 
-// Define a custom tool in Langchain that uses Anchor Browser
-class AnchorBrowserTool extends Tool {
-  constructor() {
-    super();
-    this.name = "AnchorBrowser";
-    this.description = "Use Anchor Browser to perform web-based tasks.";
-  }
+```python
+from langchain_anchorbrowser import AnchorContentTool
 
-  async _run(command) {
-    // Connect to Anchor Browser session
-    const browser = await chromium.connectOverCDP(
-      `wss://connect.anchorbrowser.io?apiKey=${ANCHOR_API_KEY}`
-    );
-
-    const page = await browser.newPage();
-    await page.goto(command.url);
-
-    // Perform specific actions as needed
-    if (command.action === 'search') {
-      await page.fill(command.search_box, command.search_text);
-      await page.click(command.search_button);
-    }
-
-    // Extract and return data if needed
-    const result = await page.content();
-
-    await browser.close();
-
-    return result;
-  }
-}
-
-// Use the AnchorBrowserTool in a Langchain agent
-const agent = new LangchainAgent();
-agent.addTool(new AnchorBrowserTool());
-
-// Use the agent to perform actions on the web
-const result = await agent.run({
-  tool: 'AnchorBrowser',
-  command: {
-    url: 'https://example.com',
-    action: 'search',
-    search_box: 'input[name="q"]',
-    search_text: 'Anchor Browser',
-    search_button: 'button[type="submit"]'
-  }
-});
-
-console.log(result);
+# Get Markdown Content for https://www.anchorbrowser.io
+AnchorContentTool().invoke(
+    {"url": "https://www.anchorbrowser.io", "format": "markdown"}
+)
 ```
 
-</CodeGroup>
-</Accordion>
+## Additional Resources
 
-## Use Anchor Browser as a Specific-Flow Tool Defined in Langchain
-
-Langchain can integrate closely with Anchor Browser to define tools for particular workflows. For example, if you need a customized process to interact with an authenticated application, you can create that flow as a reusable tool that Langchain agents can use for automation.
-
-Here is an example of creating a specific workflow tool using Anchor Browser that can be utilized by Langchain to automate targeted tasks.
-
-<Accordion title="Code example - Use Anchor Browser as a specific-flow tool defined in Langchain">
-<CodeGroup>
-
-```python python
-from langchain.tools import Tool
-from playwright.sync_api import sync_playwright
-
-ANCHOR_API_KEY = "YOUR_ANCHOR_API_KEY"  # Replace with your actual API key
-
-# Register Anchor Browser as a specific application tool in Langchain
-class AnchorSpecificTool(Tool):
-    name = "SpecificAnchorTool"
-    description = "Custom tool for interacting with a specific application."
-
-    def __init__(self):
-        super().__init__()
-
-    def _run(self, command):
-        with sync_playwright() as p:
-            # Connect to Anchor Browser session
-            browser = p.chromium.connect_over_cdp(
-                f"wss://connect.anchorbrowser.io?apiKey={ANCHOR_API_KEY}"
-            )
-            page = browser.new_page()
-            page.goto(command['url'])
-
-            # Perform specific actions based on command
-            if command.get('action') == 'extract':
-                result = page.text_content(command['selector'])
-                browser.close()
-                return result
-
-            browser.close()
-
-# Use the AnchorSpecificTool in a Langchain agent
-my_agent = LangchainAgent()
-my_agent.add_tool(AnchorSpecificTool())
-
-# Use the agent to perform a specific task
-result = my_agent.run({
-    'tool': 'SpecificAnchorTool',
-    'command': {
-        'url': 'https://example.com',
-        'action': 'extract',
-        'selector': '#data'
-    }
-})
-
-print(result)
-```
-
-```jsx node.js
-import { Tool } from 'langchain';
-import { chromium } from 'playwright-core';
-
-const ANCHOR_API_KEY = process.env.ANCHOR_API_KEY;  // Replace with your actual API key stored in environment variables
-
-// Define a custom specific-flow tool in Langchain that uses Anchor Browser
-class AnchorSpecificTool extends Tool {
-  constructor() {
-    super();
-    this.name = "SpecificAnchorTool";
-    this.description = "Custom tool for interacting with a specific application.";
-  }
-
-  async _run(command) {
-    // Connect to Anchor Browser session
-    const browser = await chromium.connectOverCDP(
-      `wss://connect.anchorbrowser.io?apiKey=${ANCHOR_API_KEY}`
-    );
-
-    const page = await browser.newPage();
-    await page.goto(command.url);
-
-    // Perform specific actions based on the command
-    if (command.action === 'extract') {
-      const result = await page.textContent(command.selector);
-      await browser.close();
-      return result;
-    }
-
-    await browser.close();
-  }
-}
-
-// Use the AnchorSpecificTool in a Langchain agent
-const agent = new LangchainAgent();
-agent.addTool(new AnchorSpecificTool());
-
-// Use the tool through the Langchain agent
-const result = await agent.run({
-  tool: 'SpecificAnchorTool',
-  command: {
-    url: 'https://example.com',
-    action: 'extract',
-    selector: '#data'
-  }
-});
-
-console.log(result);
-```
-
-</CodeGroup>
-</Accordion>
+ - [PyPi](https://pypi.org/project/langchain-anchorbrowser)
+ - [Github](https://github.com/anchorbrowser/langchain-anchorbrowser)
+ - [Anchor Browser Docs on LangChain](https://python.langchain.com/docs/integrations/tools/anchor_browser/)
