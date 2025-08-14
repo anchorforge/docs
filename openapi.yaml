@@ -726,6 +726,11 @@ components:
               description: Number of steps to break the scroll into for smoother scrolling
               default: 1
               example: 10
+            useOs:
+              type: boolean
+              description: Whether to use the OS scroll or the Playwright scroll
+              default: true
+              example: false
 
     TypeTextRequestSchema:
       type: object
