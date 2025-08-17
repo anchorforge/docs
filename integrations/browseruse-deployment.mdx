@@ -7,65 +7,32 @@ icon: 'stars'
 <Note>This guide is dedicated to running your own browser-use agent while connecting to an Anchor browser. To use the embedded browser use capability, refer to [AI task completion](/agentic-browser-control/ai-task-completion)</Note>
 
 <Steps>
-<Step title="Step one - Create an Anchor browser session">
-
-```python
-import requests
+<Step title="Step one - Create an Anchor Browser session">
+```python python
+from anchorbrowser import Anchorbrowser
 import os
 
-ANCHOR_API_KEY = "YOUR_ANCHOR_API_KEY"
-
-browser_configuration = {
-    "adblock_config": {"active": True},
-    "captcha_config": {"active": False},
-    "proxy_config": {
-        "active": True,
-        "type": "anchor_mobile",
-        "country_code": "uk"
-    },
-    "headless": False
-}
-
-response = requests.post(
-    "https://api.anchorbrowser.io/api/sessions",
-    headers={
-        "anchor-api-key": ANCHOR_API_KEY,
-        "Content-Type": "application/json",
-    },
-    json=browser_configuration
+anchor_client = Anchorbrowser(
+    api_key=os.getenv("ANCHOR_API_KEY")
 )
 
-session_data = response.json()
-session_id = session_data["data"]["id"]
-```
-
-Returns:
-```json
-{
-  "data": {
-    "id": "<string>",
-    "cdp_url": "<string>",
-    "live_view_url": "https://live.anchorbrowser.io?sessionId=<session_id>"
-    // Use the live view URL to view the browser session in real-time
-  }
-}
+session = anchor_client.sessions.create()
+cdp_url = session.cdp_url
+print("Session's CDP_URL for later use\n", cdp_url)
 ```
 </Step>
 <Step title="Initialize browser-use with Anchor browser">
-
-```python
+```python python
 from browser_use import Agent, Controller
 from browser_use.browser import BrowserProfile, BrowserSession
 from browser_use.llm import ChatOpenAI
+import os
 
 # Configure your LLM (example with OpenAI)
 llm = ChatOpenAI(
     model='gpt-4o',
     api_key=os.getenv('OPENAI_API_KEY'),
 )
-
-# Create CDP connection URL
-cdp_url = f'wss://connect.anchorbrowser.io?sessionId={session_id}'
 
 # Initialize browser session with Anchor
 profile = BrowserProfile(keep_alive=True)
@@ -93,7 +60,14 @@ result = await agent.run(max_steps=40)
 <Step title="Optional - Live view the browser">
 Use the `live_view_url` returned on the first step to view the browser session in real-time, or to embed it as a UI component
 ```html
-<iframe src="https://live.anchorbrowser.io?sessionId=<session_id>" sandbox="allow-same-origin allow-scripts" allow="clipboard-read; clipboard-write" style="border: 0px; display: block; width: 100%; height: 100%; position: absolute; top: 0px; left: 0px;"></iframe>
+<!-- Make sure to replace <session_id> with the 
+    actual session ID from the first step -->
+<iframe src="https://live.anchorbrowser.io?sessionId=<session_id>" 
+    sandbox="allow-same-origin allow-scripts" 
+    allow="clipboard-read; clipboard-write" 
+    style="border: 0px; display: block; width: 100%; height: 100%;
+    position: absolute; top: 0px; left: 0px;">
+</iframe>
 ```
 </Step>
 </Steps>
