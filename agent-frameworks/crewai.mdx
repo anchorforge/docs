@@ -17,94 +17,130 @@ You can connect your CrewAI agent directly to Anchor Browser, allowing it to use
 <Accordion title="Code example - Use Anchor Browser as a flexible browser tool"> 
 <CodeGroup>
 ```python python
-import crewai
-from playwright.sync_api import sync_playwright
+import os
+from anchorbrowser import Anchorbrowser
+from crewai import Agent, Task, Crew
 
-ANCHOR_API_KEY = "YOUR_ANCHOR_API_KEY"  # Replace with your actual API key
+ANCHOR_API_KEY = os.getenv("ANCHOR_API_KEY")
 
-# Register Anchor Browser as a tool in CrewAI
-class AnchorBrowserTool(crewai.Tool):
-    name = "AnchorBrowser"
-    description = "Use Anchor Browser to perform web-based tasks."
-
+# Create an Anchor Browser tool for CrewAI
+class AnchorBrowserTool:
     def __init__(self):
-        super().__init__()
-
-    def run(self, command):
-        with sync_playwright() as p:
-            browser = p.chromium.connect_over_cdp(
-                f"wss://connect.anchorbrowser.io?apiKey={ANCHOR_API_KEY}"
+        self.anchor_client = Anchorbrowser(api_key=ANCHOR_API_KEY)
+    
+    def browse_and_extract(self, url, task_description):
+        # Create a browser session
+        session = self.anchor_client.sessions.create(
+            session={
+                "max_duration": 30,
+                "idle_timeout": 10
+            }
+        )
+        
+        try:
+            # Use the agent to perform the task
+            result = self.anchor_client.agent.task(
+                task_description,
+                task_options={
+                    "url": url,
+                    "session_id": session.id
+                }
             )
-            page = browser.new_page()
-            page.goto(command['url'])
-            
-            # Perform specific actions as needed
-            if command.get('action') == 'search':
-                page.fill(command['search_box'], command['search_text'])
-                page.click(command['search_button'])
-
-            # Extract and return data if needed
-            result = page.content()
-
-            browser.close()
-
             return result
+        finally:
+            # Clean up
+            self.anchor_client.sessions.terminate(session.id)
 
-# Add AnchorBrowserTool to CrewAI agent
-my_agent = crewai.Agent(name="Web Agent")
-my_agent.add_tool(AnchorBrowserTool())
+# Initialize the tool
+browser_tool = AnchorBrowserTool()
 
-# Use the agent to perform actions on the web
-result = my_agent.act({
-    'tool': 'AnchorBrowser',
-    'command': {
-        'url': 'https://example.com',
-        'action': 'search',
-        'search_box': 'input[name="q"]',
-        'search_text': 'Anchor Browser',
-        'search_button': 'button[type="submit"]'
-    }
-})
+# Create a CrewAI agent that uses Anchor Browser
+researcher = Agent(
+    role='Web Researcher',
+    goal='Research and extract information from websites',
+    backstory='Expert at gathering information from web sources',
+    tools=[browser_tool.browse_and_extract],
+    verbose=True
+)
 
+# Create a task
+research_task = Task(
+    description='Go to news.ycombinator.com and extract the title of the first story',
+    agent=researcher
+)
+
+# Create and run the crew
+crew = Crew(
+    agents=[researcher],
+    tasks=[research_task],
+    verbose=True
+)
+
+result = crew.kickoff()
 print(result)
 ```
-```jsx node.js
-import crewai from 'crewai';
-import { chromium } from 'playwright-core';
 
-const ANCHOR_API_KEY = process.env.ANCHOR_API_KEY;  // Replace with your actual API key stored in environment variables
+```javascript node.js
+const { AnchorClient } = require("anchorbrowser");
+const { Agent, Task, Crew } = require("crewai");
 
-// Define a custom tool in CrewAI that uses Anchor Browser
 class AnchorBrowserTool {
-  name = "AnchorBrowser";
-  description = "Use Anchor Browser to perform web-based tasks.";
-
-  async run(command) {
-    // Connect to Anchor Browser session
-    const browser = await chromium.connectOverCDP(
-      `wss://connect.anchorbrowser.io?apiKey=${ANCHOR_API_KEY}`
-    );
-
-    const page = await browser.newPage();
-    await page.goto(command.url);
-
-    // Perform specific actions as needed
-    if (command.action === 'search') {
-      await page.fill(command.search_box, command.search_text);
-      await page.click(command.search_button);
+    constructor() {
+        this.anchorClient = new AnchorClient({
+            apiKey: process.env.ANCHOR_API_KEY,
+        });
     }
-
-    // Extract and return data if needed
-    const result = await page.content();
-
-    await browser.close();
-
-    return result;
-  }
+    
+    async browseAndExtract(url, taskDescription) {
+        // Create a browser session
+        const session = await this.anchorClient.sessions.create({
+            session: {
+                max_duration: 30,
+                idle_timeout: 10
+            }
+        });
+        
+        try {
+            // Use the agent to perform the task
+            const result = await this.anchorClient.agent.task(
+                taskDescription,
+                { sessionId: session.id }
+            );
+            return result;
+        } finally {
+            // Clean up
+            await this.anchorClient.sessions.terminate(session.id);
+        }
+    }
 }
 
-// Create a CrewAI agent a
+// Initialize the tool
+const browserTool = new AnchorBrowserTool();
 
+// Create a CrewAI agent that uses Anchor Browser
+const researcher = new Agent({
+    role: 'Web Researcher',
+    goal: 'Research and extract information from websites',
+    backstory: 'Expert at gathering information from web sources',
+    tools: [browserTool.browseAndExtract.bind(browserTool)],
+    verbose: true
+});
+
+// Create a task
+const researchTask = new Task({
+    description: 'Go to news.ycombinator.com and extract the title of the first story',
+    agent: researcher
+});
+
+// Create and run the crew
+const crew = new Crew({
+    agents: [researcher],
+    tasks: [researchTask],
+    verbose: true
+});
+
+const result = await crew.kickoff();
+console.log(result);
 ```
 </CodeGroup>
 </Accordion> 
@@ -132,12 +168,14 @@ class AnchorSpecificTool(crewai.Tool):
     def __init__(self):
         super().__init__()
 
-    def run(self, command):
+        anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
         with sync_playwright() as p:
+            # Create a browser session
+            session = anchor_client.sessions.create()
+            cdp_url = session.data.cdp_url
+        
             # Connect to Anchor Browser session
-            browser = p.chromium.connect_over_cdp(
-                f"wss://connect.anchorbrowser.io?apiKey={ANCHOR_API_KEY}"
-            )
+            browser = p.chromium.connect_over_cdp(cdp_url)
             page = browser.new_page()
             page.goto(command['url'])
 
@@ -159,17 +197,16 @@ result = my_agent.act({
     'command': {
         'url': 'https://example.com',
         'action': 'extract',
-        'selector': '#data'
+        'selector': 'body'
     }
 })
 
 print(result)
 ```
 ```jsx node.js
-import crewai from 'crewai';
-import { chromium } from 'playwright-core';
-
-const ANCHOR_API_KEY = process.env.ANCHOR_API_KEY;  // Replace with your actual API key stored in environment variables
+const { chromium } = require('playwright-core');
+const AnchorClient = require('anchorbrowser');
+const crewai = require('crewai');
 
 // Define a custom specific-flow tool in CrewAI that uses Anchor Browser
 class AnchorSpecificTool {
@@ -177,10 +214,16 @@ class AnchorSpecificTool {
   description = "Custom tool for interacting with a specific application.";
 
   async run(command) {
+    const anchorClient = new AnchorClient({
+        apiKey: process.env.ANCHOR_API_KEY,
+    });
+
+    // Create a browser session
+    const session = await anchorClient.sessions.create();
+    const cdp_url = session.data.cdp_url;
+
     // Connect to Anchor Browser session
-    const browser = await chromium.connectOverCDP(
-      `wss://connect.anchorbrowser.io?apiKey=${ANCHOR_API_KEY}`
-    );
+    const browser = await chromium.connectOverCDP(cdp_url);
 
     const page = await browser.newPage();
     await page.goto(command.url);
@@ -207,7 +250,7 @@ const result = await agent.act({
   command: {
     url: 'https://example.com',
     action: 'extract',
-    selector: '#data'
+    selector: 'body'
   }
 });
 
