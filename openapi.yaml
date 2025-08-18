@@ -89,7 +89,9 @@ components:
       type: object
       properties:
         type:
-          const: custom
+          type: string
+          enum: [custom]
+          default: custom
         server:
           type: string
           description: Proxy server address
