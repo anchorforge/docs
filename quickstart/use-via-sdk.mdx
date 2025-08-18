@@ -34,7 +34,7 @@ Set up the Anchor Browser client with your API key:
 <CodeGroup>
 
 ```javascript node.js
-import { AnchorClient } from "anchorbrowser";
+const AnchorClient = require("anchorbrowser");
 
 const anchorClient = new AnchorClient({
   apiKey: process.env.ANCHOR_API_KEY,
@@ -43,9 +43,9 @@ const anchorClient = new AnchorClient({
 
 ```python python
 import os
-from anchorbrowser import AnchorClient
+from anchorbrowser import Anchorbrowser
 
-anchor_client = AnchorClient(
+anchor_client = Anchorbrowser(
     api_key=os.getenv("ANCHOR_API_KEY")
 )
 ```
@@ -60,6 +60,7 @@ Use AI agents to automate browser tasks with natural language commands:
 <CodeGroup>
 
 ```javascript node.js
+(async () => {
 // Simple navigation task
 const result = await anchorClient.agent.task(
   "go to news.ycombinator.com and get the title of the first story"
@@ -76,8 +77,9 @@ const navigationResult = await anchorClient.agent.task(
         console.log("Agent step:", executionStep);
       },
     },
-  }
-);
+    }
+  );
+})();
 ```
 
 ```python python
@@ -112,31 +114,33 @@ Extract structured data from webpages using schemas:
 ```javascript node.js
 import { z } from "zod";
 
-// Define your data schema
-const extractionSchema = z.object({
-  title: z.string(),
-  description: z.string(),
-  price: z.string().optional(),
-});
+(async () => {
 
-// Extract structured data from product page
-const structuredResult = await anchorClient.agent.task(
-  "Extract the product title, description, and price from this Amazon product page",
-  {
-    taskOptions: {
-      outputSchema: z.toJSONSchema(extractionSchema),
-      url: "https://www.amazon.com/dp/B0D7D9N7X3",
-    },
+  // Define your data schema
+  const extractionSchema = z.object({
+    title: z.string(),
+    description: z.string(),
+    price: z.string().optional(),
+  });
+  
+  // Extract structured data from product page
+  const structuredResult = await anchorClient.agent.task(
+    "Extract the product title, description, and price from this Amazon product page",
+    {
+      taskOptions: {
+        outputSchema: z.toJSONSchema(extractionSchema),
+        url: "https://www.amazon.com/dp/B0D7D9N7X3",
+      },
+    }
+  );
+  // Validate the result
+  const validatedData = extractionSchema.safeParse(structuredResult);
+  if (validatedData.success) {
+    console.log("Product title:", validatedData.data.title);
+    console.log("Description:", validatedData.data.description);
+    console.log("Price:", validatedData.data.price);
   }
-);
-
-// Validate the result
-const validatedData = extractionSchema.safeParse(structuredResult.result);
-if (validatedData.success) {
-  console.log("Product title:", validatedData.data.title);
-  console.log("Description:", validatedData.data.description);
-  console.log("Price:", validatedData.data.price);
-}
+})();
 ```
 
 ```python python
@@ -296,7 +300,7 @@ Configure browser sessions with proxies, timeouts, and other options:
 // Create session with advanced configuration
 const sessionConfig = {
   session: {
-    recording: false, // Disable session recording
+    recording: {active: false}, // Disable session recording
     proxy: {
       active: true,
       type: "anchor_residential",
@@ -323,7 +327,7 @@ console.log("IP Info:", ipInfo);
 # Create session with advanced configuration
 session_config = {
     "session": {
-        "recording": False,  # Disable session recording
+        "recording": {"active": False},  # Disable session recording
         "proxy": {
             "active": True,
             "type": "anchor_residential",
