@@ -1262,6 +1262,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Too many requests, please try again later.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /v1/sessions/{session_id}/downloads:
     get:
       summary: List Session Downloads
@@ -1292,6 +1298,12 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: The browser session or its downloads metadata could not be found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Too many requests, please try again later.
           content:
             application/json:
               schema:
