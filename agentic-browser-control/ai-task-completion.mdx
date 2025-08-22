@@ -96,8 +96,7 @@ from playwright.sync_api import sync_playwright
 with sync_playwright() as p:
    browser = p.chromium.connect_over_cdp("wss://connect.anchorbrowser.io?apiKey=ANCHOR-API-KEY")
    context = browser.contexts[0]
-   target_url = "chrome-extension://bppehibnhionalpjigdjdilknbljaeai/background.js"
-   ai = next((sw for sw in context.service_workers if sw.url == target_url), None)
+   ai = next((sw for sw in context.service_workers if sw.url.startswith("chrome-extension://bppehibnhionalpjigdjdilknbljaeai")), None)
             
    # Use the embedded 'ai' object
    result = ai.evaluate('Find the last game played by Milwaukee in the NBA and return the result')
@@ -161,7 +160,7 @@ class OutputSchema(BaseModel):
 with sync_playwright() as p:
     browser = p.chromium.connect_over_cdp("wss://connect.anchorbrowser.io?apiKey=ANCHOR-API-KEY")
     context = browser.contexts[0]
-    ai = next((sw for sw in context.service_workers if sw.url == "chrome-extension://bppehibnhionalpjigdjdilknbljaeai/background.js"), None)
+    ai = next((sw for sw in context.service_workers if sw.url.startswith("chrome-extension://bppehibnhionalpjigdjdilknbljaeai")), None)
     page = context.pages[0]
 
     task_payload = {
