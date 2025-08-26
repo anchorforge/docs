@@ -283,6 +283,10 @@ components:
               type: boolean
               description: Indicates whether the browser session profile data should be saved when the browser session ends. Defaults to `false`.
               example: true
+            reset_preferences:
+              type: boolean
+              description: When enabled, resets the profile's preferences on session creation. Defaults to `false`.
+              example: false
         adblock:
           type: object
           description: Configuration for ad-blocking.
