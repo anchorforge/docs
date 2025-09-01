@@ -1199,6 +1199,79 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
   /v1/sessions/{session_id}:
+    get:
+      summary: Get Browser Session
+      description: Retrieves detailed information about a specific browser session.
+      tags:
+        - Browser Sessions
+      parameters:
+        - in: path
+          name: session_id
+          required: true
+          description: The ID of the session to retrieve.
+          schema:
+            type: string
+      security:
+        - api_key_header: []
+      responses:
+        "200":
+          description: Session retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  session_id:
+                    type: string
+                    description: The unique identifier of the session.
+                  team_id:
+                    type: string
+                    description: The team ID associated with the session.
+                  duration:
+                    type: integer
+                    description: The duration of the session in seconds.
+                  status:
+                    type: string
+                    description: The current status of the session.
+                  credits_used:
+                    type: number
+                    description: The number of credits consumed by the session.
+                  configuration:
+                    type: object
+                    description: The configuration settings for the session.
+                  playground:
+                    type: boolean
+                    description: Whether this is a playground session.
+                  proxy_bytes:
+                    type: integer
+                    description: The number of bytes transferred through the proxy.
+                  tokens:
+                    type: object
+                    description: Token usage information.
+                  steps:
+                    type: array
+                    items:
+                      type: object
+                    description: Array of steps executed in the session.
+                  tags:
+                    type: object
+                    description: Tags associated with the session.
+                  created_at:
+                    type: string
+                    format: date-time
+                    description: The timestamp when the session was created.
+        "404":
+          description: Session not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Failed to fetch session.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
     delete:
       summary: End Browser Session
       description: Deletes the browser session associated with the provided browser session ID. Requires a valid API key for authentication.
