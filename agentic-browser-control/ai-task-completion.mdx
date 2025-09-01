@@ -73,10 +73,17 @@ This capability allows to use the browser without any coding.
 
 <CodeGroup>
 
-```tsx node.js
+```javascript node.js
 import { chromium } from "playwright-core";
+import { Anchorbrowser } from "anchorbrowser";
 
-const browserSession = await chromium.connectOverCDP(`wss://connect.anchorbrowser.io?apiKey=ANCHOR-API-KEY`);
+(async () => {
+const anchor_client = new Anchorbrowser();
+const session = await anchor_client.sessions.create({
+    apiKey: process.env.ANCHORBROWSER_API_KEY,
+});
+const cdpUrl = session?.data?.cdp_url;
+const browser = await chromium.connectOverCDP(cdpUrl);
 const context = browser.contexts()[0];
 const ai = context.serviceWorkers()[0];
 const page = context.pages()[0];
@@ -87,21 +94,26 @@ await page.goto("http://docs.anchorbrowser.io/", {waitUntil:'domcontentloaded'})
 // Use the embedded 'ai' object
 const result = await ai.evaluate('Find the last game played by Milwaukee in the NBA and return the result')
 console.log(result);
+})();
 
 ```
 ```python python
-
 from playwright.sync_api import sync_playwright
+from anchorbrowser import Anchorbrowser
+import os
+
+anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
+session = anchor_client.sessions.create()
+cdp_url = session.data.cdp_url
 
 with sync_playwright() as p:
-   browser = p.chromium.connect_over_cdp("wss://connect.anchorbrowser.io?apiKey=ANCHOR-API-KEY")
+   browser = p.chromium.connect_over_cdp(cdp_url)
    context = browser.contexts[0]
    ai = next((sw for sw in context.service_workers if sw.url.startswith("chrome-extension://bppehibnhionalpjigdjdilknbljaeai")), None)
             
    # Use the embedded 'ai' object
    result = ai.evaluate('Find the last game played by Milwaukee in the NBA and return the result')
    print(result)
-
 ```
 </CodeGroup>
 
@@ -112,12 +124,18 @@ The following demonstrates using **Zod** and **Pydantic** to utilize the structu
 
 <CodeGroup>
 
-```tsx node.js
+```javascript node.js
 import { chromium } from 'playwright';
 import { z } from "zod";
-import { zodToJsonSchema } from "zod-to-json-schema";
+import { Anchorbrowser } from "anchorbrowser";
 
-const browser = await chromium.connectOverCDP("wss://connect.anchorbrowser.io?apiKey=ANCHOR-API-KEY");
+(async () => {
+const anchor_client = new Anchorbrowser();
+const session = await anchor_client.sessions.create({
+    apiKey: process.env.ANCHORBROWSER_API_KEY,
+});
+const cdpUrl = session?.data?.cdp_url;
+const browser = await chromium.connectOverCDP(cdpUrl);
 const context = browser.contexts()[0];
 const ai = context.serviceWorkers()[0];
 const page = context.pages()[0];
@@ -132,7 +150,7 @@ const outputSchema = z.object({
   )
 });
 
-const jsonSchema = zodToJsonSchema(outputSchema);
+const jsonSchema = z.toJSONSchema(outputSchema);
 const taskPayload = {
   output_schema: jsonSchema,
   prompt: 'Collect the node names and their CPU average %',
@@ -142,12 +160,17 @@ await page.goto("https://play.grafana.org/a/grafana-k8s-app/navigation/nodes?fro
 
 const result = await ai.evaluate(JSON.stringify(taskPayload));
 console.info(result);
+
+browser.close();
+})();
 ```
 ```python python
 from playwright.sync_api import sync_playwright
+from anchorbrowser import Anchorbrowser
 from pydantic import BaseModel
 from typing import List
 import json
+import os
 
 class NodeCpuUsage(BaseModel):
     node: str
@@ -157,15 +180,19 @@ class NodeCpuUsage(BaseModel):
 class OutputSchema(BaseModel):
     nodes_cpu_usage: List[NodeCpuUsage]
 
+anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
+session = anchor_client.sessions.create()
+cdp_url = session.data.cdp_url
+
 with sync_playwright() as p:
-    browser = p.chromium.connect_over_cdp("wss://connect.anchorbrowser.io?apiKey=ANCHOR-API-KEY")
+    browser = p.chromium.connect_over_cdp(cdp_url)
     context = browser.contexts[0]
     ai = next((sw for sw in context.service_workers if sw.url.startswith("chrome-extension://bppehibnhionalpjigdjdilknbljaeai")), None)
     page = context.pages[0]
 
     task_payload = {
         'prompt': 'Collect the node names and their CPU average %',
-        'output_schema': json.loads(NodeCpuUsage.schema_json())
+        'output_schema': OutputSchema.model_json_schema()
     }
 
     page.goto("https://play.grafana.org/a/grafana-k8s-app/navigation/nodes?from=now-1h&to=now&refresh=1m")
