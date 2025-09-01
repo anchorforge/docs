@@ -61,19 +61,24 @@ components:
           type: string
           description: |
             **On change make sure to update the country_code.**
+          default: anchor_proxy
           oneOf:
-            - enum: [anchor_residential, anchor_mobile, anchor_gov]
+            - enum: [anchor_proxy, anchor_residential, anchor_mobile, anchor_gov]
               title: anchor_residential
               description: Create a session with a residential proxy to access websites as if you're browsing from a computer in that country.
-            - enum: [anchor_residential, anchor_mobile, anchor_gov]
+            - enum: [anchor_proxy, anchor_residential, anchor_mobile, anchor_gov]
               description: Create a session with a mobile proxy to access websites as if you're browsing from a mobile device in that country.
               title: anchor_mobile 
-            - enum: [anchor_residential, anchor_mobile, anchor_gov]
+            - enum: [anchor_proxy, anchor_residential, anchor_mobile, anchor_gov]
               description: Create your session with a residential proxy to access websites as if you're browsing from a computer in that country. This option reduces the chance of being blocked by governmental websites.
               title: anchor_gov
+            - enum: [anchor_proxy, anchor_residential, anchor_mobile, anchor_gov]
+              description: Create a session with a proxy to access websites as if you're browsing from a computer in that country.
+              title: anchor_proxy
           
         country_code:
           oneOf:
+            - $ref: '#/components/schemas/AnchorProxyCountryCode'
             - $ref: '#/components/schemas/ResidentialCountryCode'
             - $ref: '#/components/schemas/MobileCountryCode'
             - $ref: '#/components/schemas/GovCountryCode'
@@ -81,6 +86,18 @@ components:
             Supported country codes ISO 2 lowercase
             
             **On change make sure to update the Proxy type.**
+        region:
+          type: string
+          description: |
+            Region code for more specific geographic targeting.
+            The city parameter can only be used when region is also provided.
+            Example: "ca" for California
+        city:
+          type: string
+          description: |
+            City name for precise geographic targeting. Supported for anchor_proxy only.
+            Can only be used when region is also provided.
+            Example: "San Francisco", "los-angeles", "london"
       required: [active]
 
 
@@ -121,6 +138,12 @@ components:
       type: string
       title: anchor_gov
       enum: [af, al, dz, ad, ao, as, ag, ar, am, aw, au, at, az, bs, bh, bb, by, be, bz, bj, bm, bo, ba, br, bg, bf, cm, ca, cv, td, cl, co, cg, cr, ci, hr, cu, cy, cz, dk, dm, do, ec, eg, sv, ee, et, fo, fi, fr, gf, pf, ga, gm, ge, de, gh, gi, gr, gd, gp, gt, gg, gn, gw, gy, ht, hn, hu, is, in, ir, iq, ie, il, it, jm, jp, jo, kz, kw, kg, lv, lb, ly, li, lt, lu, mk, ml, mt, mq, mr, mx, md, mc, me, ma, nl, nz, ni, ng, no, pk, pa, py, pe, ph, pl, pt, pr, qa, ro, lc, sm, sa, sn, rs, sc, sl, sk, si, so, za, kr, es, sr, se, ch, sy, st, tw, tj, tg, tt, tn, tr, tc, ua, ae, us, uy, uz, ve, ye]
+
+    AnchorProxyCountryCode:
+      type: string
+      title: anchor_proxy
+      enum: [af, al, dz, ad, ao, as, ag, ar, am, aw, au, at, az, bs, bh, bb, by, be, bz, bj, bm, bo, ba, br, bg, bf, cm, ca, cv, td, cl, co, cg, cr, ci, hr, cu, cy, cz, dk, dm, do, ec, eg, sv, ee, et, fo, fi, fr, gf, pf, ga, gm, ge, de, gh, gi, gr, gd, gp, gt, gg, gn, gw, gy, ht, hn, hu, is, in, ir, iq, ie, il, it, jm, jp, jo, kz, kw, kg, lv, lb, ly, li, lt, lu, mk, ml, mt, mq, mr, mx, md, mc, me, ma, nl, nz, ni, ng, no, pk, pa, py, pe, ph, pl, pt, pr, qa, ro, lc, sm, sa, sn, rs, sc, sl, sk, si, so, za, kr, es, sr, se, ch, sy, st, tw, tj, tg, tt, tn, tr, tc, ua, ae, us, uy, uz, ve, ye]
+
     # ==============================
     # PROFILE SCHEMAS
     # ==============================
