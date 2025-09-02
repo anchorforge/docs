@@ -39,32 +39,30 @@ Enable web bot auth by setting the `web_bot_auth.active` flag to `true` in your 
 
 <CodeGroup>
 ```python python
-from anchorbrowser import AnchorBrowser
+from anchorbrowser import Anchorbrowser
+import os
 
 # Initialize the client
-client = AnchorBrowser(api_key="your-api-key")
+client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
 
 # Session configuration with web bot auth enabled
 config = {
-  "browser": {
     "web_bot_auth": {
       "active": True
     }
-  }
 }
 
 # Create session with web bot auth
-session = client.sessions.create(config)
-
-print(f"Session created: {session.id}")
-print(f"CDP URL: {session.cdp_url}")
-print(f"Live view URL: {session.live_view_url}")
+session = client.sessions.create(browser=config)
+print(f"Session created: {session.data.id}")
+print(f"CDP URL: {session.data.cdp_url}")
+print(f"Live view URL: {session.data.live_view_url}")
 ```
 ```javascript node.js
-import { AnchorBrowser } from 'anchorbrowser';
+import  AnchorBrowser from 'anchorbrowser';
 
 // Initialize the client
-const client = new AnchorBrowser({ apiKey: 'your-api-key' });
+const client = new AnchorBrowser({ apiKey: process.env.ANCHOR_API_KEY });
 
 // Session configuration with web bot auth enabled
 const config = {
