@@ -4,241 +4,95 @@ description: ''
 icon: 'map'
 ---
 
-Anchor provides 4 types of proxy configurations:
-- [Anchor Residential Proxy](/advanced/proxy#use-anchor-residential-proxy) - anchor_residential
-- [Anchor Mobile Proxy](/advanced/proxy#use-anchor-mobile-proxy) - anchor_mobile
-- [Anchor Gov Proxy](/advanced/proxy#use-anchor-gov-proxy) - anchor_gov
-- [Custom Proxy](/advanced/proxy#use-a-custom-proxy) - custom
+Anchor provides proxy configurations to help you access websites from different geographic locations. You can use custom proxies or leverage Anchor's built-in proxy infrastructure for localization.
 
-To experiment with different proxy types, visit our [Interactive API Reference](/api-reference/browser-sessions/start-browser-session)
+#### Quick Start Example
 
-### Use Anchor Residential Proxy
-Create your session with a residential proxy to access websites as if you're browsing from a computer in that country.
+Here's a simple example of how to use Anchor's built-in proxy:
 
 <CodeGroup>
+
+```javascript node.js
+const session = await axios.post('https://api.anchorbrowser.io/v1/sessions', {
+  session: {
+    proxy: {
+      active: true,
+      country_code: 'us'
+    }
+  }
+}, {
+  headers: {
+    'anchor-api-key': 'your-api-key',
+    'Content-Type': 'application/json'
+  }
+});
+```
+
+```python python
+import requests
+
+response = requests.post('https://api.anchorbrowser.io/v1/sessions', 
+  json={
+    'session': {
+      'proxy': {
+        'active': True,
+        'country_code': 'us'
+      }
+    }
+  },
+  headers={
+    'anchor-api-key': 'your-api-key',
+    'Content-Type': 'application/json'
+  }
+)
+
+session = response.json()
+```
 
 ```bash curl
 curl --request POST \
   --url https://api.anchorbrowser.io/v1/sessions \
   --header 'Content-Type: application/json' \
-  --header 'anchor-api-key: <api-key>' \
+  --header 'anchor-api-key: your-api-key' \
   --data '{
   "session": {
     "proxy": {
-      "type": "anchor_residential",
-      "country_code": "us",
-      "active": true
+      "active": true,
+      "country_code": "us"
     }
   }
 }'
 ```
 
-```javascript node.js
-const axios = require('axios');
-
-(async () => {
-  const response = await axios.post('https://api.anchorbrowser.io/v1/sessions', {
-    session: {
-      proxy: {
-        type: 'anchor_residential',
-        country_code: 'us',
-        active: true
-      }
-    }
-  }, {
-    headers: {
-      'anchor-api-key': process.env.ANCHOR_API_KEY,
-      'Content-Type': 'application/json'
-    }
-  });
-  
-  console.log('Session created:', response.data);
-})().catch(console.error);
-```
-
-```python python
-import os
-import requests
-import json
-
-ANCHOR_API_KEY = os.getenv('ANCHOR_API_KEY')
-
-response = requests.post(
-    'https://api.anchorbrowser.io/v1/sessions',
-    json={
-        'session': {
-            'proxy': {
-                'type': 'anchor_residential',
-                'country_code': 'us',
-                'active': True
-            }
-        }
-    },
-    headers={
-        'anchor-api-key': ANCHOR_API_KEY,
-        'Content-Type': 'application/json'
-    }
-)
-
-response.raise_for_status()
-print('Session created:')
-print(json.dumps(response.json()['data'], indent=2))
-```
-
 </CodeGroup>
 
-### Use Anchor Mobile Proxy
-Create your session with a mobile proxy to access websites as if you're browsing from a mobile device in that country.
+This creates a browser session using Anchor's US proxy. You can change `country_code` to any supported country (e.g., 'gb', 'de', 'jp').
 
-<CodeGroup>
+To experiment with different proxy configurations, visit our [Interactive API Reference](/api-reference/browser-sessions/start-browser-session)
 
-```bash curl
-curl --request POST \
-  --url https://api.anchorbrowser.io/v1/sessions \
-  --header 'Content-Type: application/json' \
-  --header 'anchor-api-key: <api-key>' \
-  --data '{
-  "session": {
-    "proxy": {
-      "type": "anchor_mobile",
-      "country_code": "us",
-      "active": true
-    }
-  }
-}'
-```
+## Custom Proxy
 
-```javascript node.js
-const axios = require('axios');
+Anchor Browser allows you to use your own proxy servers, giving you complete control over your proxy infrastructure. This is particularly useful when you have existing proxy solutions or need to comply with specific network policies.
 
-(async () => {
-  const response = await axios.post('https://api.anchorbrowser.io/v1/sessions', {
-    session: {
-      proxy: {
-        type: 'anchor_mobile',
-        country_code: 'us',
-        active: true
-      }
-    }
-  }, {
-    headers: {
-      'anchor-api-key': process.env.ANCHOR_API_KEY,
-      'Content-Type': 'application/json'
-    }
-  });
-  
-  console.log('Session created:', response.data);
-})().catch(console.error);
-```
+### Custom Proxy Configuration
 
-```python python
-import os
-import requests
-import json
+To use a custom proxy, you need to provide the following information:
 
-ANCHOR_API_KEY = os.getenv('ANCHOR_API_KEY')
+- **`type`**: Set to `"custom"` to indicate you're using your own proxy
+- **`server`**: The hostname or IP address of your proxy server
+- **`port`**: The port number your proxy server listens on (optional, defaults to 80 for HTTP, 443 for HTTPS)
+- **`username`**: Your proxy authentication username (if required)
+- **`password`**: Your proxy authentication password (if required)
+- **`active`**: Set to `true` to enable the proxy
 
-response = requests.post(
-    'https://api.anchorbrowser.io/v1/sessions',
-    json={
-        'session': {
-            'proxy': {
-                'type': 'anchor_mobile',
-                'country_code': 'us',
-                'active': True
-            }
-        }
-    },
-    headers={
-        'anchor-api-key': ANCHOR_API_KEY,
-        'Content-Type': 'application/json'
-    }
-)
+### Supported Proxy Protocols
 
-response.raise_for_status()
-print('Session created:')
-print(json.dumps(response.json()['data'], indent=2))
-```
+Anchor Browser supports the following proxy protocols:
+- **HTTP Proxy**: Standard HTTP proxy with optional authentication
+- **HTTPS Proxy**: Secure HTTPS proxy connections
+- **SOCKS5 Proxy**: SOCKS5 proxy for enhanced privacy and flexibility
 
-</CodeGroup>
-
-### Use Anchor Gov Proxy
-Create your session with a residential proxy to access websites as if you're browsing from a computer in that country. This option reduces the chance of being blocked by governmental websites.
-
-<CodeGroup>
-
-```bash curl
-curl --request POST \
-  --url https://api.anchorbrowser.io/v1/sessions \
-  --header 'Content-Type: application/json' \
-  --header 'anchor-api-key: <api-key>' \
-  --data '{
-  "session": {
-    "proxy": {
-      "type": "anchor_gov",
-      "country_code": "us",
-      "active": true
-    }
-  }
-}'
-```
-
-```javascript node.js
-const axios = require('axios');
-
-(async () => {
-  const response = await axios.post('https://api.anchorbrowser.io/v1/sessions', {
-    session: {
-      proxy: {
-        type: 'anchor_gov',
-        country_code: 'us',
-        active: true
-      }
-    }
-  }, {
-    headers: {
-      'anchor-api-key': process.env.ANCHOR_API_KEY,
-      'Content-Type': 'application/json'
-    }
-  });
-  
-  console.log('Session created:', response.data);
-})().catch(console.error);
-```
-
-```python python
-import os
-import requests
-import json
-
-ANCHOR_API_KEY = os.getenv('ANCHOR_API_KEY')
-
-response = requests.post(
-    'https://api.anchorbrowser.io/v1/sessions',
-    json={
-        'session': {
-            'proxy': {
-                'type': 'anchor_gov',
-                'country_code': 'us',
-                'active': True
-            }
-        }
-    },
-    headers={
-        'anchor-api-key': ANCHOR_API_KEY,
-        'Content-Type': 'application/json'
-    }
-)
-
-response.raise_for_status()
-print('Session created:')
-print(json.dumps(response.json()['data'], indent=2))
-```
-
-</CodeGroup>
-
-
-### Use a Custom Proxy
+### Example Configurations
 
 <CodeGroup>
 
@@ -318,14 +172,153 @@ print(json.dumps(response.json()['data'], indent=2))
 
 </CodeGroup>
 
+
 ## Localization
 
 You can specify a country code for your proxy to route traffic through a specific geographic location. This is useful for accessing region-specific content or testing localized experiences.
 
-The `country_code` parameter accepts the following country codes in lowercase: 
+The `country_code` parameter accepts country codes in lowercase. See the [complete list of supported countries](#supported-countries-with-their-country-codes) below for all available options.
+
+### Region and City-Based Targeting
+
+For even more precise geographic targeting, you can specify both `region` and `city` parameters. This is only supported for the default proxy type (`anchor_proxy`).
+
+**Important Notes:**
+- The `city` parameter can only be used when `region` is also provided
+- If you specify a city without a region, the city parameter will be ignored
+- City names: use English, case-insensitive. Both "Los Angeles" and "los-angeles" work.
+
+<CodeGroup>
+
+```bash curl
+curl --request POST \
+  --url https://api.anchorbrowser.io/v1/sessions \
+  --header 'Content-Type: application/json' \
+  --header 'anchor-api-key: <api-key>' \
+  --data '{
+  "session": {
+    "proxy": {
+      "active": true,
+      "country_code": "us",
+      "region": "ca",
+      "city": "los-angeles"
+    }
+  }
+}'
+```
+
+```javascript node.js
+const axios = require('axios');
+
+(async () => {
+  const response = await axios.post('https://api.anchorbrowser.io/v1/sessions', {
+    session: {
+      proxy: {
+        active: true,
+        country_code: 'us',
+        region: 'ca',
+        city: 'los-angeles'
+      }
+    }
+  }, {
+    headers: {
+      'anchor-api-key': process.env.ANCHOR_API_KEY,
+      'Content-Type': 'application/json'
+    }
+  });
+  
+  console.log('Session created:', response.data);
+})().catch(console.error);
+```
+
+```python python
+import os
+import requests
+import json
+
+ANCHOR_API_KEY = os.getenv('ANCHOR_API_KEY')
+
+response = requests.post(
+    'https://api.anchorbrowser.io/v1/sessions',
+    json={
+        'session': {
+            'proxy': {
+                'active': True,
+                'country_code': 'us',
+                'region': 'ca',
+                'city': 'los-angeles'
+            }
+        }
+    },
+    headers={
+        'anchor-api-key': ANCHOR_API_KEY,
+        'Content-Type': 'application/json'
+    }
+)
+
+response.raise_for_status()
+print('Session created:')
+print(json.dumps(response.json()['data'], indent=2))
+```
+
+</CodeGroup>
 
 ### Supported Countries with their Country Codes
 <Tabs>
+<Tab title="Anchor Proxy">
+|||||||
+|---|---|---|---|---|---|
+|Afghanistan|af|France|fr|Netherlands|nl|
+|Albania|al|French Guiana|gf|New Zealand|nz|
+|Algeria|dz|French Polynesia|pf|Nicaragua|ni|
+|Andorra|ad|Gabon|ga|Nigeria|ng|
+|Angola|ao|Gambia|gm|Norway|no|
+|American Samoa|as|Georgia|ge|Pakistan|pk|
+|Antigua and Barbuda|ag|Germany|de|Panama|pa|
+|Argentina|ar|Ghana|gh|Paraguay|py|
+|Armenia|am|Gibraltar|gi|Peru|pe|
+|Aruba|aw|Greece|gr|Philippines|ph|
+|Australia|au|Grenada|gd|Poland|pl|
+|Austria|at|Guadeloupe|gp|Portugal|pt|
+|Azerbaijan|az|Guatemala|gt|Puerto Rico|pr|
+|Bahamas|bs|Guernsey|gg|Qatar|qa|
+|Bahrain|bh|Guinea|gn|Romania|ro|
+|Barbados|bb|Guinea-Bissau|gw|Saint Lucia|lc|
+|Belarus|by|Guyana|gy|San Marino|sm|
+|Belgium|be|Haiti|ht|Saudi Arabia|sa|
+|Belize|bz|Honduras|hn|Senegal|sn|
+|Benin|bj|Hungary|hu|Serbia|rs|
+|Bermuda|bm|Iceland|is|Seychelles|sc|
+|Bolivia|bo|India|in|Sierra Leone|sl|
+|Bosnia and Herzegovina|ba|Iran|ir|Slovakia|sk|
+|Brazil|br|Iraq|iq|Slovenia|si|
+|Bulgaria|bg|Ireland|ie|Somalia|so|
+|Burkina Faso|bf|Israel|il|South Africa|za|
+|Cameroon|cm|Italy|it|South Korea|kr|
+|Canada|ca|Jamaica|jm|Spain|es|
+|Cape Verde|cv|Japan|jp|Suriname|sr|
+|Chad|td|Jordan|jo|Sweden|se|
+|Chile|cl|Kazakhstan|kz|Switzerland|ch|
+|Colombia|co|Kuwait|kw|Syria|sy|
+|Congo|cg|Kyrgyzstan|kg|São Tomé and Príncipe|st|
+|Costa Rica|cr|Latvia|lv|Taiwan|tw|
+|Côte d’Ivoire|ci|Lebanon|lb|Tajikistan|tj|
+|Croatia|hr|Libya|ly|Togo|tg|
+|Cuba|cu|Liechtenstein|li|Trinidad and Tobago|tt|
+|Cyprus|cy|Lithuania|lt|Tunisia|tn|
+|Czech Republic|cz|Luxembourg|lu|Turkey|tr|
+|Denmark|dk|Macedonia|mk|Turks and Caicos Islands|tc|
+|Dominica|dm|Mali|ml|Ukraine|ua|
+|Dominican Republic|do|Malta|mt|United Arab Emirates|ae|
+|Ecuador|ec|Martinique|mq|United States|us|
+|Egypt|eg|Mauritania|mr|Uruguay|uy|
+|El Salvador|sv|Mexico|mx|Uzbekistan|uz|
+|Estonia|ee|Moldova|md|Venezuela|ve|
+|Ethiopia|et|Monaco|mc|Yemen|ye|
+|Faroe Islands|fo|Montenegro|me|
+|Finland|fi|Morocco|ma|
+
+</Tab>
 <Tab title="Residential Proxy">
 |||||||
 |---|---|---|---|---|---|
@@ -499,6 +492,152 @@ The `country_code` parameter accepts the following country codes in lowercase:
 
 </Tab>
 </Tabs>
+{/* # Anchor Proxy
+|Afghanistan|af|
+|Albania|al|
+|Algeria|dz|
+|Andorra|ad|
+|Angola|ao|
+|American Samoa|as|
+|Antigua and Barbuda|ag|
+|Argentina|ar|
+|Armenia|am|
+|Aruba|aw|
+|Australia|au|
+|Austria|at|
+|Azerbaijan|az|
+|Bahamas|bs|
+|Bahrain|bh|
+|Barbados|bb|
+|Belarus|by|
+|Belgium|be|
+|Belize|bz|
+|Benin|bj|
+|Bermuda|bm|
+|Bolivia|bo|
+|Bosnia and Herzegovina|ba|
+|Brazil|br|
+|Bulgaria|bg|
+|Burkina Faso|bf|
+|Cameroon|cm|
+|Canada|ca|
+|Cape Verde|cv|
+|Chad|td|
+|Chile|cl|
+|Colombia|co|
+|Congo|cg|
+|Costa Rica|cr|
+|Côte d’Ivoire|ci|
+|Croatia|hr|
+|Cuba|cu|
+|Cyprus|cy|
+|Czech Republic|cz|
+|Denmark|dk|
+|Dominica|dm|
+|Dominican Republic|do|
+|Ecuador|ec|
+|Egypt|eg|
+|El Salvador|sv|
+|Estonia|ee|
+|Ethiopia|et|
+|Faroe Islands|fo|
+|Finland|fi|
+|France|fr|
+|French Guiana|gf|
+|French Polynesia|pf|
+|Gabon|ga|
+|Gambia|gm|
+|Georgia|ge|
+|Germany|de|
+|Ghana|gh|
+|Gibraltar|gi|
+|Greece|gr|
+|Grenada|gd|
+|Guadeloupe|gp|
+|Guatemala|gt|
+|Guernsey|gg|
+|Guinea|gn|
+|Guinea-Bissau|gw|
+|Guyana|gy|
+|Haiti|ht|
+|Honduras|hn|
+|Hungary|hu|
+|Iceland|is|
+|India|in|
+|Iran|ir|
+|Iraq|iq|
+|Ireland|ie|
+|Israel|il|
+|Italy|it|
+|Jamaica|jm|
+|Japan|jp|
+|Jordan|jo|
+|Kazakhstan|kz|
+|Kuwait|kw|
+|Kyrgyzstan|kg|
+|Latvia|lv|
+|Lebanon|lb|
+|Libya|ly|
+|Liechtenstein|li|
+|Lithuania|lt|
+|Luxembourg|lu|
+|Macedonia|mk|
+|Mali|ml|
+|Malta|mt|
+|Martinique|mq|
+|Mauritania|mr|
+|Mexico|mx|
+|Moldova|md|
+|Monaco|mc|
+|Montenegro|me|
+|Morocco|ma|
+|Netherlands|nl|
+|New Zealand|nz|
+|Nicaragua|ni|
+|Nigeria|ng|
+|Norway|no|
+|Pakistan|pk|
+|Panama|pa|
+|Paraguay|py|
+|Peru|pe|
+|Philippines|ph|
+|Poland|pl|
+|Portugal|pt|
+|Puerto Rico|pr|
+|Qatar|qa|
+|Romania|ro|
+|Saint Lucia|lc|
+|San Marino|sm|
+|Saudi Arabia|sa|
+|Senegal|sn|
+|Serbia|rs|
+|Seychelles|sc|
+|Sierra Leone|sl|
+|Slovakia|sk|
+|Slovenia|si|
+|Somalia|so|
+|South Africa|za|
+|South Korea|kr|
+|Spain|es|
+|Suriname|sr|
+|Sweden|se|
+|Switzerland|ch|
+|Syria|sy|
+|São Tomé and Príncipe|st|
+|Taiwan|tw|
+|Tajikistan|tj|
+|Togo|tg|
+|Trinidad and Tobago|tt|
+|Tunisia|tn|
+|Turkey|tr|
+|Turks and Caicos Islands|tc|
+|Ukraine|ua|
+|United Arab Emirates|ae|
+|United States|us|
+|Uruguay|uy|
+|Uzbekistan|uz|
+|Venezuela|ve|
+|Yemen|ye| */}
 
 {/* # Gov Proxy
 |Afghanistan|af|
@@ -977,7 +1116,3 @@ The `country_code` parameter accepts the following country codes in lowercase:
 |Yemen|ye|
 |Zambia|zm|
 |Zimbabwe|zw| */}
-
-
-
-
