@@ -19,53 +19,46 @@ Headful mode provides a single URL to view the full chrome view, including the a
   width="560"
 />
 
-To create a browser in headful mode, set the `headless` parameter to `false` when [creating a session](/api-reference/sessions/create-session):
+To create a browser in headful mode, simply [create a session](/sdk-reference/browser-sessions/start-browser-session):
 
 <CodeGroup>
 
 ```javascript node.js
-const axios = require('axios');
-const ANCHOR_API_KEY = process.env.ANCHOR_API_KEY;
+import  AnchorBrowser from 'anchorbrowser';
 
-(async () => {
-const response = await axios.post("https://api.anchorbrowser.io/v1/sessions", {
-    browser: {
-        headless: {
-            active: false
-        }
+// Initialize the client
+const client = new AnchorBrowser({ apiKey: process.env.ANCHOR_API_KEY });
+
+// For explicit headfull session configuration (optional)
+const config = {
+  browser: {
+    headless: {
+      active: false
     }
-  }, {
-    headers: {
-      "anchor-api-key": ANCHOR_API_KEY,
-      "Content-Type": "application/json",
-    },
-  });
-  
-  const session = response.data.data;
-  const liveViewUrl = session.live_view_url;
-})().catch(console.error);
+  }
+};
+
+const session = await client.sessions.create(config);
+const liveViewUrl = session.data.live_view_url;
+console.log(`Live view URL: ${liveViewUrl}`);
 ```
 
 ```python python
+from anchorbrowser import Anchorbrowser
 import os
-import requests
 
-ANCHOR_API_KEY = os.getenv("ANCHOR_API_KEY")
+# Initialize the client
+client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
 
-response = requests.post(
-    "https://api.anchorbrowser.io/v1/sessions",
-    json={  "browser": {
-              "headless": {"active": False}
-            }
-          },
-    headers={
-        "anchor-api-key": ANCHOR_API_KEY,
-        "Content-Type": "application/json",
-    },
-)
-response.raise_for_status()
-session = response.json()["data"]
-live_view_url = session["live_view_url"]
+# For explicit headfull session configuration (optional)
+config = {
+    "headless": {
+      "active": False
+    }
+}
+
+session = client.sessions.create(browser=config)
+print(f"Live view URL: {session.data.live_view_url}")
 ```
 
 </CodeGroup>
@@ -88,7 +81,7 @@ Then, use the `live_view_url` from the response to embed the live view directly 
 To use the fullscreen view, replace the live view URL with the following:
 
 ```html
-<iframe src="https://anchorforge.io/devtools-frontend/inspector-fullscreen.html?wss={{session_url}}" ...></iframe>
+<iframe src="{{live_view_url}}" ...></iframe>
 ```
 
 ### Disable Browser Interactivity
@@ -105,7 +98,7 @@ To prevent the end user from interacting with the browser, add the `style="point
 ```
 
 <Info>
-This feature is available for both headful and headless modes. In headless mode, you would use the `session_url` instead of `live_view_url`.
+This feature is available for both headful and headless modes.
 </Info>
 
 ## Headless Mode (Legacy)
@@ -115,7 +108,7 @@ This feature is available for both headful and headless modes. In headless mode,
 Headless mode is being deprecated and will be removed in a future version. We recommend using headful mode for all new implementations.
 </Warning>
 
-To obtain the browser live session URL in headless mode, start by [creating a session](/api-reference/sessions/create-session) with `headless: true`:
+To obtain the browser live session URL in headless mode, start by [creating a session](/api-reference/browser-sessions/start-browser-session) with `headless: true`:
 
 <img
   className="hidden dark:block mx-auto"
@@ -124,11 +117,11 @@ To obtain the browser live session URL in headless mode, start by [creating a se
   width="560"
 />
 
-<Warning>The session_url points to the browser default first page. If your browser process involves creating a **new page**, collect the corresponding URL by using the [live view URLs](/api-reference/sessions/get-pages-for-a-session) endpoint.</Warning>
+<Warning>The live_view_url points to the browser default first page.</Warning>
 
 Then, use the **create-session** response to embed the live view URL directly into an iframe:
 
 ```html
-<iframe src="https://anchorforge.io/devtools-frontend/inspector.html?wss={{session_url}}" sandbox="allow-same-origin allow-scripts" allow="clipboard-read; clipboard-write" style="border: 0px; display: block; width: 100%; height: 100%; position: absolute; top: 0px; left: 0px;"></iframe>
+<iframe src="{{live_view_url}}" sandbox="allow-same-origin allow-scripts" allow="clipboard-read; clipboard-write" style="border: 0px; display: block; width: 100%; height: 100%; position: absolute; top: 0px; left: 0px;"></iframe>
 ```
 </Expandable>
