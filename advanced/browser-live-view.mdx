@@ -6,7 +6,7 @@ description: 'Embed interactive browser sessions directly into your application'
 
 ## Overview
 
-Anchor Browser offers a live view feature that allows you to embed an interactive frame of a website as a web element. The `live_view_url` is received when creating a session with `headless: false` (which is the default mode).
+Anchor Browser offers a live view feature that allows you to embed an interactive frame of a website as a web element. The `live_view_url` is received when creating a session.
 
 ## Headful Mode (Default)
 
@@ -29,7 +29,7 @@ import  AnchorBrowser from 'anchorbrowser';
 // Initialize the client
 const client = new AnchorBrowser({ apiKey: process.env.ANCHOR_API_KEY });
 
-// For explicit headfull session configuration (optional)
+// For explicit headfull session configuration (optional, default to false)
 const config = {
   browser: {
     headless: {
@@ -50,7 +50,7 @@ import os
 # Initialize the client
 client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
 
-# For explicit headfull session configuration (optional)
+# For explicit headfull session configuration (optional, default to False)
 config = {
     "headless": {
       "active": False
@@ -101,14 +101,49 @@ To prevent the end user from interacting with the browser, add the `style="point
 This feature is available for both headful and headless modes.
 </Info>
 
-## Headless Mode (Legacy)
+## Headless Mode
 
-<Expandable title="Headless Mode (Deprecated)">
-<Warning>
-Headless mode is being deprecated and will be removed in a future version. We recommend using headful mode for all new implementations.
-</Warning>
+To obtain the browser live session URL in headless mode, start by [creating a session](/api-reference/browser-sessions/start-browser-session):
 
-To obtain the browser live session URL in headless mode, start by [creating a session](/api-reference/browser-sessions/start-browser-session) with `headless: true`:
+<CodeGroup>
+
+```javascript node.js
+import  AnchorBrowser from 'anchorbrowser';
+
+// Initialize the client
+const client = new AnchorBrowser({ apiKey: process.env.ANCHOR_API_KEY });
+
+const config = {
+  browser: {
+    headless: {
+      active: true
+    }
+  }
+};
+
+const session = await client.sessions.create(config);
+const liveViewUrl = session.data.live_view_url;
+console.log(`Live view URL: ${liveViewUrl}`);
+```
+
+```python python
+from anchorbrowser import Anchorbrowser
+import os
+
+# Initialize the client
+client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
+
+config = {
+    "headless": {
+      "active": True
+    }
+}
+
+session = client.sessions.create(browser=config)
+print(f"Live view URL: {session.data.live_view_url}")
+```
+
+</CodeGroup>
 
 <img
   className="hidden dark:block mx-auto"
@@ -117,11 +152,10 @@ To obtain the browser live session URL in headless mode, start by [creating a se
   width="560"
 />
 
-<Warning>The live_view_url points to the browser default first page.</Warning>
+<Warning>The live_view_url currently points to the browser default first page.</Warning>
 
 Then, use the **create-session** response to embed the live view URL directly into an iframe:
 
 ```html
 <iframe src="{{live_view_url}}" sandbox="allow-same-origin allow-scripts" allow="clipboard-read; clipboard-write" style="border: 0px; display: block; width: 100%; height: 100%; position: absolute; top: 0px; left: 0px;"></iframe>
 ```
-</Expandable>
