@@ -2276,6 +2276,91 @@ paths:
                   error:
                     $ref: '#/components/schemas/ErrorResponse'
 
+  /v1/sessions/{sessionId}/uploads:
+    post:
+      summary: Upload Files
+      description: |
+        Upload files directly to a browser session for use with web forms and file inputs.
+        
+        Files are saved to the session's uploads directory and can be referenced in CDP commands.
+      security:
+        - api_key_header: []
+      tags:
+        - Browser Sessions
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          description: The browser session ID
+          schema:
+            type: string
+            format: uuid
+            example: "550e8400-e29b-41d4-a716-446655440000"
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: File to upload to the browser session
+      responses:
+        '200':
+          description: File uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        example: "success"
+                      message:
+                        type: string
+                        example: "File saved at /uploads/example.txt"
+        '400':
+          description: Invalid request (no file uploaded or file too large)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: integer
+                        example: 400
+                      message:
+                        type: string
+                        example: "No file uploaded"
+        '404':
+          description: Session not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Failed to upload file
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/components/schemas/ErrorResponse'
+
   /v1/sessions/{sessionId}/agent/files:
     post:
       summary: Upload Agent Resources
