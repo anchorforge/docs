@@ -24,6 +24,7 @@ pip3 install playwright
 
 </Step>
 <Step title="Create a session via API">
+Also available by the [live playground](https://app.anchorbrowser.io/playground)
 <CodeGroup>
 
 ```javascript node.js
@@ -32,7 +33,7 @@ const axios = require("axios");
 (async () => {
     const session = await axios.post("https://api.anchorbrowser.io/v1/sessions", {}, {
         headers: {
-            "anchor-api-key": process.env.ANCHOR_API_KEY,
+            "anchor-api-key": process.env.ANCHORBROWSER_API_KEY,
             "Content-Type": "application/json"
         }
     });
@@ -47,7 +48,7 @@ import os
 
 url = "https://api.anchorbrowser.io/v1/sessions"
 headers = {
-    "anchor-api-key": f"{os.getenv('ANCHOR_API_KEY')}",
+    "anchor-api-key": f"{os.getenv('ANCHORBROWSER_API_KEY')}",
     'Content-Type': 'application/json'
   }
 session = requests.post(url, headers=headers)
@@ -134,14 +135,13 @@ const axios = require("axios");
         "https://api.anchorbrowser.io/v1/sessions",
         browserConfiguration,
         { headers: {
-            "anchor-api-key": process.env.ANCHOR_API_KEY,
+            "anchor-api-key": process.env.ANCHORBROWSER_API_KEY,
             "Content-Type": "application/json",
         },
     });
 
     const session = response.data.data;
-    const cdp_url = session.cdp_url;
-    console.log("Session's CDP_URL for later use\n", cdp_url);  // Keep this cdp_url for next step
+    console.log("Session created:", session.id); // Keep this ID for later use
 })().catch(console.error);
 ```
 
@@ -169,15 +169,14 @@ browserConfiguration = {
 response = requests.post(
     "https://api.anchorbrowser.io/v1/sessions",
     headers={
-        "anchor-api-key": os.getenv("ANCHOR_API_KEY"),
+        "anchor-api-key": os.getenv("ANCHORBROWSER_API_KEY"),
         "Content-Type": "application/json",
     }, json=browserConfiguration
 )
 
 response.raise_for_status()
 session = response.json()["data"]
-cdp_url = session['cdp_url']
-print("Session's CDP_URL for later use\n", cdp_url)
+print("Session created:", session["id"]) # Keep this ID for later use
 ```
 
 </CodeGroup>
@@ -187,14 +186,14 @@ print("Session's CDP_URL for later use\n", cdp_url)
 
 Reconnect to an existing session using the session CDP Url.
 
-Validate the session created in the previous step is still active by checking the IP address.
 <CodeGroup>
 
 ```javascript node.js
 const { chromium } = require("playwright-core");
+const ANCHOR_API_KEY = process.env.ANCHOR_API_KEY;
 
 (async () => {
-    const browser = await chromium.connectOverCDP(cdp_url);
+    const browser = await chromium.connectOverCDP(sessionCdpUrl);
     const page = await browser.newPage();
 
     // Check the IP address
@@ -208,11 +207,16 @@ const { chromium } = require("playwright-core");
 ```
 
 ```python python
+import os
 from playwright.sync_api import sync_playwright
+
+ANCHOR_API_KEY = os.getenv("ANCHOR_API_KEY")
 
 # Connect to the session
 with sync_playwright() as p:
-    browser = p.chromium.connect_over_cdp(cdp_url)
+    browser = p.chromium.connect_over_cdp(
+        f"wss://connect.anchorbrowser.io?apiKey={ANCHOR_API_KEY}&sessionId={session['id']}"
+    )
     page = browser.new_page()
     
     # Check the IP address
@@ -222,6 +226,7 @@ with sync_playwright() as p:
 
     # Close browser but session remains active
     browser.close()
+
 ```
 
 </CodeGroup>

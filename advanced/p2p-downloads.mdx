@@ -25,6 +25,7 @@ The browser intercept download events, allowing you to extract the file data dir
 ```tsx node.js
 import { promises as fs, existsSync } from "node:fs";
 import { chromium } from "playwright";
+import AnchorBrowser from 'anchorbrowser';
 
 const { ANCHOR_API_KEY } = process.env;
 
@@ -90,17 +91,11 @@ const downloadHandler = (filePath) => async (page, info) => {
 };
 
 async function createSession() {
-  const res = await fetch("https://api.anchorbrowser.io/v1/sessions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "anchor-api-key": ANCHOR_API_KEY,
-    },
-    body: JSON.stringify({ browser: { p2p_download: { active: true } } }),
+  const anchor_client = new AnchorBrowser({apiKey: ANCHOR_API_KEY});
+  const session = await anchor_client.sessions.create({
+    browser: { p2p_download: { active: true } }
   });
-  if (!res.ok) throw new Error(`Anchor API error ${res.status}: ${await res.text()}`);
-  const { data } = await res.json();
-  return data;
+  return session.data;
 }
 
 (async () => {
@@ -132,8 +127,9 @@ async function createSession() {
 ```
 
 ```python python
-import os, base64, json, requests
+import os, base64, json
 from playwright.sync_api import sync_playwright
+from anchorbrowser import Anchorbrowser
 
 ANCHOR_API_KEY = os.getenv("ANCHOR_API_KEY")
 
@@ -186,24 +182,15 @@ def download_handler(path):
     return _handle
 
 def create_session():
-    resp = requests.post(
-        "https://api.anchorbrowser.io/v1/sessions",
-        headers={
-            "Content-Type": "application/json",
-            "anchor-api-key": ANCHOR_API_KEY,
-        },
-        json={
-            "browser": {
-                "p2p_download": {
-                    "active": True
-                }
+    anchor_client = Anchorbrowser(api_key=ANCHOR_API_KEY)
+    session = anchor_client.sessions.create({
+        "browser": {
+            "p2p_download": {
+                "active": True
             }
         }
-    )
-
-    if resp.status_code != 200:
-        raise Exception(f"Anchor API error {resp.status_code}: {resp.text}")
-    return resp.json().get("data")
+    })
+    return session.data
 
 with sync_playwright() as p:
     session = create_session()

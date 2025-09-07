@@ -61,41 +61,59 @@ async function sendMFACode(code) {
 
 ## Implementation
 
-### JavaScript Helper Functions
+### Helper Functions
 
-```javascript
-const apiKey = 'your-api-key';
-const apiBase = 'https://api.anchorbrowser.io';
+<CodeGroup>
+
+```javascript node.js
+import AnchorBrowser from 'anchorbrowser';
+
+const anchor_client = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
 
 async function signalEvent(eventName, data) {
-  const response = await fetch(`${apiBase}/api/v1/events/${eventName}`, {
-    method: 'POST',
-    headers: {
-      'anchor-api-key': apiKey,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ data: data || {} }),
-  });
-  
-  if (!response.ok) throw new Error(`Failed to signal event: ${response.status}`);
-  return await response.json();
+  try {
+    const response = await anchor_client.events.signal(eventName, { data: data || {} });
+    return response;
+  } catch (error) {
+    throw new Error(`Failed to signal event: ${error.message}`);
+  }
 }
 
 async function waitForEvent(eventName, timeoutMs = 60000) {
-  const response = await fetch(`${apiBase}/api/v1/events/${eventName}/wait`, {
-    method: 'POST',
-    headers: {
-      'anchor-api-key': apiKey,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ timeoutMs }),
-  });
-
-  if (response.status === 408) return null; // Timeout
-  if (!response.ok) throw new Error(`Failed to wait for event: ${response.status}`);
-  return await response.json();
+  try {
+    const response = await anchor_client.events.waitFor(eventName, { timeoutMs });
+    return response;
+  } catch (error) {
+    if (error.message.includes("408")) return null; // Timeout
+    throw new Error(`Failed to wait for event: ${error.message}`);
+  }
 }
 ```
+
+```python python
+import os
+from anchorbrowser import Anchorbrowser
+
+anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
+
+def signal_event(event_name, data):
+    try:
+        response = anchor_client.events.signal(event_name, data=data or {})
+        return response
+    except Exception as error:
+        raise Exception(f"Failed to signal event: {error}")
+
+def wait_for_event(event_name, timeout_ms=60000):
+    try:
+        response = anchor_client.events.wait_for(event_name, timeout_ms=timeout_ms)
+        return response
+    except Exception as error:
+        if "408" in str(error):
+            return None  # Timeout
+        raise Exception(f"Failed to wait for event: {error}")
+```
+
+</CodeGroup>
 
 ## Event Flow Patterns
 

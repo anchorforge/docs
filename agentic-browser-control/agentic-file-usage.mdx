@@ -42,16 +42,10 @@ const ANCHOR_API_KEY = process.env.ANCHOR_API_KEY;
   const formData = new FormData();
   formData.append('file', zipBlob, 'test-data.zip');
 
-  // 2. Upload to browser session using the dedicated API
-  const response = await fetch(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/agent/files`, {
-    method: 'POST',
-    headers: {
-      'anchor-api-key': ANCHOR_API_KEY
-    },
-    body: formData
+  // 2. Upload to browser session
+  const result = await anchorClient.sessions.agent.files.upload(sessionId, {
+    file: zipBlob
   });
-
-  const result = await response.json();
   console.log('Upload result:', result);
 
   // 3. Connect to the browser session and use uploaded files with AI agent
@@ -96,17 +90,14 @@ with tempfile.NamedTemporaryFile(suffix='.zip', delete=False) as temp_zip:
     
     # 2. Upload to browser session
     with open(temp_zip.name, 'rb') as zip_file:
-        files = {'file': ('test-data.zip', zip_file, 'application/zip')}
-        response = requests.post(
-            f"https://api.anchorbrowser.io/v1/sessions/{session_id}/agent/files",
-            headers={'anchor-api-key': ANCHOR_API_KEY},
-            files=files
+        result = anchor_client.sessions.agent.files.upload(
+            session_id=session_id,
+            file=zip_file
         )
     
     # Clean up temporary file
     os.unlink(temp_zip.name)
 
-result = response.json()
 print('Upload result:', result)
 
 # 3. Navigate to a website where you want to use the uploaded files
