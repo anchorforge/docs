@@ -15,77 +15,95 @@ OS-level control provides direct access to operating system primitives like mous
 **Vision-based AI models perform significantly better** when they can interact with the browser using the same primitives humans use:
 
 - **Keyboard shortcuts work naturally**: `Ctrl+F` for searching, `Ctrl+L` for browser navbar interaction, `Ctrl+T` for new tabs
-- **OS-level UI elements**: Dropdowns, context menus, and system dialogs that aren't part of the webpage DOM
+- **OS-level UI elements**: Dropdowns, context menus, and system dialogs that aren't part of the webpage DOM.
 - **Visual coordinate targeting**: AI agents can directly click on elements they see in screenshots
 
-### Beyond Traditional Web Automation
 
-## Core Capabilities
-
-### Mouse Operations
+## Core Capabilities - Beyond Traditional Web Automation
 
 Control mouse interactions with pixel-level precision:
 
+### Basic Click
+
 <CodeGroup>
-```javascript Basic Click
+```javascript node.js
+import AnchorBrowser from 'anchorbrowser';
+const anchor_client = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
+
+const response = await anchor_client.sessions.mouse.click("Your Session ID", {
 // Single click at coordinates
-const response = await axios.post(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/mouse/click`, {
-  x: 400,
-  y: 300,
-  button: 'left' // 'left', 'middle', 'right'
-}, {
-  headers: {
-    'anchor-api-key': 'your-api-key',
-    'Content-Type': 'application/json'
-  }
+    x: 100,
+    y: 700,
 });
+  console.log(response.data.status)
 ```
+```python python
+  from anchorbrowser import Anchorbrowser
+  import os
 
-```javascript Advanced Mouse Control
-// Double-click for text selection
-await axios.post(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/mouse/doubleClick`, {
-  x: 500, 
-  y: 200
-}, {
-  headers: {
-    'anchor-api-key': 'your-api-key',
-    'Content-Type': 'application/json'
-  }
-});
+  client = Anchorbrowser(
+      api_key = os.getenv("ANCHOR_API_KEY")
+  )
+  response = client.sessions.mouse.click(
+      session_id = "Your Session ID",
+    # Single click at coordinates
+      x = 100,
+      y = 700,
+  )
+  print(response.data['status'])
+```
+</CodeGroup>
 
-// Mouse down and up for custom gestures
-await axios.post(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/mouse/down`, {
-  x: 100, 
-  y: 100, 
-  button: 'left'
-}, {
-  headers: {
-    'anchor-api-key': 'your-api-key',
-    'Content-Type': 'application/json'
-  }
-});
+### Advanced Mouse Control
 
-// Move while holding down (drag)
-await axios.post(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/mouse/move`, {
-  x: 300, 
-  y: 300
-}, {
-  headers: {
-    'anchor-api-key': 'your-api-key',
-    'Content-Type': 'application/json'
-  }
-});
+<CodeGroup>
 
-// Release
-await axios.post(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/mouse/up`, {
-  x: 300, 
-  y: 300
-}, {
-  headers: {
-    'anchor-api-key': 'your-api-key',
-    'Content-Type': 'application/json'
-  }
-});
+```javascript node.js
+  import AnchorBrowser from 'anchorbrowser';
+  const anchor_client = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
+  const sessionId = "Your Session ID";
+
+  // Double-click for text selection
+  await anchor_client.sessions.mouse.doubleClick(sessionId, {
+    x: 500, 
+    y: 200
+  });
+
+  // Mouse down and up for custom gestures
+  await anchor_client.sessions.mouse.down(sessionId, {
+    x: 100, 
+    y: 100, 
+  });
+
+  // Move while holding down (drag)
+  await anchor_client.sessions.mouse.move(sessionId, {
+    x: 300, 
+    y: 300
+  });
+
+  // Release
+  await anchor_client.sessions.mouse.up(sessionId, {
+    x: 300, 
+    y: 300
+  });
+```
+```python python
+  from anchorbrowser import Anchorbrowser
+  import os
+  anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
+  sessionId = "Your Session ID";
+
+  # Double-click for text selection
+  anchor_client.sessions.mouse.double_click(sessionId, x = 500, y = 200)
+
+  # Mouse down and up for custom gestures
+  anchor_client.sessions.mouse.down(sessionId, x = 100, y = 100)
+
+  # Move while holding down (drag)
+  anchor_client.sessions.mouse.move(sessionId, x = 300, y = 300)
+
+  # Release
+  anchor_client.sessions.mouse.up(sessionId, x = 300, y = 300)
 ```
 </CodeGroup>
 
@@ -93,51 +111,77 @@ await axios.post(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/mouse/up
 
 Perform complex drag and drop operations in a single command:
  
-```javascript
-// Drag file from desktop to upload area
-const response = await axios.post(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/drag-and-drop`, {
-  startX: 200,
-  startY: 150,
-  endX: 600,
-  endY: 400,
-  button: 'left'
-}, {
-  headers: {
-    'anchor-api-key': 'your-api-key',
-    'Content-Type': 'application/json'
-  }
-});
+<CodeGroup>
+```javascript node.js
+  import AnchorBrowser from 'anchorbrowser';
+  const anchor_client = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
+  // const sessionId = "Your Session ID";
+
+  // Drag and Drop
+  await anchor_client.sessions.dragAndDrop(sessionId, {
+    startX: 200,
+    startY: 150,
+    endX: 600,
+    endY: 400,
+  });
 ```
+```python python
+  from anchorbrowser import Anchorbrowser
+  import os
+  anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
+  sessionId = "Your Session ID";
+
+  # Drag and Drop
+  anchor_client.sessions.drag_and_drop(sessionId,
+    start_x = 200,
+    start_y = 150,
+    end_x = 600,
+    end_y = 400
+    )
+```
+</CodeGroup>
 
 ### Keyboard Input
 
 Send text and keyboard shortcuts with human-like timing:
-
+#### Text Input
 <CodeGroup>
-```javascript Text Input
-// Type text with optional delay between keystrokes
-const response = await axios.post(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/keyboard/type`, {
-  text: "Hello, world!",
-  delay: 50 // milliseconds between keystrokes
-}, {
-  headers: {
-    'anchor-api-key': 'your-api-key',
-    'Content-Type': 'application/json'
-  }
-});
-```
+```javascript node.js
+  import AnchorBrowser from 'anchorbrowser';
+  const anchor_client = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
+  const sessionId = "Your Session ID";
 
-```javascript Keyboard Shortcuts
-// Execute keyboard shortcuts
-const response = await axios.post(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/keyboard/shortcut`, {
-  keys: ['Ctrl', 'a'], // Select all
-  holdTime: 100 // Hold keys for 100ms
-}, {
-  headers: {
-    'anchor-api-key': 'your-api-key',
-    'Content-Type': 'application/json'
-  }
-});
+  // Type text with optional delay between keystrokes
+  await anchor_client.sessions.keyboard.type(sessionId, {
+    text: "Hello, world!",
+    delay: 50 // milliseconds between keystrokes
+  });
+```
+```python python
+  from anchorbrowser import Anchorbrowser
+  import os
+  anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
+  sessionId = "Your Session ID";
+
+  # Type text with optional delay between keystrokes
+  anchor_client.sessions.keyboard.type(sessionId,
+    text = "Hello, world!",
+    delay = 50 # milliseconds between keystrokes
+    )
+```
+</CodeGroup>
+#### Keyboard Shortcuts
+<CodeGroup>
+```javascript node.js
+  import AnchorBrowser from 'anchorbrowser';
+  const anchor_client = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
+  const sessionId = "Your Session ID";
+
+  // Execute keyboard shortcuts
+  anchor_client.sessions.keyboard.shortcut(sessionId, {
+    keys: ['Ctrl', 'a'], // Select all
+    holdTime: 100 // Hold keys for 100ms
+  });
 
 // Common shortcuts
 const shortcuts = {
@@ -150,89 +194,169 @@ const shortcuts = {
   focusAddressBar: ['Ctrl', 'l']
 };
 ```
+```python python
+  from anchorbrowser import Anchorbrowser
+  import os
+  anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
+  sessionId = "Your Session ID";
+
+  # Execute keyboard shortcuts
+  anchor_client.sessions.keyboard.shortcut(sessionId,
+    keys = ['Ctrl', 'a'],
+    hold_time = 100 # Hold keys for 100ms
+    )
+
+  # Common shortcuts
+  shortcuts = {
+    'select_all': ['Ctrl', 'a'],
+    'copy': ['Ctrl', 'c'],
+    'paste': ['Ctrl', 'v'],
+    'undo': ['Ctrl', 'z'],
+    'new_tab': ['Ctrl', 't'],
+    'close_tab': ['Ctrl', 'w'],
+    'focus_address_bar': ['Ctrl', 'l']
+  };
+```
 </CodeGroup>
 
 ### Scrolling
 
 Control page scrolling with precision:
 
-```javascript
-// Scroll at specific coordinates
-const response = await axios.post(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/scroll`, {
-  x: 400,           // Where to perform scroll (cursor position)
-  y: 300,           // Where to perform scroll (cursor position)
-  deltaX: 0,        // Horizontal scroll amount (does not correlate with pixels)
-  deltaY: 200,      // Vertical scroll amount (does not correlate with pixels, positive = down)
-  steps: 5          // Number of steps for smooth scrolling
-}, {
-  headers: {
-    'anchor-api-key': 'your-api-key',
-    'Content-Type': 'application/json'
-  }
-});
+```javascript node.js
+  import AnchorBrowser from 'anchorbrowser';
+  const anchor_client = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
+  const sessionId = "Your Session ID";
+
+  // Scroll at specific coordinates
+  anchor_client.sessions.scroll(sessionId, {
+    x: 400,           // Where to perform scroll (cursor position)
+    y: 300,           // Where to perform scroll (cursor position)
+    deltaX: 0,        // Horizontal scroll amount (does not correlate with pixels)
+    deltaY: 200,      // Vertical scroll amount (does not correlate with pixels, positive = down)
+    steps: 5          // Number of steps for smooth scrolling
+  });
+```
+```python python
+  from anchorbrowser import Anchorbrowser
+  import os
+  anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
+  sessionId = "Your Session ID";
+
+  # Scroll at specific coordinates
+  anchor_client.sessions.scroll(sessionId,
+    x = 400,           # Where to perform scroll (cursor position)
+    y = 300,           # Where to perform scroll (cursor position)
+    delta_x = 0,        # Horizontal scroll amount (does not correlate with pixels)
+    delta_y = 200,      # Vertical scroll amount (does not correlate with pixels, positive = down)
+    steps = 5          # Number of steps for smooth scrolling
+    )
 ```
 
 ### Screenshots
 
 Capture visual state for AI analysis:
+<CodeGroup>
+```javascript node.js
+  import AnchorBrowser from 'anchorbrowser';
+  import { writeFile } from 'node:fs/promises';
+  const anchor_client = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
+  const sessionId = "Your Session ID";
 
-```javascript
-// Take screenshot of current browser state
-const response = await axios.get(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/screenshot`, {
-  headers: {
-    'anchor-api-key': 'your-api-key'
-  },
-  responseType: 'arraybuffer'
-});
+  // Take screenshot of current browser state
+  const response = await anchor_client.sessions.retrieveScreenshot(sessionId);
+  console.log(response);
+  const imageBuffer = response.body;
 
-const imageBuffer = response.data;
-// Process screenshot with vision AI model
+  // Process screenshot with vision AI model (add code below)
+  console.log(imageBuffer);
+
+  // Or save screenshot to file
+  const ab = await response.arrayBuffer();   // rs is a web ReadableStream
+  await writeFile('image.png', Buffer.from(ab));
 ```
+```python python
+  from anchorbrowser import Anchorbrowser
+  import os
+  anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
+  sessionId = "Your Session ID";
+
+  # Take screenshot of current browser state
+  response = anchor_client.sessions.retrieve_screenshot(sessionId)
+  print(response)
+
+  # Save screenshot to file
+  with open("image.png", "wb") as f:
+      for chunk in response.iter_bytes(chunk_size=8192):
+          f.write(chunk)
+
+  # Process screenshot with vision AI model (add code below)
+  print(f"Received {response}")
+```
+</CodeGroup>
 
 ### Clipboard Operations
 
 Manage clipboard content programmatically:
 
+#### Reading Clipboard
 <CodeGroup>
-```javascript Reading Clipboard
-// Get current clipboard content
-const response = await axios.get(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/clipboard`, {
-  headers: {
-    'anchor-api-key': 'your-api-key'
-  }
-});
+```javascript node.js
+import AnchorBrowser from 'anchorbrowser';
+const anchor_client = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
+const sessionId = "Your Session ID";
 
-const { data } = response.data;
-console.log('Clipboard content:', data.text);
+// Get current clipboard content
+const response = await anchor_client.sessions.clipboard.get(sessionId);
+console.log('Clipboard content:', response.data.text);
+```
+```python python
+  from anchorbrowser import Anchorbrowser
+  import os
+  anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
+  sessionId = "Your Session ID";
+
+  # Get current clipboard content
+  response = anchor_client.sessions.clipboard.get(sessionId)
+  print(response)
 ```
 
-```javascript Setting Clipboard
+</CodeGroup>
+
+#### Setting Clipboard
+<CodeGroup>
+```javascript node.js
+import AnchorBrowser from 'anchorbrowser';
+const anchor_client = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
+const sessionId = "Your Session ID";
+
 // Set clipboard content
-await axios.post(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/clipboard`, {
+await anchor_client.sessions.clipboard.set(sessionId, {
   text: "Content to copy"
-}, {
-  headers: {
-    'anchor-api-key': 'your-api-key',
-    'Content-Type': 'application/json'
-  }
 });
 
 // Trigger copy operation (copies selected text)
-const copyResponse = await axios.post(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/copy`, {}, {
-  headers: {
-    'anchor-api-key': 'your-api-key'
-  }
-});
+const copyResponse = await anchor_client.sessions.copy(sessionId);
 
 // Trigger paste operation
-await axios.post(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/paste`, {
+await anchor_client.sessions.paste(sessionId, {
   text: "Text to paste"
-}, {
-  headers: {
-    'anchor-api-key': 'your-api-key',
-    'Content-Type': 'application/json'
-  }
 });
+```
+```python python
+from anchorbrowser import Anchorbrowser
+import os
+anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
+sessionId = "Your Session ID";
+
+# Set clipboard content
+anchor_client.sessions.clipboard.set(sessionId, text="Content to copy")
+
+# Trigger copy operation (copies selected text)
+copy_response = anchor_client.sessions.copy(sessionId)
+
+# Trigger paste operation
+anchor_client.sessions.paste(sessionId, text="Text to paste")
 ```
 </CodeGroup>
 
@@ -240,17 +364,30 @@ await axios.post(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/paste`, 
 
 Direct URL navigation at the OS level on the currently selected tab:
 
-```javascript
+<CodeGroup>
+```javascript node.js
+import AnchorBrowser from 'anchorbrowser';
+const anchor_client = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
+const sessionId = "Your Session ID";
+
 // Navigate to a specific URL (completely OS-level, operates on selected tab)
-const response = await axios.post(`https://api.anchorbrowser.io/v1/sessions/${sessionId}/goto`, {
+const response = await anchor_client.sessions.goto(sessionId, {
   url: "https://example.com"
-}, {
-  headers: {
-    'anchor-api-key': 'your-api-key',
-    'Content-Type': 'application/json'
-  }
 });
+console.log("Navigation response:", response);
 ```
+```python python
+from anchorbrowser import Anchorbrowser
+import os
+anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
+sessionId = "Your Session ID";
+
+# Navigate to a specific URL (completely OS-level, operates on selected tab)
+response = anchor_client.sessions.goto(sessionId, url="https://example.com")
+print("Navigation response:", response)
+```
+
+</CodeGroup>
 
 ## AI Agent Integration Patterns
 
@@ -258,7 +395,7 @@ const response = await axios.post(`https://api.anchorbrowser.io/v1/sessions/${se
 
 Anchor includes an integrated **OpenAI Computer Use agent** that leverages OS-level control for enhanced AI interactions. This agent can perform complex tasks by combining vision models with precise OS-level operations.
 
-```python
+```python python
 class AnchorBrowser(BasePlaywrightComputer):
     """
     Computer implementation for Anchor browser (https://anchorbrowser.io)
