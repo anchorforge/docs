@@ -34,27 +34,87 @@ When you make a session creation request without sufficient credits, the system 
 3. Your client can automatically handle the payment using X402
 4. Retry the request with payment headers
 
-Here's a Python example using the x402 library:
+Here are examples using the x402 library with both Python and Node.js:
 
-```python
+<CodeGroup>
+
+```python python
 import os, json, requests
 from eth_account import Account
 from x402.clients.requests import x402_requests
+from anchorbrowser import Anchorbrowser
 
 ENDPOINT = "https://api.anchorbrowser.io/v1/sessions"
 BODY = {}
 
 key = os.getenv("PRIVATE_KEY") or exit("Set PRIVATE_KEY=0x...")
-pre = requests.post(ENDPOINT, json=BODY, timeout=30)
-if pre.status_code == 200:
-    print(json.dumps(pre.json(), indent=2))
-    exit()
 
-price = int(pre.json()["accepts"][0]["maxAmountRequired"])
-
-res = x402_requests(Account.from_key(key)).post(ENDPOINT, json=BODY, timeout=60)
-print(json.dumps(res.json(), indent=2))
+# Try to create session normally first
+try:
+    anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
+    session = anchor_client.sessions.create()
+    print(json.dumps(session.data, indent=2))
+except Exception as e:
+    # If we get a 402 error, handle payment
+    if "402" in str(e):
+        # Get payment details and process with x402
+        pre = requests.post(ENDPOINT, json=BODY, timeout=30)
+        price = int(pre.json()["accepts"][0]["maxAmountRequired"])
+        
+        res = x402_requests(Account.from_key(key)).post(ENDPOINT, json=BODY, timeout=60)
+        print(json.dumps(res.json(), indent=2))
+    else:
+        raise e
 ```
+
+```javascript node.js
+import AnchorBrowser from 'anchorbrowser';
+import { Account } from 'eth-account';
+import { x402Fetch } from 'x402';
+
+(async () => {
+  const ENDPOINT = "https://api.anchorbrowser.io/v1/sessions";
+  const BODY = {};
+  
+  const key = process.env.PRIVATE_KEY;
+  if (!key) {
+    console.error("Set PRIVATE_KEY=0x...");
+    process.exit(1);
+  }
+  
+  try {
+    // Try to create session normally first
+    const anchor_client = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
+    const session = await anchor_client.sessions.create();
+    console.log(JSON.stringify(session.data, null, 2));
+  } catch (error) {
+    // If we get a 402 error, handle payment
+    if (error.message.includes("402")) {
+      const pre = await fetch(ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(BODY)
+      });
+      
+      const preData = await pre.json();
+      const price = parseInt(preData.accepts[0].maxAmountRequired);
+      
+      const account = Account.fromPrivateKey(key);
+      const res = await x402Fetch(account, ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(BODY)
+      });
+      
+      console.log(JSON.stringify(await res.json(), null, 2));
+    } else {
+      throw error;
+    }
+  }
+})().catch(console.error);
+```
+
+</CodeGroup>
 
 
 ## Pricing

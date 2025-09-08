@@ -28,19 +28,46 @@ The default maximum duration is `180` minutes (3 hours), but you can adjust this
 
 ### Implementation Example
 
-```bash
-curl --request POST \
-  --url https://api.anchorbrowser.io/v1/sessions \
-  --header 'Content-Type: application/json' \
-  --header 'anchor-api-key: your_api_key_here' \
-  --data '{
-    "session": {
-      "timeout": {
-        "max_duration": 10,
-        "idle_timeout": 3
+<CodeGroup>
+
+
+```javascript node.js
+import AnchorBrowser from 'anchorbrowser';
+
+(async () => {
+  const anchor_client = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
+  
+  const session = await anchor_client.sessions.create({
+    session: {
+      timeout: {
+        max_duration: 10,  // 10 minutes hard limit
+        idle_timeout: 3    // 3 minutes of inactivity
       }
     }
-  }'
+  });
+  
+  console.log("Session created with timeout configuration:", session.data.id);
+})().catch(console.error);
 ```
+
+```python python
+import os
+from anchorbrowser import Anchorbrowser
+
+anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
+
+session = anchor_client.sessions.create(
+    session={
+        "timeout": {
+            "max_duration": 10,  # 10 minutes hard limit
+            "idle_timeout": 3    # 3 minutes of inactivity
+        }
+    }
+)
+
+print("Session created with timeout configuration:", session.data.id)
+```
+
+</CodeGroup>
 
 In this example, replace `"your_api_key_here"` with your actual API key. The configuration sets a 10-minute hard session limit with `max_duration`, while `idle_timeout` ensures the session terminates after 3 minutes of no active connections. These two timeout mechanisms work independently, so the session will end when whichever condition is met first.  

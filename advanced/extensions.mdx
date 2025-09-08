@@ -33,7 +33,7 @@ Once extracted, you'll see the extension's files:
 After inspecting (and optionally modifying) the files:
 1. **Select all files and folders** in the extracted directory
 2. **Create a new ZIP file** containing all the extension files
-3. **Upload this ZIP** to AnchorBrowser using the API
+3. **Upload this ZIP** to AnchorBrowser using the SDK
 
 ## Extension Requirements
 
@@ -57,48 +57,46 @@ Your extension ZIP file must contain a valid `manifest.json` with basic extensio
 }
 ```
 
-## Code Examples
-
-### JavaScript/Node.js
+## Code Example
 
 <CodeGroup>
 
-```tsx node.js
-import fs from 'fs';
-import AnchorBrowser from 'anchorbrowser';
+```javascript node.js
+  import AnchorBrowser from 'anchorbrowser';
+  import fs from 'fs';
 
-const anchor_client = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
+  const anchor_client = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
 
-const extension = await anchor_client.extensions.upload({
-  file: fs.createReadStream('./my-extension.zip'),
-  name: 'My Custom Extension'
-});
-const extensionId = extension.data.id;
-console.log("ExtensionId:", extensionId);
+  const extension = await anchor_client.extensions.upload({
+    file: fs.createReadStream('./my-extension.zip'),
+    name: 'My Custom Extension'
+  });
+  const extensionId = extension.data.id;
+  console.log("ExtensionId:", extensionId);
 
-const session = await anchor_client.sessions.create({
-  browser: {
-    extensions: [extensionId]
-  }
-});
-console.log("Session:", session);
+  const session = await anchor_client.sessions.create({
+    browser: {
+      extensions: [extensionId]
+    }
+  });
+  console.log("Session:", session);
 ```
 
 ```python python
-from anchorbrowser import Anchorbrowser
-import os
+  from anchorbrowser import Anchorbrowser
+  import os
 
-anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
+  anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
 
-with open('./my-extension.zip', 'rb') as file:
-  extension = anchor_client.extensions.upload(file=file,name='My Custom Extension')
-extensionId = extension.data.id
-print("ExtensionId:", extensionId)
+  with open('./my-extension.zip', 'rb') as file:
+    extension = anchor_client.extensions.upload(file=file,name='My Custom Extension')
+  extensionId = extension.data.id
+  print("ExtensionId:", extensionId)
 
-session = anchor_client.sessions.create(browser={
-    "extensions": [extensionId]
-  });
-print("Session:", session)
+  session = anchor_client.sessions.create(browser={
+      "extensions": [extensionId]
+    })
+  print("Session:", session)
 ```
 </CodeGroup>
 

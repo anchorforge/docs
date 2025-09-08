@@ -13,30 +13,26 @@ Anchor Browser provides built-in session recording that allows you to capture an
 Anchor Browser automatically records browser sessions and creates an MP4 video file that captures the complete visual experience.
 Recordings are accessible both through our API and the web UI (see below).
 
-<Expandable title="API Usage">
-# API Usage
+<Expandable title="SDK Usage">
+# SDK Usage
 ## Record a Session
 
 Recording is enabled by default when creating a session.
-Start a session using the [API](/api-reference/browser-sessions/start-browser-session), you can enable recording by setting `recording: true` in the request body.
-
+Start a session using the [SDK](/sdk-reference/browser-sessions/start-browser-session), you can enable recording by setting `recording: true` in the request body.
 
 
 <CodeGroup>
 
 ```javascript node.js
-const axios = require('axios');
+import AnchorBrowser from 'anchorbrowser';
 
 (async () => {
-  const response = await axios.post("https://api.anchorbrowser.io/v1/sessions", {
+  const anchor_client = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
+  
+  const response = await anchor_client.sessions.create({
     session: {
       recording: true  // Enable recording (default)
     }
-  }, {
-    headers: {
-      "anchor-api-key": process.env.ANCHOR_API_KEY,
-      "Content-Type": "application/json",
-    },
   });
   
   console.log("Session created:", response.data);
@@ -45,24 +41,16 @@ const axios = require('axios');
 
 ```python python
 import os
-import requests
+from anchorbrowser import Anchorbrowser
 
-ANCHOR_API_KEY = os.getenv("ANCHOR_API_KEY")
+anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
 
-response = requests.post(
-    "https://api.anchorbrowser.io/v1/sessions",
-    json={
-        "session": {
-            "recording": True  # Enable recording (default)
-        }
-    },
-    headers={
-        "anchor-api-key": ANCHOR_API_KEY,
-        "Content-Type": "application/json",
-    },
+response = anchor_client.sessions.create(
+    session={
+        "recording": True  # Enable recording (default)
+    }
 )
-response.raise_for_status()
-print("Session created:", response.json())
+print("Session created:", response.data)
 ```
 
 </CodeGroup>
@@ -74,39 +62,26 @@ Retrieve recordings for a specific session:
 <CodeGroup>
 
 ```javascript node.js
-const axios = require('axios');
+import AnchorBrowser from 'anchorbrowser';
 
 (async () => {
+  const anchor_client = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
   const sessionId = 'your-session-id'; // Replace with actual session ID
   
-  const recordings = await axios.get(
-    `https://api.anchorbrowser.io/v1/sessions/${sessionId}/recordings`,
-    {
-      headers: {
-        "anchor-api-key": process.env.ANCHOR_API_KEY,
-      },
-    }
-  );
-
+  const recordings = await anchor_client.sessions.recordings.list(sessionId);
   console.log("Recordings:", recordings.data);
 })().catch(console.error);
 ```
 
 ```python python
 import os
-import requests
+from anchorbrowser import Anchorbrowser
 
-ANCHOR_API_KEY = os.getenv("ANCHOR_API_KEY")
+anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
 session_id = "your-session-id"  # Replace with actual session ID
 
-recordings = requests.get(
-    f"https://api.anchorbrowser.io/v1/sessions/{session_id}/recordings",
-    headers={
-        "anchor-api-key": ANCHOR_API_KEY,
-    },
-)
-recordings.raise_for_status()
-print("Recordings:", recordings.json())
+recordings = anchor_client.sessions.recordings.list(session_id)
+print("Recordings:", recordings.data)
 ```
 
 </CodeGroup>
@@ -118,52 +93,38 @@ Download a specific recording file:
 <CodeGroup>
 
 ```javascript node.js
-const axios = require('axios');
-const fs = require('fs');
-
-(async () => {
-  const sessionId = 'your-session-id'; // Replace with actual session ID
+  import AnchorBrowser from 'anchorbrowser';
+  import { writeFile } from 'node:fs/promises';
   
-  const recording = await axios.get(
-    `https://api.anchorbrowser.io/v1/sessions/${sessionId}/recordings/primary/fetch`,
-    {
-      headers: {
-        "anchor-api-key": process.env.ANCHOR_API_KEY,
-      },
-      responseType: 'stream'
-    }
-  );
-
-  // Save to file
-  const writer = fs.createWriteStream(`recording-${sessionId}.mp4`);
-  recording.data.pipe(writer);
-  
-  console.log(`Recording saved as recording-${sessionId}.mp4`);
-})().catch(console.error);
+  (async () => {
+    const anchor_client = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
+    // const sessionId = 'your-session-id'; // Replace with actual session ID
+    
+    const recording = await anchor_client.sessions.recordings.primary.get(sessionId);
+    
+    // Save to file
+    const buffer = await recording.arrayBuffer();
+    await writeFile(`recording-${sessionId}.mp4`, Buffer.from(buffer));
+    
+    console.log(`Recording saved as recording-${sessionId}.mp4`);
+  })().catch(console.error);
 ```
 
 ```python python
-import os
-import requests
+  import os
+  from anchorbrowser import Anchorbrowser
 
-ANCHOR_API_KEY = os.getenv("ANCHOR_API_KEY")
-session_id = "your-session-id"  # Replace with actual session ID
+  anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
+  session_id = "your-session-id"  # Replace with actual session ID
 
-recording = requests.get(
-    f"https://api.anchorbrowser.io/v1/sessions/{session_id}/recordings/primary/fetch",
-    headers={
-        "anchor-api-key": ANCHOR_API_KEY,
-    },
-    stream=True
-)
-recording.raise_for_status()
+  recording = anchor_client.sessions.recordings.primary.get(session_id)
 
-# Save to file
-with open(f"recording-{session_id}.mp4", "wb") as f:
-    for chunk in recording.iter_content(chunk_size=8192):
-        f.write(chunk)
+  # Save to file
+  with open(f"recording-{session_id}.mp4", "wb") as f:
+      for chunk in recording.iter_bytes(chunk_size=8192):
+          f.write(chunk)
 
-print(f"Recording saved as recording-{session_id}.mp4")
+  print(f"Recording saved as recording-{session_id}.mp4")
 ```
 
 </CodeGroup>

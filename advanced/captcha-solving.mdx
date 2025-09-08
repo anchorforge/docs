@@ -14,16 +14,40 @@ For the full list of available options, view the [interactive api documentation]
 
 ### Code Example
 
-```bash
-curl --request POST \
-  --url https://api.anchorbrowser.io/v1/sessions \
-  --header 'Content-Type: application/json' \
-  --header 'anchor-api-key: <api-key>' \
-  --data '{
-  "browser": {
-    "captcha_solver": {
-      "active": true
+<CodeGroup>
+```javascript node.js
+import AnchorBrowser from 'anchorbrowser';
+
+(async () => {
+  const anchor_client = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
+  
+  const session = await anchor_client.sessions.create({
+    browser: {
+      captcha_solver: {
+        active: true
+      }
     }
-  }
-}'
+  });
+  
+  console.log("Session created with CAPTCHA solver:", session.data.id);
+})().catch(console.error);
 ```
+
+```python python
+import os
+from anchorbrowser import Anchorbrowser
+
+anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
+
+session = anchor_client.sessions.create(
+    browser={
+        "captcha_solver": {
+            "active": True
+        }
+    }
+)
+
+print("Session created with CAPTCHA solver:", session.data.id)
+```
+
+</CodeGroup>
