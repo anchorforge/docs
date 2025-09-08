@@ -33,7 +33,7 @@ Once extracted, you'll see the extension's files:
 After inspecting (and optionally modifying) the files:
 1. **Select all files and folders** in the extracted directory
 2. **Create a new ZIP file** containing all the extension files
-3. **Upload this ZIP** to AnchorBrowser using the API
+3. **Upload this ZIP** to AnchorBrowser using the SDK
 
 ## Extension Requirements
 
@@ -95,7 +95,7 @@ Your extension ZIP file must contain a valid `manifest.json` with basic extensio
 
   session = anchor_client.sessions.create(browser={
       "extensions": [extensionId]
-    });
+    })
   print("Session:", session)
 ```
 </CodeGroup>

@@ -29,6 +29,8 @@ POST https://api.anchorbrowser.io/api/v1/events/{eventName}/wait
 ```
 
 Both endpoints require `anchor-api-key` header and accept JSON payloads.
+
+####  
 </Expandable>
 
 ## MFA Use Case
@@ -136,12 +138,3 @@ const mfaData = await waitPromise;
 - Always set appropriate timeouts
 - Validate received event data
 - Handle timeout scenarios gracefully
-
-```javascript
-const mfaEvent = await waitForEvent('mfa_code', 30000);
-if (mfaEvent?.data?.code && /^\d{6}$/.test(mfaEvent.data.code)) {
-  // Use validated MFA code
-} else {
-  throw new Error('Invalid or missing MFA code');
-}
-```

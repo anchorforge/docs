@@ -33,7 +33,7 @@ const axios = require("axios");
 (async () => {
     const session = await axios.post("https://api.anchorbrowser.io/v1/sessions", {}, {
         headers: {
-            "anchor-api-key": process.env.ANCHORBROWSER_API_KEY,
+            "anchor-api-key": process.env.ANCHOR_API_KEY,
             "Content-Type": "application/json"
         }
     });
@@ -48,7 +48,7 @@ import os
 
 url = "https://api.anchorbrowser.io/v1/sessions"
 headers = {
-    "anchor-api-key": f"{os.getenv('ANCHORBROWSER_API_KEY')}",
+    "anchor-api-key": f"{os.getenv('ANCHOR_API_KEY')}",
     'Content-Type': 'application/json'
   }
 session = requests.post(url, headers=headers)
@@ -135,7 +135,7 @@ const axios = require("axios");
         "https://api.anchorbrowser.io/v1/sessions",
         browserConfiguration,
         { headers: {
-            "anchor-api-key": process.env.ANCHORBROWSER_API_KEY,
+            "anchor-api-key": process.env.ANCHOR_API_KEY,
             "Content-Type": "application/json",
         },
     });
@@ -169,7 +169,7 @@ browserConfiguration = {
 response = requests.post(
     "https://api.anchorbrowser.io/v1/sessions",
     headers={
-        "anchor-api-key": os.getenv("ANCHORBROWSER_API_KEY"),
+        "anchor-api-key": os.getenv("ANCHOR_API_KEY"),
         "Content-Type": "application/json",
     }, json=browserConfiguration
 )
