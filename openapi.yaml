@@ -1328,6 +1328,66 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /v1/sessions/{session_id}/pages:
+    get:
+      summary: Get Browser Session Pages
+      description: Retrieves a list of pages associated with a specific browser session.
+      tags:
+        - Browser Sessions
+      parameters:
+        - in: path
+          name: session_id
+          required: true
+          description: The ID of the session to retrieve pages for.
+          schema:
+            type: string
+      security:
+        - api_key_header: []
+      responses:
+        "200":
+          description: Session pages retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      description: The unique identifier of the page.
+                    title:
+                      type: string
+                      description: The title of the page.
+                    url:
+                      type: string
+                      description: The URL of the page.
+                    frontend_url:
+                      type: string
+                      description: The frontend URL for accessing the page.
+                  required:
+                    - id
+                    - title
+                    - url
+                    - frontend_url
+        "401":
+          description: Invalid API Key or unauthorized access.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Session not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
   /v1/sessions/{session_id}/recordings:
     get:
       summary: List Session Recordings
