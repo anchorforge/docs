@@ -95,7 +95,6 @@
               "integrations/browseruse-deployment",
               "integrations/openai-cua",
               "integrations/groq",
-              "advanced/x402-payment-integration",
               "advanced/cloudflare-web-bot-auth",
               "integrations/make",
               "agent-frameworks/crewai",
