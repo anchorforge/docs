@@ -93,13 +93,25 @@
                 ]
               },
               "integrations/browseruse-deployment",
-              "integrations/openai-cua",
               "integrations/groq",
               "advanced/cloudflare-web-bot-auth",
               "integrations/make",
               "agent-frameworks/crewai",
               "agent-frameworks/langchain",
-              "agent-frameworks/custom-agent-framework"
+              "agent-frameworks/custom-agent-framework",
+              {
+                "group": "Open Source",
+                "icon": "stars",
+                "pages": [
+                  {
+                    "group": "Playwright",
+                    "icon": "stars",
+                    "pages": [
+                      "integrations/open-source/playwright/index"
+                    ]
+                  }
+                ]
+              }
             ]
           },
           {
