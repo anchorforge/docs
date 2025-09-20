@@ -107,7 +107,25 @@
                     "group": "Playwright",
                     "icon": "stars",
                     "pages": [
-                      "integrations/open-source/playwright/index"
+                      "integrations/open-source/playwright/index",
+                     {
+                        "group": "E2E Testing",
+                        "icon": "stars",
+                        "pages": [
+                          "integrations/open-source/playwright/e2e-testing/storybook",
+                          "integrations/open-source/playwright/e2e-testing/grafana",
+                          "integrations/open-source/playwright/e2e-testing/apache-superset"
+                        ]
+                      },
+                      {
+                        "group": "Business Applications",
+                        "icon": "stars",
+                        "pages": [
+                          "integrations/open-source/playwright/business-applications/netsuite",
+                          "integrations/open-source/playwright/business-applications/sap-s4-hana",
+                          "integrations/open-source/playwright/business-applications/sage-intact"
+                        ]
+                      }
                     ]
                   }
                 ]
