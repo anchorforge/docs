@@ -93,13 +93,62 @@
                 ]
               },
               "integrations/browseruse-deployment",
-              "integrations/openai-cua",
               "integrations/groq",
               "advanced/cloudflare-web-bot-auth",
               "integrations/make",
               "agent-frameworks/crewai",
               "agent-frameworks/langchain",
-              "agent-frameworks/custom-agent-framework"
+              "agent-frameworks/custom-agent-framework",
+              {
+                "group": "Open Source",
+                "icon": "stars",
+                "pages": [
+                  {
+                    "group": "Playwright",
+                    "icon": "stars",
+                    "pages": [
+                      "integrations/open-source/playwright/index",
+                     {
+                        "group": "E2E Testing",
+                        "icon": "stars",
+                        "pages": [
+                          "integrations/open-source/playwright/e2e-testing/storybook",
+                          "integrations/open-source/playwright/e2e-testing/grafana",
+                          "integrations/open-source/playwright/e2e-testing/apache-superset",
+                          "integrations/open-source/playwright/e2e-testing/openhands",
+                          "integrations/open-source/playwright/e2e-testing/twenty"
+                        ]
+                      },
+                      {
+                        "group": "Business Applications",
+                        "icon": "stars",
+                        "pages": [
+                          "integrations/open-source/playwright/business-applications/netsuite",
+                          "integrations/open-source/playwright/business-applications/sap-s4-hana",
+                          "integrations/open-source/playwright/business-applications/sage-intact",
+                          "integrations/open-source/playwright/business-applications/salesforce",
+                          "integrations/open-source/playwright/business-applications/zendesk",
+                          "integrations/open-source/playwright/business-applications/tableau",
+                          "integrations/open-source/playwright/business-applications/notion",
+                          "integrations/open-source/playwright/business-applications/jira",
+                          "integrations/open-source/playwright/business-applications/attio",
+                          "integrations/open-source/playwright/business-applications/pipedrive",
+                          "integrations/open-source/playwright/business-applications/hubspot",
+                          "integrations/open-source/playwright/business-applications/dropbox",
+                          "integrations/open-source/playwright/business-applications/clickup",
+                          "integrations/open-source/playwright/business-applications/monday",
+                          "integrations/open-source/playwright/business-applications/docusign",
+                          "integrations/open-source/playwright/business-applications/airtable",
+                          "integrations/open-source/playwright/business-applications/figma",
+                          "integrations/open-source/playwright/business-applications/miro",
+                          "integrations/open-source/playwright/business-applications/wrike",
+                          "integrations/open-source/playwright/business-applications/bill"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
             ]
           },
           {
