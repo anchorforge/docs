@@ -4,7 +4,7 @@ description: "Automate Figma design workflows with Playwright when APIs aren't a
 icon: 'stars'
 ---
 
-## How to Automate Figma with Playwright
+# How to Automate Figma with Playwright
 
 Automate critical Figma design workflows with Playwright when APIs aren't available or sufficient. You'll eliminate manual design handoffs and reduce version control errors by automating repetitive design collaboration processes. Use Playwright to interact with Figma's web interface programmatically.
 
@@ -15,7 +15,7 @@ Automate critical Figma design workflows with Playwright when APIs aren't availa
 
 Install Playwright and configure authentication:
 
-```
+```bash
 npm install playwright
 ```
 
@@ -23,7 +23,7 @@ npm install playwright
 
 Create scripts for common Figma actions:
 
-```
+```JavaScript
 import { chromium } from 'playwright';
 
 const browser = await chromium.launch();

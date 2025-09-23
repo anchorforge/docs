@@ -14,15 +14,16 @@ Test your Storybook components directly with Playwright's component testing fram
 
 Install the required packages:
 
-```
+```bash
 npm install @storybook/react/experimental-playwright @playwright/experimental-ct-react
 ```
+
 
 ## Write Tests
 
 Create tests that mount your stories:
 
-```
+```JavaScript
 import { createTest } from '@storybook/react/experimental-playwright';
 import { test as base } from '@playwright/experimental-ct-react';
 import stories from './Button.stories.portable';

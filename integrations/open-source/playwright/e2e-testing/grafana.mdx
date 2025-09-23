@@ -16,15 +16,16 @@ Test your Grafana dashboards and monitoring workflows with Playwright's end-to-e
 
 Install Playwright and configure for Grafana testing:
 
-```
+```bash
 npm install playwright
 ```
+
 
 ## Write Tests
 
 Create tests for dashboard functionality:
 
-```
+```JavaScript
 import { test, expect } from '@playwright/test';
 
 test('dashboard loads with correct panels', async ({ page }) => {

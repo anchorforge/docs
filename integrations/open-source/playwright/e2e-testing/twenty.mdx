@@ -15,15 +15,16 @@ Test your Twenty CRM workflows with Playwright's end-to-end testing framework. Y
 
 Install Playwright and configure for Twenty testing:
 
-```
+```bash
 npm install playwright
 ```
+
 
 ## Write Tests
 
 Create tests for CRM functionality:
 
-```
+```JavaScript
 import { test, expect } from '@playwright/test';
 
 test('creates new contact successfully', async ({ page }) => {
