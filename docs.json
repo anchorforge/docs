@@ -219,5 +219,10 @@
     "socials": {
       "x": "https://x.com/anchorbrowser"
     }
+  },
+  "integrations": {
+    "posthog": {
+      "apiKey": "phc_Glt3S5wLjDhBxQXiauvIHMh4h9P2BAWIsEqyQPwkwC5"
+    }
   }
 }
