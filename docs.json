@@ -142,7 +142,16 @@
                           "integrations/open-source/playwright/business-applications/figma",
                           "integrations/open-source/playwright/business-applications/miro",
                           "integrations/open-source/playwright/business-applications/wrike",
-                          "integrations/open-source/playwright/business-applications/bill"
+                          "integrations/open-source/playwright/business-applications/bill",
+                          "integrations/open-source/playwright/business-applications/uipath",
+                          "integrations/open-source/playwright/business-applications/servicenow"
+                        ]
+                      },
+                      {
+                        "group": "Government",
+                        "icon": "stars",
+                        "pages": [
+                        
                         ]
                       }
                     ]
