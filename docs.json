@@ -144,7 +144,8 @@
                           "integrations/open-source/playwright/business-applications/wrike",
                           "integrations/open-source/playwright/business-applications/bill",
                           "integrations/open-source/playwright/business-applications/uipath",
-                          "integrations/open-source/playwright/business-applications/servicenow"
+                          "integrations/open-source/playwright/business-applications/servicenow",
+                          "integrations/open-source/playwright/business-applications/crowdstrike"
                         ]
                       },
                       {
