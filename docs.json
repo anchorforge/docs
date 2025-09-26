@@ -152,7 +152,13 @@
                         "group": "Government",
                         "icon": "stars",
                         "pages": [
-                        
+                          {
+                            "group": "USA",
+                            "icon": "stars",
+                            "pages": [
+                              "integrations/open-source/playwright/government/usa/federal/fincen-105"
+                            ]
+                          }
                         ]
                       }
                     ]
