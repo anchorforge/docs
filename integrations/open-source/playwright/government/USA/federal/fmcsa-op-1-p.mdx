@@ -1,12 +1,12 @@
 ---
 title: "FMCSA Form OP-1(P)"
-description: "Automate motor carrier property operating authority application workflows with Playwright when APIs aren't available."
+description: "Automate motor carrier passenger operating authority application workflows with Playwright when APIs aren't available."
 icon: 'stars'
 ---
 
 # How to Automate FMCSA Form OP-1(P) with Playwright
 
-Automate FMCSA property carrier operating authority application workflows with Playwright when APIs aren't available or sufficient. You'll eliminate manual registration processes and reduce authority approval delays by automating repetitive FMCSA application workflows. Use Playwright to interact with FMCSA's Unified Registration System programmatically.
+Automate FMCSA passenger carrier operating authority application workflows with Playwright when APIs aren't available or sufficient. You'll eliminate manual registration processes and reduce authority approval delays by automating repetitive FMCSA application workflows. Use Playwright to interact with FMCSA's Unified Registration System programmatically.
 
 [View FMCSA developer resources](https://mobile.fmcsa.dot.gov/QCDevsite/docs/apiAccess) for available APIs when applicable.
 
@@ -36,7 +36,7 @@ await page.click('[data-testid="login-button"]');
 
 // Start new OP-1(P) application
 await page.click('[data-testid="new-application"]');
-await page.selectOption('[name="application_type"]', 'property_carrier_authority');
+await page.selectOption('[name="application_type"]', 'passenger_carrier_authority');
 await page.selectOption('[name="operation_classification"]', 'for_hire');
 
 // Legal business name
@@ -83,9 +83,7 @@ await page.fill('[name="owner_ssn_2"]', '345-67-8901');
 
 // Operating authority requested
 await page.check('[name="interstate_authority"]');
-await page.selectOption('[name="property_type"]', 'general_freight');
-await page.check('[name="household_goods"]');
-await page.check('[name="commodities_refrigerated"]');
+await page.selectOption('[name="passenger_type"]', 'bus');
 
 // Geographic scope
 await page.check('[name="48_states"]');
