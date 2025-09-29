@@ -1,0 +1,156 @@
+---
+title: "DOJ Form 361"
+description: "Automate bankruptcy filing fee installment request workflows with Playwright when APIs aren't available."
+icon: 'stars'
+---
+
+# How to Automate DOJ Form 361 with Playwright
+
+Automate bankruptcy filing fee installment payment request workflows with Playwright when APIs aren't available or sufficient. You'll eliminate manual payment arrangement processing and reduce case filing delays by automating repetitive fee waiver and installment processes. Use Playwright to interact with PACER and U.S. Trustee systems programmatically.
+
+[View PACER developer resources](https://pacer.uscourts.gov/file-case/developer-resources) for available APIs when applicable.
+
+## Setup
+
+Install Playwright and configure authentication:
+```bash
+npm install playwright
+```
+
+## Automate Workflows
+
+Create scripts for common DOJ Form 361 tasks:
+
+```JavaScript
+import { chromium } from 'playwright';
+
+const browser = await chromium.launch();
+const page = await browser.newPage();
+
+// Navigate to PACER bankruptcy system
+await page.goto('https://ecf.pacer.uscourts.gov/');
+await page.fill('[data-testid="username"]', process.env.PACER_USERNAME);
+await page.fill('[data-testid="password"]', process.env.PACER_PASSWORD);
+await page.click('[data-testid="login-button"]');
+
+// Start new installment payment application
+await page.click('[data-testid="bankruptcy-filing"]');
+await page.click('[data-testid="form-361"]');
+await page.selectOption('[name="bankruptcy_chapter"]', 'chapter_7');
+
+// Debtor information
+await page.fill('[name="debtor_first_name"]', 'Michael');
+await page.fill('[name="debtor_middle_name"]', 'James');
+await page.fill('[name="debtor_last_name"]', 'Thompson');
+await page.fill('[name="ssn"]', '456-78-9012');
+await page.fill('[name="case_number"]', '24-12345');
+
+// Court information
+await page.selectOption('[name="district"]', 'northern_california');
+await page.selectOption('[name="division"]', 'san_francisco');
+await page.fill('[name="judge_name"]', 'Hon. Patricia Chen');
+
+// Joint debtor (if applicable)
+await page.check('[name="joint_petition"]');
+await page.fill('[name="joint_first_name"]', 'Lisa');
+await page.fill('[name="joint_middle_name"]', 'Marie');
+await page.fill('[name="joint_last_name"]', 'Thompson');
+await page.fill('[name="joint_ssn"]', '789-01-2345');
+
+// Contact information
+await page.fill('[name="address"]', '567 Market Street, Apt 12');
+await page.fill('[name="city"]', 'San Francisco');
+await page.selectOption('[name="state"]', 'CA');
+await page.fill('[name="zip"]', '94102');
+await page.fill('[name="phone"]', '415-555-0134');
+await page.fill('[name="email"]', 'mthompson@email.com');
+
+// Filing fee information
+await page.fill('[name="total_filing_fee"]', '338');
+await page.selectOption('[name="chapter_type"]', 'chapter_7_individual');
+
+// Financial situation
+await page.fill('[name="monthly_income"]', '1850');
+await page.fill('[name="monthly_expenses"]', '2100');
+await page.fill('[name="dependents"]', '2');
+await page.check('[name="receiving_public_assistance"]');
+await page.selectOption('[name="assistance_type"]', 'snap');
+
+// Installment payment proposal
+await page.selectOption('[name="number_of_installments"]', '4');
+await page.fill('[name="first_payment_amount"]', '85');
+await page.fill('[name="first_payment_date"]', '02/15/2025');
+await page.fill('[name="second_payment_amount"]', '84');
+await page.fill('[name="second_payment_date']', '03/15/2025');
+await page.fill('[name="third_payment_amount"]', '84');
+await page.fill('[name="third_payment_date"]', '04/15/2025');
+await page.fill('[name="fourth_payment_amount"]', '85');
+await page.fill('[name="fourth_payment_date"]', '05/15/2025');
+
+// Income sources
+await page.fill('[name="employment_income"]', '1600');
+await page.fill('[name="spouse_income"]', '250');
+await page.fill('[name="other_income"]', '0');
+await page.fill('[name="total_household_income"]', '1850');
+
+// Expense breakdown
+await page.fill('[name="rent_mortgage"]', '1200');
+await page.fill('[name="utilities"]', '180');
+await page.fill('[name="food"]', '450');
+await page.fill('[name="transportation"]', '150');
+await page.fill('[name="healthcare"]', '120');
+
+// Asset information
+await page.fill('[name="bank_accounts_total"]', '45');
+await page.fill('[name="vehicle_value"]', '3200');
+await page.fill('[name="personal_property_value"]', '800');
+await page.selectOption('[name="home_ownership"]', 'renter');
+
+// Hardship explanation
+await page.fill('[name="inability_to_pay_explanation"]', 'Lost primary employment three months ago. Currently working part-time while searching for full-time position. Family expenses exceed current income. Unable to pay filing fee in full without creating additional financial hardship.');
+
+// Attorney information (if represented)
+await page.check('[name="represented_by_attorney"]');
+await page.fill('[name="attorney_name"]', 'David Richardson');
+await page.fill('[name="attorney_bar_number"]', 'CA-234567');
+await page.fill('[name="attorney_firm"]', 'Bay Area Bankruptcy Law');
+await page.fill('[name="attorney_address"]', '890 Financial District Blvd, Suite 400');
+await page.fill('[name="attorney_phone"]', '415-555-0199');
+await page.fill('[name="attorney_email"]', 'drichardson@bayareabankruptcy.com');
+
+// Supporting documentation
+await page.click('[data-testid="upload-income-proof"]');
+await page.setInputFiles('[name="income_documents"]', './documents/paystubs_3months.pdf');
+await page.click('[data-testid="upload-expense-proof"]');
+await page.setInputFiles('[name="expense_documents"]', './documents/bills_statements.pdf');
+await page.click('[data-testid="upload-bank-statements"]');
+await page.setInputFiles('[name="bank_statements"]', './documents/bank_statements_2months.pdf');
+
+// Certification
+await page.check('[name="certify_unable_to_pay"]');
+await page.check('[name="certify_accuracy"]');
+await page.check('[name="understand_dismissal_risk"]');
+await page.check('[name="acknowledge_court_authority"]');
+
+// Signature
+await page.fill('[name="debtor_signature"]', 'Michael James Thompson');
+await page.fill('[name="debtor_signature_date"]', '01/28/2025');
+await page.fill('[name="joint_signature"]', 'Lisa Marie Thompson');
+await page.fill('[name="joint_signature_date"]', '01/28/2025');
+
+// Attorney signature (if applicable)
+await page.fill('[name="attorney_signature"]', 'David Richardson');
+await page.fill('[name="attorney_signature_date"]', '01/28/2025');
+await page.click('[data-testid="submit-application"]');
+
+// Download confirmation
+await page.click('[data-testid="download-confirmation"]');
+
+await browser.close();
+```
+
+Playwright handles payment calculation, income verification, and bankruptcy court submission processes automatically. You can automate installment applications, payment tracking, and case status monitoring workflows.
+
+## Scale your DOJ Form 361 automation with Anchor Browser
+
+Run your Playwright bankruptcy court automations on cloud browsers with enterprise-grade reliability and persistent PACER sessions. Learn more and get started for free: [https://anchorbrowser.io](https://anchorbrowser.io)

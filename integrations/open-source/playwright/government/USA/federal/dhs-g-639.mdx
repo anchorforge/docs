@@ -1,0 +1,108 @@
+---
+title: "DHS Form G-639"
+description: "Automate USCIS FOIA and Privacy Act records request workflows with Playwright when APIs aren't available."
+icon: 'stars'
+---
+
+# How to Automate USCIS Form G-639 with Playwright
+
+Automate USCIS Freedom of Information Act (FOIA) and Privacy Act records request workflows with Playwright when APIs aren't available or sufficient. You'll eliminate manual immigration records requests and reduce processing delays by automating repetitive FOIA filing processes. Use Playwright to interact with USCIS systems programmatically.
+
+[View USCIS developer resources](https://www.uscis.gov/tools) for available APIs when applicable.
+
+## Setup
+
+Install Playwright and configure authentication:
+```bash
+npm install playwright
+```
+
+## Automate Workflows
+
+Create scripts for common USCIS Form G-639 tasks:
+
+```JavaScript
+import { chromium } from 'playwright';
+
+const browser = await chromium.launch();
+const page = await browser.newPage();
+
+// Navigate to USCIS online system
+await page.goto('https://www.uscis.gov/records/request-records');
+await page.fill('[data-testid="username"]', process.env.USCIS_USERNAME);
+await page.fill('[data-testid="password"]', process.env.USCIS_PASSWORD);
+await page.click('[data-testid="login-button"]');
+
+// Start new G-639 request
+await page.click('[data-testid="new-form-g639"]');
+await page.selectOption('[name="request_type"]', 'foia');
+
+// Requester information
+await page.fill('[name="first_name"]', 'Maria');
+await page.fill('[name="middle_name"]', 'Elena');
+await page.fill('[name="last_name"]', 'Rodriguez');
+await page.fill('[name="other_names"]', 'Maria Garcia');
+await page.fill('[name="date_of_birth"]', '03/15/1985');
+await page.fill('[name="country_of_birth"]', 'Mexico');
+
+// Contact information
+await page.fill('[name="address"]', '123 Main Street, Apt 4B');
+await page.fill('[name="city"]', 'Los Angeles');
+await page.selectOption('[name="state"]', 'CA');
+await page.fill('[name="zip"]', '90012');
+await page.fill('[name="phone"]', '213-555-0198');
+await page.fill('[name="email"]', 'maria.rodriguez@email.com');
+
+// Request details
+await page.check('[name="requesting_own_records"]');
+await page.selectOption('[name="record_type"]', 'immigration_file');
+
+// A-Number and case information
+await page.fill('[name="alien_number"]', '012-345-678');
+await page.fill('[name="receipt_number"]', 'WAC2190012345');
+await page.fill('[name="case_number"]', 'LAX2023456789');
+
+// Records requested
+await page.check('[name="naturalization_certificate"]');
+await page.check('[name="green_card_records"]');
+await page.check('[name="visa_petition"]');
+await page.check('[name="adjustment_status"]');
+await page.fill('[name="date_range_from"]', '01/01/2018');
+await page.fill('[name="date_range_to"]', '12/31/2024');
+
+// Additional information
+await page.fill('[name="additional_details"]', 'Request includes all correspondence related to I-485 application filed in 2020 and subsequent green card issuance.');
+
+// Fee waiver request (if applicable)
+await page.check('[name="request_fee_waiver"]');
+await page.selectOption('[name="waiver_reason"]', 'financial_hardship');
+await page.fill('[name="annual_income"]', '28000');
+
+// Delivery preferences
+await page.selectOption('[name="delivery_method"]', 'electronic');
+await page.check('[name="certified_copy"]');
+
+// Identity verification
+await page.click('[data-testid="upload-id-front"]');
+await page.setInputFiles('[name="id_document"]', './documents/drivers_license_front.pdf');
+await page.click('[data-testid="upload-id-back"]');
+await page.setInputFiles('[name="id_document_back"]', './documents/drivers_license_back.pdf');
+
+// Signature and certification
+await page.check('[name="certify_accuracy"]');
+await page.fill('[name="signature_name"]', 'Maria Elena Rodriguez');
+await page.fill('[name="signature_date"]', '01/10/2025');
+await page.click('[data-testid="submit-request"]');
+
+// Download confirmation
+await page.click('[data-testid="download-confirmation"]');
+
+await browser.close();
+```
+
+Playwright handles record type selection, identity verification, and USCIS submission processes automatically. You can automate bulk FOIA requests, status tracking, and document retrieval workflows.
+
+## Scale your USCIS Form G-639 automation with Anchor Browser
+
+Run your Playwright USCIS automations on cloud browsers with enterprise-grade reliability and persistent immigration records sessions. Learn more and get started for free: [https://anchorbrowser.io](https://anchorbrowser.io)
+
