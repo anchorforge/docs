@@ -31,8 +31,10 @@ import { Anchorbrowser } from "anchorbrowser";
  const anchor_client = new Anchorbrowser()
  const session = await anchor_client.sessions.create({
     browser: {
-        name: 'new-profile',
-        persist: true
+        profile: {
+            name: 'new-profile',
+            persist: true
+            }
         }
     })
  console.log(session)
