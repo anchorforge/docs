@@ -19,7 +19,7 @@ npm install playwright
 
 ## Automate Workflows
 
-Create scripts for common FDA Form 2579 tasks:
+Create scripts for common [FDA Form 2579](https://www.fda.gov/media/144454/download) tasks:
 
 ```JavaScript
 import { chromium } from 'playwright';
@@ -27,11 +27,8 @@ import { chromium } from 'playwright';
 const browser = await chromium.launch();
 const page = await browser.newPage();
 
-// Navigate to FDA Food Facility Registration system
-await page.goto('https://www.access.fda.gov/scripts/furls/');
-await page.fill('[data-testid="username"]', process.env.FDA_USERNAME);
-await page.fill('[data-testid="password"]', process.env.FDA_PASSWORD);
-await page.click('[data-testid="login-button"]');
+// Navigate to FDA Food forms
+await page.goto('https://www.fda.gov/about-fda/reports-manuals-forms/forms');
 
 // Start new facility registration
 await page.click('[data-testid="new-registration"]');

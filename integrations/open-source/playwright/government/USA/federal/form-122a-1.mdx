@@ -19,7 +19,7 @@ npm install playwright
 
 ## Automate Workflows
 
-Create scripts for common Form 122A-1 tasks:
+Create scripts for common [Form 122A-1](https://www.uscourts.gov/file/26712/download) tasks:
 
 ```JavaScript
 import { chromium } from 'playwright';
@@ -27,11 +27,8 @@ import { chromium } from 'playwright';
 const browser = await chromium.launch();
 const page = await browser.newPage();
 
-// Navigate to PACER bankruptcy system
-await page.goto('https://ecf.pacer.uscourts.gov/');
-await page.fill('[data-testid="username"]', process.env.PACER_USERNAME);
-await page.fill('[data-testid="password"]', process.env.PACER_PASSWORD);
-await page.click('[data-testid="login-button"]');
+// Navigate to US Federal Courts system
+await page.goto('https://www.uscourts.gov/forms-rules/forms');
 
 // Start new Form 122A-1
 await page.click('[data-testid="bankruptcy-filing"]');

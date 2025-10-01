@@ -20,7 +20,7 @@ npm install playwright
 
 ## Automate Workflows
 
-Create scripts for common VA Form 21-526EZ tasks:
+Create scripts for common [VA Form 21-526EZ](https://www.vba.va.gov/pubs/forms/VBA-21-526EZ-ARE.pdf) tasks:
 
 ```JavaScript
 import { chromium } from 'playwright';
@@ -29,11 +29,7 @@ const browser = await chromium.launch();
 const page = await browser.newPage();
 
 // Navigate to VA.gov
-await page.goto('https://www.va.gov/disability/file-disability-claim-form-21-526ez/');
-await page.click('[data-testid="sign-in-button"]');
-await page.fill('[data-testid="username"]', process.env.VA_USERNAME);
-await page.fill('[data-testid="password"]', process.env.VA_PASSWORD);
-await page.click('[data-testid="login-button"]');
+await page.goto('https://www.va.gov/find-forms/'');
 
 // Start new disability claim
 await page.click('[data-testid="start-new-claim"]');

@@ -20,7 +20,7 @@ npm install playwright
 
 ## Automate Workflows
 
-Create scripts for common FMCSA Form BMC-40 tasks:
+Create scripts for common [FMCSA Form BMC-40](https://www.fmcsa.dot.gov/sites/fmcsa.dot.gov/files/2025-09/BMC-40%20Form.pdf) tasks:
 
 
 ```JavaScript
@@ -30,10 +30,7 @@ const browser = await chromium.launch();
 const page = await browser.newPage();
 
 // Navigate to FMCSA registration system
-await page.goto('https://li-public.fmcsa.dot.gov/');
-await page.fill('[data-testid="username"]', process.env.FMCSA_USERNAME);
-await page.fill('[data-testid="password"]', process.env.FMCSA_PASSWORD);
-await page.click('[data-testid="login-button"]');
+await page.goto('https://www.fmcsa.dot.gov/registration/registration-forms');
 
 // Start new BMC-40 filing
 await page.click('[data-testid="insurance-filing"]');

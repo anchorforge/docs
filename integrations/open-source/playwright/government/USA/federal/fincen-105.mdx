@@ -18,7 +18,7 @@ npm install playwright
 
 ## Automate Workflows
 
-Create scripts for common FinCEN 105 tasks:
+Create scripts for common [FinCEN 105](https://www.fincen.gov/system/files/shared/fin105_cmir.pdf) tasks:
 
 ```JavaScript
 import { chromium } from 'playwright';
@@ -27,7 +27,7 @@ const browser = await chromium.launch();
 const page = await browser.newPage();
 
 // Navigate to FinCEN 105 portal
-await page.goto('https://fincen105.cbp.dhs.gov/#/');
+await page.goto('https://www.fincen.gov/resources/filing-information');
 
 // Start new CMIR filing
 await page.click('[data-testid="new-filing-button"]');
