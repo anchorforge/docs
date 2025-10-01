@@ -19,7 +19,7 @@ npm install playwright
 
 ## Automate Workflows
 
-Create scripts for common BOP Form BP-S0243 tasks:
+Create scripts for common [BOP Form BP-S0243](https://www.bop.gov/policy/forms/BP_A0243.pdf) tasks:
 
 ```JavaScript
 import { chromium } from 'playwright';
@@ -27,11 +27,8 @@ import { chromium } from 'playwright';
 const browser = await chromium.launch();
 const page = await browser.newPage();
 
-// Navigate to BOP TRULINCS system
-await page.goto('https://www.bop.gov/inmateloc/');
-await page.fill('[data-testid="username"]', process.env.BOP_USERNAME);
-await page.fill('[data-testid="password"]', process.env.BOP_PASSWORD);
-await page.click('[data-testid="login-button"]');
+// Navigate to Bureau of Prisons website
+await page.goto('https://www.bop.gov/mobile/policy/forms.jsp');
 
 // Start new BP-S0243 request
 await page.click('[data-testid="new-form-s0243"]');

@@ -19,7 +19,7 @@ npm install playwright
 
 ## Automate Workflows
 
-Create scripts for common BLM Form 3510 tasks:
+Create scripts for common [BLM Form 3510](https://www.blm.gov/sites/blm.gov/files/uploads/Services_National-Operations-Center_Eforms_Fluid-and-Solid-Minerals_3510-001.pdf) tasks:
 
 ```JavaScript
 import { chromium } from 'playwright';
@@ -28,10 +28,7 @@ const browser = await chromium.launch();
 const page = await browser.newPage();
 
 // Navigate to BLM minerals system
-await page.goto('https://www.blm.gov/services/minerals');
-await page.fill('[data-testid="username"]', process.env.BLM_USERNAME);
-await page.fill('[data-testid="password"]', process.env.BLM_PASSWORD);
-await page.click('[data-testid="login-button"]');
+await page.goto('https://www.blm.gov/services/electronic-forms');
 
 // Start new mineral operations report
 await page.click('[data-testid="new-form-3510"]');

@@ -19,7 +19,7 @@ npm install playwright
 
 ## Automate Workflows
 
-Create scripts for common CCC Form 941 tasks:
+Create scripts for common [CCC Form 941](https://www.farmers.gov/sites/default/files/documents/form-ccc-941.pdf) tasks:
 
 ```JavaScript
 import { chromium } from 'playwright';
@@ -28,10 +28,7 @@ const browser = await chromium.launch();
 const page = await browser.newPage();
 
 // Navigate to farmers.gov system
-await page.goto('https://www.farmers.gov/service-center-locator');
-await page.fill('[data-testid="username"]', process.env.USDA_USERNAME);
-await page.fill('[data-testid="password"]', process.env.USDA_PASSWORD);
-await page.click('[data-testid="login-button"]');
+await page.goto('https://www.farmers.gov/working-with-us/common-forms');
 
 // Start new CCC-941 certification
 await page.click('[data-testid="new-form-941"]');

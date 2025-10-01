@@ -1,14 +1,14 @@
 ---
 title: "DOJ Form 361"
-description: "Automate bankruptcy filing fee installment request workflows with Playwright when APIs aren't available."
+description: "Automate Department of Justice identity certification workflows with Playwright when APIs aren't available."
 icon: 'stars'
 ---
 
 # How to Automate DOJ Form 361 with Playwright
 
-Automate bankruptcy filing fee installment payment request workflows with Playwright when APIs aren't available or sufficient. You'll eliminate manual payment arrangement processing and reduce case filing delays by automating repetitive fee waiver and installment processes. Use Playwright to interact with PACER and U.S. Trustee systems programmatically.
+Automate Department of Justice identity certification workflows with Playwright when APIs aren't available or sufficient. You'll eliminate manual FOIA and Privacy Act request processing and reduce verification delays by automating repetitive identity certification processes. Use Playwright to interact with DOJ records request systems programmatically.
 
-[View PACER developer resources](https://pacer.uscourts.gov/file-case/developer-resources) for available APIs when applicable.
+[View Department of Justice developer resources](https://www.justice.gov/developer) for available APIs when applicable.
 
 ## Setup
 
@@ -19,7 +19,7 @@ npm install playwright
 
 ## Automate Workflows
 
-Create scripts for common DOJ Form 361 tasks:
+Create scripts for common [DOJ Form 361](https://www.justice.gov/ust/file/doj361_form.pdf/dl?inline) tasks:
 
 ```JavaScript
 import { chromium } from 'playwright';
@@ -27,121 +27,146 @@ import { chromium } from 'playwright';
 const browser = await chromium.launch();
 const page = await browser.newPage();
 
-// Navigate to PACER bankruptcy system
-await page.goto('https://ecf.pacer.uscourts.gov/');
-await page.fill('[data-testid="username"]', process.env.PACER_USERNAME);
-await page.fill('[data-testid="password"]', process.env.PACER_PASSWORD);
-await page.click('[data-testid="login-button"]');
+// Navigate to Department of Justice website
+await page.goto('https://www.justice.gov/forms');
 
-// Start new installment payment application
-await page.click('[data-testid="bankruptcy-filing"]');
+// Start new identity certification
+await page.click('[data-testid="new-request"]');
 await page.click('[data-testid="form-361"]');
-await page.selectOption('[name="bankruptcy_chapter"]', 'chapter_7');
+await page.selectOption('[name="request_type"]', 'privacy_act_request');
 
-// Debtor information
-await page.fill('[name="debtor_first_name"]', 'Michael');
-await page.fill('[name="debtor_middle_name"]', 'James');
-await page.fill('[name="debtor_last_name"]', 'Thompson');
-await page.fill('[name="ssn"]', '456-78-9012');
-await page.fill('[name="case_number"]', '24-12345');
+// Full name of requester
+await page.fill('[name="requester_last_name"]', 'Thompson');
+await page.fill('[name="requester_first_name"]', 'Rebecca');
+await page.fill('[name="requester_middle_name"]', 'Anne');
+await page.fill('[name="requester_suffix"]', '');
 
-// Court information
-await page.selectOption('[name="district"]', 'northern_california');
-await page.selectOption('[name="division"]', 'san_francisco');
-await page.fill('[name="judge_name"]', 'Hon. Patricia Chen');
+// Citizenship status
+await page.selectOption('[name="citizenship_status"]', 'us_citizen');
 
-// Joint debtor (if applicable)
-await page.check('[name="joint_petition"]');
-await page.fill('[name="joint_first_name"]', 'Lisa');
-await page.fill('[name="joint_middle_name"]', 'Marie');
-await page.fill('[name="joint_last_name"]', 'Thompson');
-await page.fill('[name="joint_ssn"]', '789-01-2345');
+// Social Security Number (optional but recommended)
+await page.fill('[name="ssn"]', '123-45-6789');
+
+// Current address
+await page.fill('[name="address_line_1"]', '456 Constitution Avenue');
+await page.fill('[name="address_line_2"]', 'Apt 12B');
+await page.fill('[name="city"]', 'Washington');
+await page.selectOption('[name="state"]', 'DC');
+await page.fill('[name="zip"]', '20001');
+
+// Date of birth
+await page.fill('[name="date_of_birth"]', '06/14/1982');
+
+// Place of birth
+await page.fill('[name="place_of_birth_city"]', 'Philadelphia');
+await page.selectOption('[name="place_of_birth_state"]', 'PA');
+await page.selectOption('[name="place_of_birth_country"]', 'USA');
 
 // Contact information
-await page.fill('[name="address"]', '567 Market Street, Apt 12');
-await page.fill('[name="city"]', 'San Francisco');
-await page.selectOption('[name="state"]', 'CA');
-await page.fill('[name="zip"]', '94102');
-await page.fill('[name="phone"]', '415-555-0134');
-await page.fill('[name="email"]', 'mthompson@email.com');
+await page.fill('[name="phone"]', '202-555-0156');
+await page.fill('[name="email"]', 'rthompson@email.com');
 
-// Filing fee information
-await page.fill('[name="total_filing_fee"]', '338');
-await page.selectOption('[name="chapter_type"]', 'chapter_7_individual');
+// Records being requested
+await page.fill('[name="records_description"]', 'All records relating to employment with the Federal Bureau of Investigation from 2005 to 2015, including personnel files, training records, and performance evaluations.');
 
-// Financial situation
-await page.fill('[name="monthly_income"]', '1850');
-await page.fill('[name="monthly_expenses"]', '2100');
-await page.fill('[name="dependents"]', '2');
-await page.check('[name="receiving_public_assistance"]');
-await page.selectOption('[name="assistance_type"]', 'snap');
+// Time period for records
+await page.fill('[name="date_range_start"]', '01/01/2005');
+await page.fill('[name="date_range_end"]', '12/31/2015');
 
-// Installment payment proposal
-await page.selectOption('[name="number_of_installments"]', '4');
-await page.fill('[name="first_payment_amount"]', '85');
-await page.fill('[name="first_payment_date"]', '02/15/2025');
-await page.fill('[name="second_payment_amount"]', '84');
-await page.fill('[name="second_payment_date']', '03/15/2025');
-await page.fill('[name="third_payment_amount"]', '84');
-await page.fill('[name="third_payment_date"]', '04/15/2025');
-await page.fill('[name="fourth_payment_amount"]', '85');
-await page.fill('[name="fourth_payment_date"]', '05/15/2025');
+// DOJ component
+await page.selectOption('[name="doj_component"]', 'fbi');
 
-// Income sources
-await page.fill('[name="employment_income"]', '1600');
-await page.fill('[name="spouse_income"]', '250');
-await page.fill('[name="other_income"]', '0');
-await page.fill('[name="total_household_income"]', '1850');
+// Optional: Authorization to release information to another person
+await page.check('[name="authorize_release_to_another"]');
 
-// Expense breakdown
-await page.fill('[name="rent_mortgage"]', '1200');
-await page.fill('[name="utilities"]', '180');
-await page.fill('[name="food"]', '450');
-await page.fill('[name="transportation"]', '150');
-await page.fill('[name="healthcare"]', '120');
+// Authorized person information
+await page.fill('[name="authorized_person_name"]', 'David Thompson');
+await page.fill('[name="authorized_relationship"]', 'Spouse');
+await page.fill('[name="authorized_address"]', '456 Constitution Avenue, Apt 12B');
+await page.fill('[name="authorized_city"]', 'Washington');
+await page.selectOption('[name="authorized_state"]', 'DC');
+await page.fill('[name="authorized_zip"]', '20001');
+await page.fill('[name="authorized_phone"]', '202-555-0157');
+await page.fill('[name="authorized_email"]', 'dthompson@email.com');
 
-// Asset information
-await page.fill('[name="bank_accounts_total"]', '45');
-await page.fill('[name="vehicle_value"]', '3200');
-await page.fill('[name="personal_property_value"]', '800');
-await page.selectOption('[name="home_ownership"]', 'renter');
+// Purpose of authorization
+await page.fill('[name="authorization_purpose"]', 'Authorized to receive and review records on my behalf for legal proceedings.');
 
-// Hardship explanation
-await page.fill('[name="inability_to_pay_explanation"]', 'Lost primary employment three months ago. Currently working part-time while searching for full-time position. Family expenses exceed current income. Unable to pay filing fee in full without creating additional financial hardship.');
+// Previous names (if applicable)
+await page.check('[name="has_previous_names"]');
+await page.fill('[name="previous_name"]', 'Rebecca Miller');
+await page.fill('[name="name_change_date"]', '08/2010');
 
-// Attorney information (if represented)
-await page.check('[name="represented_by_attorney"]');
-await page.fill('[name="attorney_name"]', 'David Richardson');
-await page.fill('[name="attorney_bar_number"]', 'CA-234567');
-await page.fill('[name="attorney_firm"]', 'Bay Area Bankruptcy Law');
-await page.fill('[name="attorney_address"]', '890 Financial District Blvd, Suite 400');
-await page.fill('[name="attorney_phone"]', '415-555-0199');
-await page.fill('[name="attorney_email"]', 'drichardson@bayareabankruptcy.com');
+// Previous addresses (if relevant to records)
+await page.check('[name="has_previous_addresses"]');
+await page.fill('[name="previous_address"]', '789 Market Street, Philadelphia, PA 19107');
+await page.fill('[name="previous_address_dates"]', '2005-2010');
+
+// Employment information (if relevant)
+await page.fill('[name="employer_during_period"]', 'Federal Bureau of Investigation');
+await page.fill('[name="job_title"]', 'Special Agent');
+await page.fill('[name="employee_id"]', 'FBI-SA-12345');
+await page.fill('[name="employment_dates"]', '2005-2015');
+
+// Identity verification documents
+await page.click('[data-testid="upload-id-front"]');
+await page.setInputFiles('[name="identification_front"]', './documents/drivers_license_front.pdf');
+await page.click('[data-testid="upload-id-back"]');
+await page.setInputFiles('[name="identification_back"]', './documents/drivers_license_back.pdf');
 
 // Supporting documentation
-await page.click('[data-testid="upload-income-proof"]');
-await page.setInputFiles('[name="income_documents"]', './documents/paystubs_3months.pdf');
-await page.click('[data-testid="upload-expense-proof"]');
-await page.setInputFiles('[name="expense_documents"]', './documents/bills_statements.pdf');
-await page.click('[data-testid="upload-bank-statements"]');
-await page.setInputFiles('[name="bank_statements"]', './documents/bank_statements_2months.pdf');
+await page.click('[data-testid="upload-supporting-docs"]');
+await page.setInputFiles('[name="supporting_documents"]', './documents/birth_certificate.pdf');
 
-// Certification
-await page.check('[name="certify_unable_to_pay"]');
-await page.check('[name="certify_accuracy"]');
-await page.check('[name="understand_dismissal_risk"]');
-await page.check('[name="acknowledge_court_authority"]');
+// Notarization (if required)
+await page.check('[name="notarized"]');
+await page.fill('[name="notary_name"]', 'John Notary Public');
+await page.fill('[name="notary_commission_number"]', 'DC-12345');
+await page.fill('[name="notary_expiration"]', '12/31/2026');
+await page.fill('[name="notarization_date"]', '03/15/2025');
+
+// Fee waiver request (if applicable)
+await page.selectOption('[name="fee_waiver_requested"]', 'no');
+
+// Expedited processing request
+await page.selectOption('[name="expedited_processing"]', 'yes');
+await page.fill('[name="expedited_justification"]', 'Records needed for pending litigation with court-imposed deadline.');
+
+// Certification under penalty of perjury
+await page.check('[name="certify_true_and_correct"]');
+await page.check('[name="certify_identity"]');
+await page.check('[name="understand_penalties_false_statement"]');
+await page.check('[name="understand_penalties_false_pretenses"]');
+
+// Privacy Act acknowledgment
+await page.check('[name="acknowledge_privacy_act"]');
+await page.check('[name="consent_to_disclosure"]');
+
+// Request delivery preference
+await page.selectOption('[name="delivery_method"]', 'electronic');
+await page.check('[name="email_notification"]');
+
+// Declaration statement
+await page.fill('[name="declaration_text"]', 'I declare under penalty of perjury under the laws of the United States of America that the foregoing is true and correct, and that I am the person named above.');
 
 // Signature
-await page.fill('[name="debtor_signature"]', 'Michael James Thompson');
-await page.fill('[name="debtor_signature_date"]', '01/28/2025');
-await page.fill('[name="joint_signature"]', 'Lisa Marie Thompson');
-await page.fill('[name="joint_signature_date"]', '01/28/2025');
+await page.fill('[name="signature_name"]', 'Rebecca Anne Thompson');
+await page.fill('[name="signature_date"]', '03/15/2025');
 
-// Attorney signature (if applicable)
-await page.fill('[name="attorney_signature"]', 'David Richardson');
-await page.fill('[name="attorney_signature_date"]', '01/28/2025');
-await page.click('[data-testid="submit-application"]');
+// Digital signature or attestation
+await page.check('[name="electronic_signature_consent"]');
+await page.fill('[name="electronic_signature']', 'Rebecca Anne Thompson');
+
+// Authorized representative signature (if applicable)
+await page.fill('[name="authorized_signature"]', 'David Thompson');
+await page.fill('[name="authorized_signature_date"]', '03/15/2025');
+
+// Request tracking preferences
+await page.check('[name="track_request_online"]');
+await page.check('[name="sms_notifications"]');
+await page.fill('[name="mobile_number"]', '202-555-0156');
+
+await page.click('[data-testid="submit-certification"]');
 
 // Download confirmation
 await page.click('[data-testid="download-confirmation"]');
@@ -149,8 +174,8 @@ await page.click('[data-testid="download-confirmation"]');
 await browser.close();
 ```
 
-Playwright handles payment calculation, income verification, and bankruptcy court submission processes automatically. You can automate installment applications, payment tracking, and case status monitoring workflows.
+Playwright handles identity verification, authorization processing, and DOJ submission processes automatically. You can automate FOIA requests, Privacy Act requests, and identity certification workflows.
 
 ## Scale your DOJ Form 361 automation with Anchor Browser
 
-Run your Playwright bankruptcy court automations on cloud browsers with enterprise-grade reliability and persistent PACER sessions. Learn more and get started for free: [https://anchorbrowser.io](https://anchorbrowser.io)
+Run your Playwright DOJ automations on cloud browsers with enterprise-grade reliability and persistent PACER sessions. Learn more and get started for free: [https://anchorbrowser.io](https://anchorbrowser.io)

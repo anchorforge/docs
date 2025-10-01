@@ -19,7 +19,7 @@ npm install playwright
 
 ## Automate Workflows
 
-Create scripts for common IRS Form W-7 tasks:
+Create scripts for common [IRS Form W-7](https://www.irs.gov/pub/irs-pdf/fw7.pdf) tasks:
 
 ```JavaScript
 import { chromium } from 'playwright';
@@ -28,10 +28,7 @@ const browser = await chromium.launch();
 const page = await browser.newPage();
 
 // Navigate to IRS online system
-await page.goto('https://www.irs.gov/individuals/itin-application');
-await page.fill('[data-testid="username"]', process.env.IRS_USERNAME);
-await page.fill('[data-testid="password"]', process.env.IRS_PASSWORD);
-await page.click('[data-testid="login-button"]');
+await page.goto('https://www.irs.gov/forms-instructions);
 
 // Start new W-7 application
 await page.click('[data-testid="new-application"]');

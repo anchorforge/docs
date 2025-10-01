@@ -20,7 +20,7 @@ npm install playwright
 
 ## Automate Workflows
 
-Create scripts for common FMCSA Form OP-1(P) tasks:
+Create scripts for common [FMCSA Form OP-1(P)](https://www.fmcsa.dot.gov/sites/fmcsa.dot.gov/files/2025-09/OP-1%28P%29%20Form.pdf) tasks:
 
 ```JavaScript
 import { chromium } from 'playwright';
@@ -28,11 +28,8 @@ import { chromium } from 'playwright';
 const browser = await chromium.launch();
 const page = await browser.newPage();
 
-// Navigate to FMCSA Unified Registration System
-await page.goto('https://portal.fmcsa.dot.gov/UrsRegistrationWizard/');
-await page.fill('[data-testid="username"]', process.env.FMCSA_USERNAME);
-await page.fill('[data-testid="password"]', process.env.FMCSA_PASSWORD);
-await page.click('[data-testid="login-button"]');
+// Navigate to FMCSA registration system
+await page.goto('https://www.fmcsa.dot.gov/registration/registration-forms');
 
 // Start new OP-1(P) application
 await page.click('[data-testid="new-application"]');

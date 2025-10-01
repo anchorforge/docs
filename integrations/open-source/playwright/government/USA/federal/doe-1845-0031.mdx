@@ -19,7 +19,7 @@ npm install playwright
 
 ## Automate Workflows
 
-Create scripts for common DOE Form 1845-0031 tasks:
+Create scripts for common [DOE Form 1845-0031](https://studentaid.gov/sites/default/files/GeneralForbearance.pdf) tasks:
 
 ```JavaScript
 import { chromium } from 'playwright';
@@ -27,11 +27,8 @@ import { chromium } from 'playwright';
 const browser = await chromium.launch();
 const page = await browser.newPage();
 
-// Navigate to Federal Student Aid system
-await page.goto('https://studentaid.gov/login');
-await page.fill('[data-testid="username"]', process.env.FSA_USERNAME);
-await page.fill('[data-testid="password"]', process.env.FSA_PASSWORD);
-await page.click('[data-testid="login-button"]');
+// Navigate to Department of Education website
+await page.goto('https://www.ed.gov/grants-and-programs/apply-grant/grant-application-and-other-forms');
 
 // Start new forbearance request
 await page.click('[data-testid="manage-loans"]');

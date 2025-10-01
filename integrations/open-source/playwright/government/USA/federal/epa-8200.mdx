@@ -20,7 +20,7 @@ npm install playwright
 
 ## Automate Workflows
 
-Create scripts for common EPA Form 8700-22 tasks:
+Create scripts for common [EPA Form 8700-22](https://www.epa.gov/sites/default/files/2018-05/documents/uniform_hazardous_waste_manifest.pdf) tasks:
 
 ```JavaScript
 import { chromium } from 'playwright';
@@ -29,10 +29,7 @@ const browser = await chromium.launch();
 const page = await browser.newPage();
 
 // Navigate to EPA RCRAInfo system
-await page.goto('https://rcrainfo.epa.gov/');
-await page.fill('[data-testid="username"]', process.env.EPA_USERNAME);
-await page.fill('[data-testid="password"]', process.env.EPA_PASSWORD);
-await page.click('[data-testid="login-button"]');
+await page.goto('https://www.epa.gov/hwgenerators/uniform-hazardous-waste-manifest-instructions-sample-form-and-continuation-sheet');
 
 // Start new hazardous waste notification
 await page.click('[data-testid="new-notification"]');

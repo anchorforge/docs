@@ -19,7 +19,7 @@ npm install playwright
 
 ## Automate Workflows
 
-Create scripts for common FS Form 5444 tasks:
+Create scripts for common [FS Form 5444](https://www.treasurydirect.gov/forms/acctauth.pdf) tasks:
 
 ```JavaScript
 import { chromium } from 'playwright';
@@ -28,10 +28,7 @@ const browser = await chromium.launch();
 const page = await browser.newPage();
 
 // Navigate to TreasuryDirect system
-await page.goto('https://www.treasurydirect.gov/login');
-await page.fill('[data-testid="username"]', process.env.TD_USERNAME);
-await page.fill('[data-testid="password"]', process.env.TD_PASSWORD);
-await page.click('[data-testid="login-button"]');
+await page.goto('https://treasurydirect.gov/forms/');
 
 // Start new account authorization form
 await page.click('[data-testid="manage-account"]');

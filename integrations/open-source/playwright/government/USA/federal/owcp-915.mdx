@@ -20,7 +20,7 @@ npm install playwright
 
 ## Automate Workflows
 
-Create scripts for common OWCP Form 915 tasks:
+Create scripts for common [OWCP Form 915](https://www.dol.gov/sites/dolgov/files/owcp/dfec/regs/compliance/owcp-915.pdf) tasks:
 
 ```JavaScript
 import { chromium } from 'playwright';
@@ -29,10 +29,7 @@ const browser = await chromium.launch();
 const page = await browser.newPage();
 
 // Navigate to OWCP system
-await page.goto('https://www.ecomp.dol.gov/');
-await page.fill('[data-testid="username"]', process.env.OWCP_USERNAME);
-await page.fill('[data-testid="password"]', process.env.OWCP_PASSWORD);
-await page.click('[data-testid="login-button"]');
+await page.goto('https://www.dol.gov/agencies/owcp/FECA/regs/compliance/forms');
 
 // Start new OWCP-915 form
 await page.click('[data-testid="new-claim"]');

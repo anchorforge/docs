@@ -19,7 +19,7 @@ npm install playwright
 
 ## Automate Workflows
 
-Create scripts for common CMS Form 10069 tasks:
+Create scripts for common [CMS Form 10069](https://www.cms.gov/medicare/cms-forms/cms-forms/downloads/cms10069.pdf) tasks:
 
 ```JavaScript
 import { chromium } from 'playwright';
@@ -28,10 +28,7 @@ const browser = await chromium.launch();
 const page = await browser.newPage();
 
 // Navigate to CMS PECOS system
-await page.goto('https://pecos.cms.hhs.gov/');
-await page.fill('[data-testid="username"]', process.env.CMS_USERNAME);
-await page.fill('[data-testid="password"]', process.env.CMS_PASSWORD);
-await page.click('[data-testid="login-button"]');
+await page.goto('https://www.cms.gov/medicare/forms-notices/cms-forms-list');
 
 // Start new provider enrollment application
 await page.click('[data-testid="new-enrollment"]');
