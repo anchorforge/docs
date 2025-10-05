@@ -176,25 +176,6 @@ components:
           description: Whether to use a dedicated sticky IP for this profile. Defaults to false.
           example: false
 
-    ProfileUpdateRequestSchema:
-      type: object
-      properties:
-        description:
-          type: string
-          description: The new description for the profile.
-          example: Updated profile description.
-        source:
-          type: string
-          description: The source of the profile data. Currently, only `session` is supported.
-          example: session
-          enum:
-            - session
-        session_id:
-          type: string
-          format: uuid
-          description: The browser session ID is required if the source is set to `session`. The browser session must belong to the user and be active.
-          example: 550e8400-e29b-41d4-a716-446655440000
-
     ProfileResponseSchema:
       type: object
       properties:
@@ -306,10 +287,6 @@ components:
               type: boolean
               description: Indicates whether the browser session profile data should be saved when the browser session ends. Defaults to `false`.
               example: true
-            reset_preferences:
-              type: boolean
-              description: When enabled, resets the profile's preferences on session creation. Defaults to `false`.
-              example: false
         adblock:
           type: object
           description: Configuration for ad-blocking.
@@ -1049,58 +1026,6 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
           description: Unable to retrieve profile due to an unexpected error.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-    put:
-      summary: Update Profile
-      description: Updates the description or data of an existing profile using a browser session.
-      security:
-        - api_key_header: []
-      tags:
-        - Profiles
-      parameters:
-        - name: name
-          in: path
-          required: true
-          description: The name of the profile to update.
-          schema:
-            type: string
-            example: my-profile
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ProfileUpdateRequestSchema'
-      responses:
-        '200':
-          description: Profile updated successfully.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SuccessResponse'
-        '400':
-          description: Invalid request or input.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Profile or session not found or unreachable.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
-          description: Unable to update profile due to an unexpected error.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '501':
-          description: Feature not implemented.
           content:
             application/json:
               schema:
