@@ -13,13 +13,9 @@ The following guide explains how to create and use Identity Profiles in Anchor B
 
 ## Quick start - Create and use a profile
 
-
-
-
+<Expandable title="Via SDK" defaultOpen >
 <Steps>
-<Step title="Start a playground session with a proflie">
-Through the Anchor playground, create a profile on the configuration area. Then, click to start a session.
-##### **OR**
+<Step title="Start a session with a new profile">
 [create-session via SDK](/sdk-reference/browser-sessions/start-browser-session) (or [API](/api-reference/browser-sessions/start-browser-session))
 while configuring the new profile to persist
 
@@ -54,17 +50,12 @@ session = anchor_client.sessions.create(browser={
 print(session)
 ```
 </CodeGroup>
-
 </Step>
 <Step title="Authenticate Once">
-Authenticate to the target service using the playground or the Live URL of the session to create a browser context with the required cookies and session data.
+Use the Live URL of the session to authenticate to the target service and create a browser context with the required cookies and session data.
 </Step>
 <Step title="Save Profile">
-#### Playground
-Save the profile using the 'Save Profile' button in the Anchor Browser Playground.
-#### Live URL
-End the session using the [Session History page](https://app.anchorbrowser.io/sessions).
-<Note>This operation will end the current playground browser session</Note>
+End the session using the [Session History page](https://app.anchorbrowser.io/sessions). The profile will be automatically saved since you set `persist: true` when creating the session.
 </Step>
 <Step title="Use the profile in other sessions">
 Now, when using the [create session](/sdk-reference/browser-sessions/start-browser-session) API, pass the `profile` parameter with the name of the profile you created to load the saved browser context.
@@ -100,5 +91,32 @@ print(session)
 </CodeGroup>
 </Step>
 </Steps>
+</Expandable>
+
+<Expandable title="Via UI" defaultOpen >
+<Steps>
+<Step title="Start a session with a new profile">
+Through the Anchor playground, create a profile on the configuration area. Then, click to start a session.
+
+<img src="/images/profile-create.png" alt="Create profile in playground" />
+</Step>
+<Step title="Authenticate Once">
+Authenticate to the target service using the playground to create a browser context with the required cookies and session data.
+</Step>
+<Step title="Save Profile">
+Save the profile using the 'Save Profile' button in the Anchor Browser Playground.
+
+<img src="/images/profile-save.png" alt="Save profile in playground" />
+
+<Note>This operation will end the current playground browser session</Note>
+
+<img src="/images/profile-confirm.png" alt="Confirm profile save" />
+</Step>
+<Step title="Use the profile in other sessions">
+Select the saved profile from the dropdown in the playground configuration area when starting a new session.
+<img src="/images/profile-reuse.png" alt="Reuse saved profile" />
+</Step>
+</Steps>
+</Expandable>
 
 For additional capabilities and advanced use cases, refer to the API documentation for [profiles](/api-reference/profiles).
