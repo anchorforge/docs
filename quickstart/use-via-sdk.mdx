@@ -2,7 +2,7 @@
 title: "SDK Quick Start"
 ---
 
-This page is a quick start using our official SDK. If you want a quick start using raw code with Playwright, [click here](/quickstart/use-via-code).
+This page is a quick start using our official SDK.
 
 For complete documentation and advanced usage examples, visit our package repositories:
 
@@ -61,26 +61,28 @@ Use AI agents to automate browser tasks with natural language commands:
 
 ```javascript node.js
 (async () => {
-// Simple navigation task
-const result = await anchorClient.agent.task(
-  "go to news.ycombinator.com and get the title of the first story"
-);
-console.log("Task result:", result);
-
-// Task with execution step monitoring
-const executionStepLogs = [];
-const navigationResult = await anchorClient.agent.task(
-  "go to news.ycombinator.com and get the title of the first story",
-  {
-    taskOptions: {
-      onAgentStep: (executionStep) => {
-        console.log("Agent step:", executionStep);
-        executionStepLogs.push(executionStep);
+  // Simple navigation task
+  const result = await anchorClient.agent.task(
+    "go to news.ycombinator.com and get the title of the first story"
+  );
+  console.log("Task result:", result);
+  
+  // Task with execution step monitoring
+  const executionStepLogs = [];
+  const navigationResult = await anchorClient.agent.task(
+    "go to news.ycombinator.com and get the title of the first story",
+    {
+      taskOptions: {
+        onAgentStep: (executionStep) => {
+          console.log("Agent step:", executionStep);
+          executionStepLogs.push(executionStep);
+        },
       },
-    },
-  }
-);
-})();
+    }
+  );
+  console.log("Navigation result:", navigationResult)
+  console.log("Execution step logs count:", executionStepLogs.length)
+  })();
 ```
 
 ```python python
@@ -108,8 +110,10 @@ print("Execution step logs count:", len(execution_step_logs))
 
 </CodeGroup>
 </Step>
+</Steps>
 
-<Step title="Structured Data Extraction">
+## Additional Usage
+### Structured Data Extraction
 
 Extract structured data from webpages using schemas:
 
@@ -137,6 +141,7 @@ import { z } from "zod";
       },
     }
   );
+  
   // Validate the result
   const validatedData = extractionSchema.safeParse(structuredResult);
   if (validatedData.success) {
@@ -152,6 +157,7 @@ import { z } from "zod";
 ```python python
 from pydantic import BaseModel
 from typing import Optional
+import ast
 
 # Define your data schema
 class ProductSchema(BaseModel):
@@ -169,16 +175,159 @@ structured_result = anchor_client.agent.task(
 )
 
 # Validate the result
-validated_data = ProductSchema.model_validate(structured_result["result"])
+validated_data = ProductSchema.model_validate(ast.literal_eval(structured_result))   
 print("Product title:", validated_data.title)
 print("Description:", validated_data.description)
 print("Price:", validated_data.price)
 ```
 
 </CodeGroup>
-</Step>
 
-<Step title="Browser Task with Session Control">
+
+### Screenshots and Tools
+
+Capture screenshots and use additional tools:
+
+<CodeGroup>
+
+```javascript node.js
+import fs from "fs/promises";
+
+(async () => {
+  // Create a session for screenshot
+  const screenshotSession = await anchorClient.sessions.create();
+  const screenshotBrowser = await anchorClient.browser.connect(screenshotSession.data.id);
+  const screenshotPage = screenshotBrowser.contexts()[0].pages()[0];
+  await screenshotPage.goto("https://example.com");
+
+  // Capture screenshot from the session
+  const screenshot = await anchorClient.tools.screenshotWebpage({
+    sessionId: screenshotSession.data.id,
+  });
+
+  // Get screenshot data
+  const buffer = await screenshot.arrayBuffer();
+  console.log("Screenshot captured, size:", buffer.byteLength);
+
+  // Save screenshot to file
+  await fs.writeFile("screenshot.png", Buffer.from(buffer));
+  console.log("Screenshot saved as screenshot.png");
+})();
+```
+
+```python python
+# Create a session for screenshot
+screenshot_session = anchor_client.sessions.create()
+with anchor_client.browser.connect(screenshot_session.data.id) as screenshot_browser:
+    screenshot_page = screenshot_browser.contexts[0].pages[0]
+    screenshot_page.goto("https://example.com")
+
+# Capture screenshot from the session
+screenshot = anchor_client.tools.screenshot_webpage(
+    session_id=screenshot_session.data.id
+)
+
+# Get screenshot data
+screenshot_data = screenshot.read()
+print("Screenshot captured, size:", len(screenshot_data))
+
+# Save screenshot to file
+with open("screenshot.png", "wb") as f:
+   f.write(screenshot_data)
+   print("Screenshot saved as screenshot.png")
+```
+
+</CodeGroup>
+
+### Advanced Configuration
+
+Configure browser sessions with proxies, timeouts, and other options:
+
+<CodeGroup>
+
+```javascript node.js
+// Create session with advanced configuration
+const sessionConfig = {
+  session: {
+    recording: {active: false}, // Disable session recording
+    proxy: {
+      active: true,
+      type: "anchor_residential",
+      country_code: "us",
+    },
+    timeout: {
+      max_duration: 5, // 5 minutes
+      idle_timeout: 1, // 1 minute
+    }
+  },
+};
+
+const configuredSession = await anchorClient.sessions.create(sessionConfig);
+const result = await anchorClient.agent.task(
+  "What is my IP address and where am I?",
+  {
+  sessionId: configuredSession.data.id,
+});
+console.log(result);
+```
+
+```python python
+# Create session with advanced configuration
+session_config = {
+    "session": {
+        "recording": {"active": False},  # Disable session recording
+        "proxy": {
+            "active": True,
+            "type": "anchor_residential",
+            "country_code": "us"
+        },
+        "max_duration": 5,  # 5 minutes
+        "idle_timeout": 1    # 1 minute
+    }
+}
+
+configured_session = anchor_client.sessions.create(session=session_config)
+result = anchor_client.agent.task(
+  session_options=configured_session,
+  prompt="What is my IP address and where am I?"
+  )
+print(result)
+```
+
+</CodeGroup>
+
+## From SDK to Browser: Run Extra Playwright Code
+
+### Standalone Browser Creation
+
+Create a standalone browser instance:
+
+<CodeGroup>
+
+```javascript node.js
+(async () => {
+// Create standalone browser
+const standaloneBrowser = await anchorClient.browser.create();
+const page = standaloneBrowser.contexts()[0].pages()[0];
+await page.goto("https://httpbin.org/ip");
+
+console.log("Current URL:", page.url());
+
+// Disconnect (session keeps running)
+standaloneBrowser.close();
+})();
+```
+
+```python python
+# Create standalone browser
+with anchor_client.browser.create() as standalone_browser:
+    page = standalone_browser.contexts[0].pages[0]
+    page.goto("https://httpbin.org/ip")
+    print("Current URL:", page.url)
+```
+</CodeGroup>
+
+### Browser Task with Session Control
 
 Use AI agents with direct browser control:
 
@@ -203,6 +352,8 @@ console.log("Current URL:", page.url());
 // Wait for task completion
 const taskResult = await browserTask.taskResultPromise;
 console.log("Final result:", taskResult);
+
+browserTask.playwrightBrowser.close();
 ```
 
 ```python python
@@ -211,32 +362,32 @@ browser_task = anchor_client.agent.browser_task(
     "go to github.com/trending and find the most popular JavaScript repository"
 )
 
-print("Session ID:", browser_task.session_id)
+print("Session ID:", browser_task["session_id"])
 
 # Access the Playwright browser instance
-playwright_browser = browser_task.playwright_browser
-page = playwright_browser.contexts[0].pages[0]
+playwright_browser = browser_task["playwright_browser"]
+with playwright_browser as browser:
+    page = browser.contexts[0].pages[0]
 
-# Direct Playwright manipulation
-page.goto("https://stackoverflow.com/")
-print("Current URL:", page.url)
+    # Direct Playwright manipulation
+    page.goto("https://stackoverflow.com/")
+    print("Current URL:", page.url)
 
-# Wait for task completion
-task_result = browser_task.task_result_promise
-print("Final result:", task_result)
+    # Wait for task completion
+    task_result = browser_task["task_result_task"]
+    print("Final result:", task_result)
 ```
 
 </CodeGroup>
-</Step>
 
-<Step title="Manual Session Management">
+### Manual Session Management
 
 Create and manage browser sessions manually:
 
 <CodeGroup>
 
 ```javascript node.js
-// Create session and connect
+// Create session and connect it later
 const sessionResponse = await anchorClient.sessions.create();
 const sessionId = sessionResponse.data.id;
 
@@ -246,10 +397,12 @@ const page = context.pages()[0];
 await page.goto("https://reddit.com/r/programming");
 
 console.log("Current URL:", page.url());
+
+browser.close();
 ```
 
 ```python python
-# Create session and connect
+# Create session and connect it later
 session_response = anchor_client.sessions.create()
 session_id = session_response.data.id
 
@@ -261,157 +414,8 @@ with anchor_client.browser.connect(session_id) as browser:
 ```
 
 </CodeGroup>
-</Step>
 
-<Step title="Standalone Browser Creation">
 
-Create a standalone browser instance:
-
-<CodeGroup>
-
-```javascript node.js
-// Create standalone browser
-const standaloneBrowser = await anchorClient.browser.create();
-const page = standaloneBrowser.contexts()[0].pages()[0];
-await page.goto("https://httpbin.org/ip");
-
-console.log("Current URL:", page.url());
-```
-
-```python python
-# Create standalone browser
-with anchor_client.browser.create() as standalone_browser:
-    page = standalone_browser.contexts[0].pages[0]
-    page.goto("https://httpbin.org/ip")
-    print("Current URL:", page.url)
-```
-
-</CodeGroup>
-</Step>
-
-<Step title="Screenshots and Tools">
-
-Capture screenshots and use additional tools:
-
-<CodeGroup>
-
-```javascript node.js
-// Create a session for screenshot
-const screenshotSession = await anchorClient.sessions.create();
-const screenshotBrowser = await anchorClient.browser.connect(screenshotSession.data.id);
-const screenshotPage = screenshotBrowser.contexts()[0].pages()[0];
-await screenshotPage.goto("https://example.com");
-
-// Capture screenshot from the session
-const screenshot = await anchorClient.tools.screenshotWebpage({
-  sessionId: screenshotSession.data.id,
-});
-
-// Convert to blob and save
-const screenshotBlob = await screenshot.blob();
-console.log("Screenshot type:", screenshotBlob.type); // image/png
-
-// You can also save the screenshot
-const buffer = await screenshotBlob.arrayBuffer();
-// Save buffer to file system as needed
-```
-
-```python python
-# Create a session for screenshot
-screenshot_session = anchor_client.sessions.create()
-with anchor_client.browser.connect(screenshot_session.data.id) as screenshot_browser:
-    screenshot_page = screenshot_browser.contexts[0].pages[0]
-    screenshot_page.goto("https://example.com")
-
-# Capture screenshot from the session
-screenshot = anchor_client.tools.screenshot_webpage(
-    session_id=screenshot_session.data.id
-)
-
-# Get screenshot data
-screenshot_data = screenshot.read()
-print("Screenshot captured, size:", len(screenshot_data))
-
-# Save screenshot to file
-with open("screenshot.png", "wb") as f:
-    f.write(screenshot_data)
-```
-
-</CodeGroup>
-</Step>
-
-<Step title="Advanced Configuration">
-
-Configure browser sessions with proxies, timeouts, and other options:
-
-<CodeGroup>
-
-```javascript node.js
-// Create session with advanced configuration
-const sessionConfig = {
-  session: {
-    recording: {active: false}, // Disable session recording
-    proxy: {
-      active: true,
-      type: "anchor_residential",
-      country_code: "us",
-    },
-    max_duration: 5, // 5 minutes
-    idle_timeout: 1, // 1 minute
-  },
-};
-
-const configuredSession = await anchorClient.sessions.create(sessionConfig);
-const configuredBrowser = await anchorClient.browser.connect(
-  configuredSession.data.id
-);
-
-// Use the configured browser to check IP location
-const page = configuredBrowser.contexts()[0].pages()[0];
-try {
-  // Set longer timeout for proxy requests
-  await page.goto("https://httpbin.org/ip", { timeout: 60000 });
-  const ipInfo = await page.textContent("pre");
-  console.log("IP Info:", ipInfo);
-} catch (timeoutError) {
-  console.log("⚠️  Proxy request timed out (this is normal for residential proxies)");
-  console.log("Session created successfully with proxy configuration");
-}
-```
-
-```python python
-# Create session with advanced configuration
-session_config = {
-    "session": {
-        "recording": {"active": False},  # Disable session recording
-        "proxy": {
-            "active": True,
-            "type": "anchor_residential",
-            "country_code": "us"
-        },
-        "max_duration": 5,  # 5 minutes
-        "idle_timeout": 1    # 1 minute
-    }
-}
-
-configured_session = anchor_client.sessions.create(session_config)
-
-with anchor_client.browser.connect(configured_session.data.id) as configured_browser:
-    # Use the configured browser to check IP location
-    page = configured_browser.contexts[0].pages[0]
-    try:
-        # Set longer timeout for proxy requests
-        page.goto("https://httpbin.org/ip", timeout=60000)
-        ip_info = page.text_content("pre")
-        print("IP Info:", ip_info)
-    except Exception as timeout_error:
-        print("⚠️  Proxy request timed out (this is normal for residential proxies)")
-        print("Session created successfully with proxy configuration")
-```
-
-</CodeGroup>
-</Step>
-</Steps>
 
 ## Key SDK Benefits
 
