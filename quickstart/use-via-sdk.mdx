@@ -11,7 +11,7 @@ For complete documentation and advanced usage examples, visit our package reposi
 
 <Steps>
 <Step title="Fetch API Key">
-In [Anchor UI](https://app.anchorbrowser.io/api-access), copy your API key
+In [Anchor UI](https://app.anchorbrowser.io/api-keys), copy your API key
 </Step>
 <Step title="Install the SDK">
 
@@ -184,9 +184,9 @@ print("Price:", validated_data.price)
 </CodeGroup>
 
 
-### Screenshots and Tools
+### Screenshots
 
-Capture screenshots and use additional tools:
+Capture screenshots of your current session view.
 
 <CodeGroup>
 
@@ -274,16 +274,16 @@ console.log(result);
 ```python python
 # Create session with advanced configuration
 session_config = {
-    "session": {
-        "recording": {"active": False},  # Disable session recording
-        "proxy": {
-            "active": True,
-            "type": "anchor_residential",
-            "country_code": "us"
-        },
-        "max_duration": 5,  # 5 minutes
-        "idle_timeout": 1    # 1 minute
-    }
+  "recording": {"active": False},  # Disable session recording
+  "proxy": {
+      "active": True,
+      "type": "anchor_residential",
+      "country_code": "us"
+  },
+  "timeout": {
+      "max_duration": 5,
+      "idle_timeout": 1
+  }
 }
 
 configured_session = anchor_client.sessions.create(session=session_config)

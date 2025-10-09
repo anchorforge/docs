@@ -16,16 +16,15 @@ The following guide explains how to create and use Identity Profiles in Anchor B
 <Expandable title="Via SDK" defaultOpen >
 <Steps>
 <Step title="Start a session with a new profile">
-[create-session via SDK](/sdk-reference/browser-sessions/start-browser-session) (or [API](/api-reference/browser-sessions/start-browser-session))
-while configuring the new profile to persist
+Create a session via SDK, Make sure to configure the new profile to persist.
 
 <CodeGroup>
 ```JavaScript node.js
-import { Anchorbrowser } from "anchorbrowser";
+import Anchorbrowser from "anchorbrowser";
 
 (async () => {
- const anchor_client = new Anchorbrowser()
- const session = await anchor_client.sessions.create({
+ const anchorClient = new Anchorbrowser()
+ const session = await anchorClient.sessions.create({
     browser: {
         profile: {
             name: 'new-profile',
@@ -52,21 +51,113 @@ print(session)
 </CodeGroup>
 </Step>
 <Step title="Authenticate Once">
-Use the Live URL of the session to authenticate to the target service and create a browser context with the required cookies and session data.
-</Step>
-<Step title="Save Profile">
-End the session using the [Session History page](https://app.anchorbrowser.io/sessions). The profile will be automatically saved since you set `persist: true` when creating the session.
-</Step>
-<Step title="Use the profile in other sessions">
-Now, when using the [create session](/sdk-reference/browser-sessions/start-browser-session) API, pass the `profile` parameter with the name of the profile you created to load the saved browser context.
+Authenticate to the target service and create a browser context with the required cookies and session data.
 
 <CodeGroup>
 ```JavaScript node.js
-import { Anchorbrowser } from "anchorbrowser";
+import Anchorbrowser from "anchorbrowser";
 
 (async () => {
- const anchor_client = new Anchorbrowser()
- const session = await anchor_client.sessions.create({
+ const anchorClient = new Anchorbrowser()
+ const session = await anchorClient.sessions.create({
+    browser: {
+        profile: {
+            name: 'new-profile',
+            persist: true
+            }
+        }
+    })
+
+ const sessionId = session.data.id;
+
+ // Navigate to the login page
+ await anchorClient.sessions.goto(sessionId, {
+    url: 'https://example.com/login'
+ })
+
+ // Fill in your login credentials
+ await anchorClient.sessions.mouse.click(sessionId, { x: 100, y: 200 })
+ await anchorClient.sessions.keyboard.type(sessionId, { text: 'your-username' })
+
+ await anchorClient.sessions.mouse.click(sessionId, { x: 100, y: 250 })
+ await anchorClient.sessions.keyboard.type(sessionId, { text: 'your-password' })
+
+ // Submit the login form
+ await anchorClient.sessions.mouse.click(sessionId, { x: 100, y: 300 })
+
+ console.log('Authentication completed. Profile will be saved when session ends.')
+})();
+```
+```python python
+from anchorbrowser import Anchorbrowser
+import os
+
+anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
+session = anchor_client.sessions.create(browser={
+    "profile": {
+        "name": "new-profile",
+        "persist": True
+    }
+})
+
+session_id = session["data"]["id"]
+
+# Navigate to the login page
+anchor_client.sessions.goto(session_id, url="https://example.com/login")
+
+# Fill in your login credentials
+anchor_client.sessions.mouse.click(session_id, x=100, y=200)
+anchor_client.sessions.keyboard.type(session_id, text="your-username")
+
+anchor_client.sessions.mouse.click(session_id, x=100, y=250)
+anchor_client.sessions.keyboard.type(session_id, text="your-password")
+
+# Submit the login form
+anchor_client.sessions.mouse.click(session_id, x=100, y=300)
+
+print("Authentication completed. Profile will be saved when session ends.")
+```
+</CodeGroup>
+</Step>
+<Step title="Save Profile">
+End the session. The profile will be automatically saved since you set `persist: true` when creating the session.
+
+<CodeGroup>
+```JavaScript node.js
+import Anchorbrowser from "anchorbrowser";
+
+(async () => {
+ const anchorClient = new Anchorbrowser()
+
+ // After completing authentication, end the session to save the profile
+ await anchorClient.sessions.delete(sessionId)
+
+ console.log('Session ended. Profile "new-profile" has been saved.')
+})();
+```
+```python python
+from anchorbrowser import Anchorbrowser
+import os
+
+anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
+
+# After completing authentication, end the session to save the profile
+anchor_client.sessions.delete(session_id)
+
+print('Session ended. Profile "new-profile" has been saved.')
+```
+</CodeGroup>
+</Step>
+<Step title="Use the profile in other sessions">
+Now, when creating a new session pass the `profile` parameter with the name of the profile you created to load the saved browser context.
+
+<CodeGroup>
+```JavaScript node.js
+import Anchorbrowser from "anchorbrowser";
+
+(async () => {
+ const anchorClient = new Anchorbrowser()
+ const session = await anchorClient.sessions.create({
     browser: {
         profile: {
             name: 'new-profile'
@@ -105,10 +196,10 @@ Authenticate to the target service using the playground to create a browser cont
 </Step>
 <Step title="Save Profile">
 Save the profile using the 'Save Profile' button in the Anchor Browser Playground.
+<Note>This operation will end the current playground browser session</Note>
 
 <img src="/images/profile-save.png" alt="Save profile in playground" />
 
-<Note>This operation will end the current playground browser session</Note>
 
 <img src="/images/profile-confirm.png" alt="Confirm profile save" />
 </Step>
@@ -119,4 +210,3 @@ Select the saved profile from the dropdown in the playground configuration area 
 </Steps>
 </Expandable>
 
-For additional capabilities and advanced use cases, refer to the API documentation for [profiles](/api-reference/profiles).
