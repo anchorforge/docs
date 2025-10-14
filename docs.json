@@ -1,4 +1,10 @@
 {
+  "api": {
+    "examples": {
+      "defaults": "required",
+      "prefill": false
+    }
+  },
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
   "name": "Anchor Browser Docs",
@@ -201,6 +207,7 @@
         "versions": [
           {
             "version": "Latest - v1",
+            "default": true,
             "openapi": {
               "source": "/openapi.yaml",
               "directory": "api-reference"
