@@ -58,7 +58,8 @@
                 "icon": "fingerprint",
                 "pages": [
                   "essentials/authentication-and-identity",
-                  "advanced/mfa"
+                  "advanced/mfa",
+                  "integrations/1password"
                 ]
               },
               {
@@ -114,7 +115,7 @@
                     "icon": "stars",
                     "pages": [
                       "integrations/open-source/playwright/index",
-                     {
+                      {
                         "group": "E2E Testing",
                         "icon": "stars",
                         "pages": [
