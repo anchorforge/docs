@@ -58,7 +58,8 @@
                 "icon": "fingerprint",
                 "pages": [
                   "essentials/authentication-and-identity",
-                  "advanced/mfa"
+                  "advanced/mfa",
+                  "integrations/1password"
                 ]
               },
               {
