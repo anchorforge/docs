@@ -816,6 +816,142 @@ components:
         data:
           $ref: '#/components/schemas/ExtensionResponseSchema'
 
+    # ==============================
+    # BATCH SESSION SCHEMAS
+    # ==============================
+    # Schemas related to batch browser session management
+    BatchSessionRequestSchema:
+      type: object
+      required:
+        - count
+      properties:
+        count:
+          type: integer
+          minimum: 1
+          maximum: 1000
+          description: Number of sessions to create in the batch (1-1000)
+        configuration:
+          $ref: '#/components/schemas/SessionCreateRequestSchema'
+          description: Configuration that applies to all sessions in the batch
+        metadata:
+          type: object
+          additionalProperties: true
+          description: Optional batch-level metadata for identification and organization
+
+    BatchSessionResponseSchema:
+      type: object
+      properties:
+        batch_id:
+          type: string
+          format: uuid
+          description: Unique identifier for the batch
+        status:
+          type: string
+          enum: [pending, processing, completed, failed]
+          description: Current status of the batch
+        total_requests:
+          type: integer
+          description: Total number of sessions requested in the batch
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp when the batch was created
+
+    BatchSessionItemSchema:
+      type: object
+      properties:
+        item_index:
+          type: integer
+          description: Index of this session within the batch (0-based)
+        session_id:
+          type: string
+          format: uuid
+          description: Unique identifier for the browser session (if created successfully)
+        status:
+          type: string
+          enum: [pending, processing, completed, failed]
+          description: Current status of this individual session
+        cdp_url:
+          type: string
+          description: CDP websocket connection URL (if session is ready)
+        live_view_url:
+          type: string
+          description: Live view URL for the session (if session is ready)
+        error:
+          type: string
+          description: Error message if session creation failed
+        retry_count:
+          type: integer
+          description: Number of times this session creation has been retried
+        started_at:
+          type: string
+          format: date-time
+          description: Timestamp when session creation started
+        completed_at:
+          type: string
+          format: date-time
+          description: Timestamp when session creation completed
+        metadata:
+          type: object
+          additionalProperties: true
+          description: Session-specific metadata
+
+    BatchSessionStatusResponseSchema:
+      type: object
+      properties:
+        batch_id:
+          type: string
+          format: uuid
+          description: Unique identifier for the batch
+        status:
+          type: string
+          enum: [pending, processing, completed, failed]
+          description: Current status of the batch
+        total_requests:
+          type: integer
+          description: Total number of sessions requested
+        completed_requests:
+          type: integer
+          description: Number of sessions successfully created
+        failed_requests:
+          type: integer
+          description: Number of sessions that failed to create
+        processing_requests:
+          type: integer
+          description: Number of sessions currently being processed
+        pending_requests:
+          type: integer
+          description: Number of sessions waiting to be processed
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp when the batch was created
+        actual_completion_time:
+          type: string
+          format: date-time
+          description: Timestamp when the batch completed (if completed)
+        error:
+          type: string
+          description: Error message if batch failed
+        sessions:
+          type: array
+          items:
+            $ref: '#/components/schemas/BatchSessionItemSchema'
+          description: Array of individual session details
+        progress:
+          type: object
+          properties:
+            percentage:
+              type: number
+              minimum: 0
+              maximum: 100
+              description: Completion percentage (0-100)
+            current_phase:
+              type: string
+              enum: [queued, provisioning, configuring, ready]
+              description: Current processing phase
+
+
 paths:
   /v1/profiles:
     post:
@@ -2605,6 +2741,159 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
           description: Failed to signal event
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/batch-sessions:
+    post:
+      summary: Create Batch Sessions
+      description: |
+        Creates multiple browser sessions in a single batch operation. This endpoint allows you to 
+        create up to 5,000 browser sessions simultaneously with the same configuration.
+        
+        The batch will be processed asynchronously, and you can monitor progress using the batch status endpoint.
+      security:
+        - api_key_header: []
+      tags:
+        - Batch Sessions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchSessionRequestSchema'
+            examples:
+              small_batch:
+                summary: Small batch example
+                value:
+                  count: 10
+                  configuration:
+                    browser:
+                      headless:
+                        active: true
+                      viewport:
+                        width: 1440
+                        height: 900
+                    session:
+                      timeout:
+                        idle_timeout: 10
+                        max_duration: 300
+                  metadata:
+                    project: "web-scraping"
+                    environment: "production"
+              large_batch:
+                summary: Large batch example (from test snippet)
+                value:
+                  count: 2500
+                  configuration:
+                    browser:
+                      headless:
+                        active: true
+                      viewport:
+                        width: 1440
+                        height: 900
+                      recording:
+                        active: true
+                    session:
+                      timeout:
+                        idle_timeout: 10
+                        max_duration: 300
+                      tags: ["batch-test-comprehensive"]
+                  metadata:
+                    test: true
+                    description: "Comprehensive batch test with 3 sessions"
+      responses:
+        '200':
+          description: Batch created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/BatchSessionResponseSchema'
+        '400':
+          description: Invalid request parameters or configuration
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalid_count:
+                  summary: Invalid session count
+                  value:
+                    error:
+                      code: 400
+                      message: "Session count must be between 1 and 1000"
+                invalid_config:
+                  summary: Invalid configuration
+                  value:
+                    error:
+                      code: 400
+                      message: "CAPTCHA solver requires proxy to be active"
+        '402':
+          description: Payment Required - Insufficient credits for batch creation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Too many requests - Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/batch-sessions/{batch_id}:
+    get:
+      summary: Get Batch Session Status
+      description: |
+        Retrieves detailed status information for a specific batch, including progress,
+        individual session details, and any errors that occurred.
+      security:
+        - api_key_header: []
+      tags:
+        - Batch Sessions
+      parameters:
+        - name: batch_id
+          in: path
+          required: true
+          description: The unique identifier of the batch
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Batch status retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/BatchSessionStatusResponseSchema'
+        '404':
+          description: Batch not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Invalid API Key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
           content:
             application/json:
               schema:
