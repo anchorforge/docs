@@ -85,6 +85,7 @@
                 ]
               },
               "advanced/extensions",
+              "advanced/batch-browser-sessions",
               "advanced/os-level-control"
             ]
           },
