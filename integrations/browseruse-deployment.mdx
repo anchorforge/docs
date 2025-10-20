@@ -17,7 +17,7 @@ anchor_client = Anchorbrowser(
 )
 
 session = anchor_client.sessions.create()
-cdp_url = session.cdp_url
+cdp_url = session.data.cdp_url
 print("Session's CDP_URL for later use\n", cdp_url)
 ```
 </Step>
