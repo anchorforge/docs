@@ -326,6 +326,13 @@ components:
             active:
               type: boolean
               description: Whether to disable web security features (CORS, same-origin policy, etc.). Allows accessing iframes and resources from different origins. Defaults to `false`.
+        extra_stealth:
+          type: object
+          description: Configuration for extra stealth mode to enhance browser fingerprinting protection.
+          properties:
+            active:
+              type: boolean
+              description: Enable or disable extra stealth mode.
 
     SessionCreateRequestSchema:
       type: object
