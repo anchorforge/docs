@@ -31,17 +31,22 @@ Anchor Browser leverages Playwright's robust browser automation capabilities to 
 When you connect to Anchor Browser, you're using Playwright's familiar API but with cloud-hosted browsers:
 
 ```
-// First create a session
-const session = await axios.post("https://api.anchorbrowser.io/v1/sessions", {}, {
-    headers: {
-        "anchor-api-key": process.env.ANCHOR_API_KEY,
-        "Content-Type": "application/json"
-    }
+import { chromium } from 'playwright';
+import AnchorClient from 'anchorbrowser';
+
+const anchorClient = new AnchorClient({
+  apiKey: process.env.ANCHOR_API_KEY,
 });
-const cdp_url = session.data.data.cdp_url;
+
+// First create a session
+const session = await anchorClient.sessions.create();
+const cdp_url = session.data.cdp_url;
 
 // Then connect using the session's CDP URL
 const browser = await chromium.connectOverCDP(cdp_url);
+console.log('Browser connected');
+
+browser.close();
 ```
 
 This gives you all of Playwright's power while eliminating infrastructure complexity and adding enterprise features.
