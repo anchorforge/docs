@@ -1,0 +1,95 @@
+---
+title: 'Agents'
+description: 'Configure AI agents for browser automation tasks'
+icon: 'robot'
+---
+
+Anchor Browser supports three AI agents for browser automation. Choose the right agent for your use case:
+
+## Available Agents
+
+### Browser-Use (Default)
+- **Best for:** Complex workflows, multi-step tasks
+- **Providers:** OpenAI, Azure, Gemini, Groq
+- **Features:** Pause/resume, human intervention, structured output
+
+### OpenAI CUA
+- **Best for:** Simple, direct tasks
+- **Provider:** OpenAI only
+- **Features:** High accuracy, screenshot-based interaction
+
+### Gemini Computer Use
+- **Best for:** Google ecosystem integration
+- **Provider:** Google Gemini only
+- **Features:** Multi-turn conversation, structured output
+
+## Quick Start
+
+<Accordion title="Code example - Using Agents" defaultOpen>
+<CodeGroup>
+```python python
+import os
+from anchorbrowser import Anchorbrowser
+
+anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
+
+# Use different agents with task_options
+result = anchor_client.agent.task(
+    "Navigate to example.com and extract the page title",
+    task_options={
+        "url": "https://example.com",
+        "output_schema": {"type": "object", "properties": {"title": {"type": "string"}}}
+    }
+)
+
+# For specific agents, use tools/perform_web_task
+result = anchor_client.tools.perform_web_task(
+    session_id="your-session-id",
+    prompt="Fill out the contact form",
+    agent="openai-cua"
+)
+```
+
+```typescript typescript
+import { Anchorbrowser } from 'anchorbrowser';
+
+const anchorClient = new Anchorbrowser({ 
+  apiKey: process.env.ANCHOR_API_KEY 
+});
+
+(async () => {
+  // Use different agents with taskOptions
+  const result = await anchorClient.agent.task(
+    "Navigate to example.com and extract the page title",
+    {
+      url: "https://example.com",
+      outputSchema: { type: "object", properties: { title: { type: "string" } } }
+    }
+  );
+
+  // For specific agents, use tools/perform_web_task
+  const result2 = await anchorClient.tools.performWebTask({
+    sessionId: "your-session-id",
+    prompt: "Fill out the contact form",
+    agent: "gemini-computer-use"
+  });
+})();
+```
+</CodeGroup>
+</Accordion>
+
+## Agent Configuration
+
+### agent.task() Parameters
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `url` | string | Target URL to navigate to |
+| `output_schema` / `outputSchema` | object | JSON schema for structured output |
+| `on_agent_step` / `onAgentStep` | function | Callback for step-by-step execution logs |
+
+### tools/perform_web_task Parameters
+| Agent | Required | Optional |
+|-------|----------|----------|
+| **browser-use** | `prompt` | `agent`, `url`, `provider`, `model`, `max_steps`, `highlight_elements`, `detect_elements`, `human_intervention` |
+| **openai-cua** | `prompt` | `agent`, `url` |
+| **gemini-computer-use** | `prompt` | `agent`, `url`, `model`, `human_intervention` |
