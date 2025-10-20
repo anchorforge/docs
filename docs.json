@@ -70,6 +70,7 @@
                   "advanced/dedicated-sticky-ip"
                 ]
               },
+              "advanced/tasks",
               "advanced/session-timeout",
               "essentials/recording",
               "advanced/captcha-solving",
