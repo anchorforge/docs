@@ -1117,6 +1117,455 @@ components:
             integration:
               $ref: '#/components/schemas/IntegrationItem'
 
+    # ==============================
+    # TASK MANAGEMENT SCHEMAS
+    # ==============================
+    Task:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the task
+        name:
+          type: string
+          pattern: '^[a-zA-Z0-9_-]+$'
+          minLength: 1
+          maxLength: 255
+          description: Task name (letters, numbers, hyphens, and underscores only)
+        teamId:
+          type: string
+          format: uuid
+          description: Team identifier that owns this task
+        description:
+          type: string
+          maxLength: 1000
+          description: Optional description of the task
+        latestVersion:
+          type: string
+          description: Latest version identifier (draft, latest, or version number)
+        code:
+          type: string
+          description: Base64 encoded task code
+        language:
+          type: string
+          enum: [typescript]
+          description: Programming language for the task
+        browserConfiguration:
+          $ref: '#/components/schemas/SessionConfig'
+          description: Browser configuration for task execution
+        deleted:
+          type: boolean
+          description: Whether the task is soft deleted
+        createdAt:
+          type: string
+          format: date-time
+          description: Task creation timestamp
+        updatedAt:
+          type: string
+          format: date-time
+          description: Task last update timestamp
+      required: [id, name, teamId, latestVersion, code, language, deleted, createdAt, updatedAt]
+
+    TaskMetadata:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the task
+        name:
+          type: string
+          pattern: '^[a-zA-Z0-9_-]+$'
+          minLength: 1
+          maxLength: 255
+          description: Task name
+        teamId:
+          type: string
+          format: uuid
+          description: Team identifier that owns this task
+        description:
+          type: string
+          maxLength: 1000
+          description: Optional description of the task
+        latest:
+          type: string
+          description: Latest version identifier
+        deleted:
+          type: boolean
+          description: Whether the task is soft deleted
+        createdAt:
+          type: string
+          format: date-time
+          description: Task creation timestamp
+        updatedAt:
+          type: string
+          format: date-time
+          description: Task last update timestamp
+      required: [id, name, teamId, latest, deleted, createdAt, updatedAt]
+
+    TaskVersion:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the task version
+        taskId:
+          type: string
+          format: uuid
+          description: Parent task identifier
+        version:
+          type: string
+          description: Version identifier (draft, latest, or version number)
+        code:
+          type: string
+          description: Base64 encoded task code
+        language:
+          type: string
+          enum: [typescript]
+          description: Programming language for the task
+        description:
+          type: string
+          maxLength: 1000
+          description: Optional description of the version
+        browserConfiguration:
+          $ref: '#/components/schemas/SessionConfig'
+          description: Browser configuration for task execution
+        deleted:
+          type: boolean
+          description: Whether the version is soft deleted
+        createdAt:
+          type: string
+          format: date-time
+          description: Version creation timestamp
+        updatedAt:
+          type: string
+          format: date-time
+          description: Version last update timestamp
+      required: [id, taskId, version, code, deleted, createdAt, updatedAt]
+
+    TaskExecutionResult:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the execution result
+        taskVersionId:
+          type: string
+          format: uuid
+          description: Task version identifier
+        version:
+          type: string
+          description: Version that was executed
+        status:
+          type: string
+          enum: [success, failure, timeout, cancelled]
+          description: Execution status
+        output:
+          type: string
+          nullable: true
+          description: Task execution output
+        errorMessage:
+          type: string
+          nullable: true
+          description: Error message if execution failed
+        startTime:
+          type: string
+          format: date-time
+          description: Execution start time
+        executionTime:
+          type: number
+          nullable: true
+          description: Execution duration in milliseconds
+      required: [id, taskVersionId, version, status, startTime]
+
+    CreateTaskRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          pattern: '^[a-zA-Z0-9_-]+$'
+          minLength: 1
+          maxLength: 255
+          description: Task name (letters, numbers, hyphens, and underscores only)
+        code:
+          type: string
+          pattern: '^[A-Za-z0-9+/]*={0,2}$'
+          description: Base64 encoded task code (optional)
+        language:
+          type: string
+          enum: [typescript]
+          description: Programming language for the task
+        description:
+          type: string
+          maxLength: 1000
+          description: Optional description of the task
+        browserConfiguration:
+          $ref: '#/components/schemas/SessionConfig'
+          description: Browser configuration for task execution
+      required: [name, language]
+
+    UpdateTaskMetadataRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          pattern: '^[a-zA-Z0-9_-]+$'
+          minLength: 1
+          maxLength: 255
+          description: Task name (letters, numbers, hyphens, and underscores only)
+        description:
+          type: string
+          maxLength: 1000
+          description: Optional description of the task
+
+    DraftTaskRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 1
+          pattern: '^[A-Za-z0-9+/]*={0,2}$'
+          description: Base64 encoded task code
+        language:
+          type: string
+          enum: [typescript]
+          description: Programming language for the task
+        description:
+          type: string
+          maxLength: 1000
+          description: Optional description of the version
+        browserConfiguration:
+          $ref: '#/components/schemas/SessionConfig'
+          description: Browser configuration for task execution
+      required: [code]
+
+    PublishVersionRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 1
+          pattern: '^[A-Za-z0-9+/]*={0,2}$'
+          description: Base64 encoded task code (required for new versions)
+        language:
+          type: string
+          enum: [typescript]
+          description: Programming language for the task
+        description:
+          type: string
+          maxLength: 1000
+          description: Optional description of the version
+        browserConfiguration:
+          $ref: '#/components/schemas/SessionConfig'
+          description: Browser configuration for task execution
+
+    RunTaskRequest:
+      type: object
+      properties:
+        taskId:
+          type: string
+          format: uuid
+          description: Task identifier
+        version:
+          type: string
+          pattern: '^(draft|latest|\d+)$'
+          description: Version to run (draft, latest, or version number)
+        sessionId:
+          type: string
+          format: uuid
+          description: Optional existing session ID to use
+        taskSessionId:
+          type: string
+          format: uuid
+          description: Optional task-specific session ID
+        overrideBrowserConfiguration:
+          $ref: '#/components/schemas/SessionConfig'
+          description: Override browser configuration for this execution
+        inputs:
+          type: object
+          additionalProperties:
+            type: string
+          patternProperties:
+            '^ANCHOR_.*$':
+              type: string
+          description: Environment variables for task execution (keys must start with ANCHOR_)
+      required: [taskId]
+
+    RunTaskByNameRequest:
+      type: object
+      properties:
+        sessionId:
+          type: string
+          format: uuid
+          description: Optional existing session ID to use
+        taskSessionId:
+          type: string
+          format: uuid
+          description: Optional task-specific session ID
+        overrideBrowserConfiguration:
+          $ref: '#/components/schemas/SessionConfig'
+          description: Override browser configuration for this execution
+        inputs:
+          type: object
+          additionalProperties:
+            type: string
+          patternProperties:
+            '^ANCHOR_.*$':
+              type: string
+          description: Environment variables for task execution (keys must start with ANCHOR_)
+
+
+    TaskListResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            tasks:
+              type: array
+              items:
+                $ref: '#/components/schemas/Task'
+            total:
+              type: integer
+              minimum: 0
+              description: Total number of tasks
+            page:
+              type: integer
+              minimum: 1
+              description: Current page number
+            limit:
+              type: integer
+              minimum: 1
+              maximum: 100
+              description: Number of tasks per page
+          required: [tasks, total, page, limit]
+
+    TaskResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Task'
+
+    TaskMetadataResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/TaskMetadata'
+
+    TaskVersionResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/TaskVersion'
+
+    TaskVersionsListResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            taskId:
+              type: string
+              format: uuid
+              description: Task identifier
+            versions:
+              type: array
+              items:
+                type: object
+                properties:
+                  version:
+                    type: string
+                    description: Version identifier
+                  description:
+                    type: string
+                    description: Version description
+                  createdAt:
+                    type: string
+                    format: date-time
+                    description: Version creation timestamp
+                  updatedAt:
+                    type: string
+                    format: date-time
+                    description: Version last update timestamp
+                required: [version, createdAt, updatedAt]
+          required: [taskId, versions]
+
+    TaskExecutionResultsListResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            results:
+              type: array
+              items:
+                $ref: '#/components/schemas/TaskExecutionResult'
+            pagination:
+              type: object
+              properties:
+                page:
+                  type: integer
+                  minimum: 1
+                  description: Current page number
+                limit:
+                  type: integer
+                  minimum: 1
+                  description: Number of results per page
+                total:
+                  type: integer
+                  minimum: 0
+                  description: Total number of results
+                totalPages:
+                  type: integer
+                  minimum: 0
+                  description: Total number of pages
+              required: [page, limit, total, totalPages]
+          required: [results, pagination]
+
+    RunTaskResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            success:
+              type: boolean
+              description: Whether the task executed successfully
+            message:
+              type: string
+              description: Execution result message
+            taskId:
+              type: string
+              format: uuid
+              description: Task identifier
+            executionTime:
+              type: number
+              description: Execution duration in milliseconds
+            output:
+              type: string
+              description: Task execution output
+            error:
+              type: string
+              description: Error message if execution failed
+          required: [success, message, taskId]
+
+    DeleteTaskResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            success:
+              type: boolean
+              description: Whether the deletion was successful
+            message:
+              type: string
+              description: Deletion result message
+          required: [success, message]
+
 paths:
   /v1/profiles:
     post:
@@ -3258,6 +3707,716 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
           description: Failed to resume agent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/task:
+    post:
+      summary: Create Task
+      description: |
+        Creates a new task or updates an existing task with the same name. Tasks are reusable code snippets 
+        that can be executed in browser sessions. Tasks support versioning with draft and published versions.
+      security:
+        - api_key_header: []
+      tags:
+        - Tasks
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTaskRequest'
+            examples:
+              createTask:
+                summary: Create a new task
+                value:
+                  name: "web-scraper"
+                  language: "typescript"
+                  description: "A task to scrape product information from e-commerce sites"
+                  code: "Y29uc3QgYW5jaG9yID0gcmVxdWlyZSgnYW5jaG9yYnJvd3NlcicpOwoKYXN5bmMgZnVuY3Rpb24gcnVuKCkgewogIGNvbnN0IHNlc3Npb24gPSBhd2FpdCBhbmNob3IuY3JlYXRlU2Vzc2lvbigpOwogIGF3YWl0IHNlc3Npb24uZ29UbygnaHR0cHM6Ly9leGFtcGxlLmNvbScpOwogIGNvbnN0IHRpdGxlID0gYXdhaXQgc2Vzc2lvbi5nZXRUaXRsZSgpOwogIGNvbnNvbGUubG9nKHRpdGxlKTsKICBhd2FpdCBzZXNzaW9uLmNsb3NlKCk7Cn0KcnVuKCk7"
+      responses:
+        '200':
+          description: Task created or updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+        '400':
+          description: Invalid request or validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Task name already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Failed to create task
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    get:
+      summary: List Tasks
+      description: |
+        Retrieves a paginated list of all tasks for the authenticated team. Tasks are returned 
+        with their latest version information and metadata.
+      security:
+        - api_key_header: []
+      tags:
+        - Tasks
+      parameters:
+        - name: page
+          in: query
+          required: false
+          description: Page number
+          schema:
+            type: string
+            pattern: '^[1-9]\d*$'
+            default: '1'
+        - name: limit
+          in: query
+          required: false
+          description: Number of tasks per page
+          schema:
+            type: string
+            pattern: '^[1-9]\d*$'
+            default: '10'
+      responses:
+        '200':
+          description: List of tasks retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskListResponse'
+        '500':
+          description: Failed to list tasks
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v1/task/run:
+    post:
+      summary: Run Task
+      description: |
+        Executes a task in a browser session. The task can be run with a specific version or the latest version.
+        Optionally, you can provide an existing session ID or let the system create a new one.
+      security:
+        - api_key_header: []
+      tags:
+        - Tasks
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RunTaskRequest'
+            examples:
+              runTask:
+                summary: Run a task with specific version
+                value:
+                  taskId: "550e8400-e29b-41d4-a716-446655440000"
+                  version: "1"
+                  inputs:
+                    ANCHOR_TARGET_URL: "https://example.com"
+                    ANCHOR_MAX_PAGES: "10"
+              runTaskLatest:
+                summary: Run task with latest version
+                value:
+                  taskId: "550e8400-e29b-41d4-a716-446655440000"
+                  version: "latest"
+      responses:
+        '200':
+          description: Task executed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RunTaskResponse'
+        '404':
+          description: Task or session not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Task execution failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/task/run/{taskName}:
+    post:
+      summary: Run Task by Name
+      description: |
+        Executes a task by its name, always using the latest version. This is a convenience endpoint
+        for running tasks without needing to know the task ID.
+      security:
+        - api_key_header: []
+      tags:
+        - Tasks
+      parameters:
+        - name: taskName
+          in: path
+          required: true
+          description: The name of the task to run
+          schema:
+            type: string
+            pattern: '^[a-zA-Z0-9_-]+$'
+            example: "web-scraper"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RunTaskByNameRequest'
+      responses:
+        '200':
+          description: Task executed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RunTaskResponse'
+        '404':
+          description: Task not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Task execution failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/task/{taskId}:
+    get:
+      summary: Get Task Metadata
+      description: |
+        Retrieves task metadata without the code content. Useful for getting task information
+        without downloading the full task code.
+      security:
+        - api_key_header: []
+      tags:
+        - Tasks
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          description: The ID of the task to retrieve
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Task metadata retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskMetadataResponse'
+        '404':
+          description: Task not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Failed to retrieve task
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      summary: Update Task Metadata
+      description: |
+        Updates task metadata (name and description). This does not affect the task code or versions.
+      security:
+        - api_key_header: []
+      tags:
+        - Tasks
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          description: The ID of the task to update
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTaskMetadataRequest'
+      responses:
+        '200':
+          description: Task metadata updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskMetadataResponse'
+        '404':
+          description: Task not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Task name already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Failed to update task
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      summary: Delete Task
+      description: |
+        Soft deletes a task and all its versions. The task will no longer be accessible
+        but the data is preserved for potential recovery.
+      security:
+        - api_key_header: []
+      tags:
+        - Tasks
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          description: The ID of the task to delete
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Task deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteTaskResponse'
+        '404':
+          description: Task not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Failed to delete task
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/task/{taskId}/versions:
+    get:
+      summary: List Task Versions
+      description: |
+        Retrieves all versions of a specific task, including draft and published versions.
+      security:
+        - api_key_header: []
+      tags:
+        - Tasks
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          description: The ID of the task
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Task versions retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskVersionsListResponse'
+        '404':
+          description: Task not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Failed to retrieve task versions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/task/{taskId}/latest:
+    get:
+      summary: Get Latest Task Version
+      description: |
+        Retrieves the latest version of a task, including the full code content.
+      security:
+        - api_key_header: []
+      tags:
+        - Tasks
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          description: The ID of the task
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Latest task version retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskVersionResponse'
+        '404':
+          description: Task or version not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Failed to retrieve task version
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/task/{taskId}/draft:
+    get:
+      summary: Get Task Draft
+      description: |
+        Retrieves the draft version of a task, including the full code content.
+      security:
+        - api_key_header: []
+      tags:
+        - Tasks
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          description: The ID of the task
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Task draft retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskVersionResponse'
+        '404':
+          description: Task or draft not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Failed to retrieve task draft
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      summary: Create or Update Task Draft
+      description: |
+        Creates or updates the draft version of a task. Draft versions are used for development
+        and testing before publishing.
+      security:
+        - api_key_header: []
+      tags:
+        - Tasks
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          description: The ID of the task
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DraftTaskRequest'
+      responses:
+        '200':
+          description: Task draft created or updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskVersionResponse'
+        '404':
+          description: Task not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Failed to create or update task draft
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/task/{taskId}/deploy:
+    post:
+      summary: Deploy Task
+      description: |
+        Deploys a task by creating a new version with auto-incremented version number.
+        This is the recommended way to publish task changes.
+      security:
+        - api_key_header: []
+      tags:
+        - Tasks
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          description: The ID of the task
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublishVersionRequest'
+      responses:
+        '200':
+          description: Task deployed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskVersionResponse'
+        '404':
+          description: Task not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Failed to deploy task
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/task/{taskId}/executions:
+    get:
+      summary: List Task Executions
+      description: |
+        Retrieves execution history for a task, including success/failure status,
+        execution times, and outputs. Results can be filtered by version and status.
+      security:
+        - api_key_header: []
+      tags:
+        - Tasks
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          description: The ID of the task
+          schema:
+            type: string
+            format: uuid
+        - name: page
+          in: query
+          required: false
+          description: Page number
+          schema:
+            type: string
+            pattern: '^[1-9]\d*$'
+            default: '1'
+        - name: limit
+          in: query
+          required: false
+          description: Number of results per page
+          schema:
+            type: string
+            pattern: '^[1-9]\d*$'
+            default: '10'
+        - name: status
+          in: query
+          required: false
+          description: Filter by execution status
+          schema:
+            type: string
+            enum: [success, failure, timeout, cancelled]
+        - name: version
+          in: query
+          required: false
+          description: Filter by task version
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Task executions retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskExecutionResultsListResponse'
+        '404':
+          description: Task not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Failed to retrieve task executions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/task/{taskId}/{taskVersion}:
+    get:
+      summary: Get Task Version
+      description: |
+        Retrieves a specific version of a task, including the full code content.
+      security:
+        - api_key_header: []
+      tags:
+        - Tasks
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          description: The ID of the task
+          schema:
+            type: string
+            format: uuid
+        - name: taskVersion
+          in: path
+          required: true
+          description: The version to retrieve (draft, latest, or version number)
+          schema:
+            type: string
+            pattern: '^(draft|latest|\d+)$'
+      responses:
+        '200':
+          description: Task version retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskVersionResponse'
+        '404':
+          description: Task or version not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Failed to retrieve task version
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      summary: Publish Task Version
+      description: |
+        Publishes a specific version of a task. This creates a new version if it doesn't exist,
+        or updates an existing version's metadata.
+      security:
+        - api_key_header: []
+      tags:
+        - Tasks
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          description: The ID of the task
+          schema:
+            type: string
+            format: uuid
+        - name: taskVersion
+          in: path
+          required: true
+          description: The version to publish (cannot be draft)
+          schema:
+            type: string
+            pattern: '^\d+$'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublishVersionRequest'
+      responses:
+        '200':
+          description: Task version published successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskVersionResponse'
+        '400':
+          description: Cannot publish to draft version
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Task not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Failed to publish task version
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      summary: Delete Task Version
+      description: |
+        Soft deletes a specific version of a task. The version will no longer be accessible
+        but the data is preserved for potential recovery.
+      security:
+        - api_key_header: []
+      tags:
+        - Tasks
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          description: The ID of the task
+          schema:
+            type: string
+            format: uuid
+        - name: taskVersion
+          in: path
+          required: true
+          description: The version to delete
+          schema:
+            type: string
+            pattern: '^(draft|latest|\d+)$'
+      responses:
+        '200':
+          description: Task version deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteTaskResponse'
+        '404':
+          description: Task or version not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Failed to delete task version
           content:
             application/json:
               schema:
