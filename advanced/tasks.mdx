@@ -9,40 +9,68 @@ icon: "code"
 The Tasks API enables you to **create, version, and execute reusable browser automation code** in your Anchor Browser sessions. Tasks allow you to:
 
 - **Write once, run anywhere**: Create reusable automation scripts that can be executed across multiple sessions
-- **Version control**: Manage different versions of your tasks with draft and published versions
-- **Team collaboration**: Share tasks across your team with proper access controls
 - **Execution tracking**: Monitor task execution history, performance, and results
-- **Environment variables**: Pass dynamic inputs to your tasks for flexible execution
+- **Input**: Pass dynamic inputs to your tasks for flexible execution
+- **Output**: Return exactly what you need: status, messages, and domain data tailored to your use case.
 
 <Info>
 Tasks are executed in a secure sandbox environment and can access the full Anchor Browser API for automation capabilities.
 </Info>
 
-## Task Concepts
-
-### Task Structure
-
-A task consists of:
-
-- **Metadata**: Name, description, language, and team ownership
-- **Code**: Base64-encoded automation code (TypeScript)
-- **Versions**: Multiple versions including draft and published versions
-- **Browser Configuration**: Optional browser settings for task execution
-
-### Versioning System
-
-Tasks support a flexible versioning system:
-
-- **Draft**: Development version for testing and iteration
-- **Published Versions**: Numbered versions (1, 2, 3, etc.) for production use
-- **Latest**: Always refers to the highest numbered published version
-
 ## Creating Your First Task
+
+## Writing Task Code
+
+For reliable execution, **follow these guidelines:**
+ - Write your **code in TypeScript.**
+ - **Export** a single **default async function.**
+ - In that function, **return** whatever your workflow requires as **output** (e.g., status, messages, domain data).
+
+<Info>
+Tasks can receive values as inputs. **All input names must be prefixed with `ANCHOR_`**
+</Info>
+
+### Basic Task Example
+
+<CodeGroup>
+```typescript typescript
+import AnchorClient from 'anchorbrowser';
+
+// Initialize the Anchor client with your API key
+const anchorClient = new AnchorClient({
+    apiKey: process.env.ANCHOR_API_KEY,
+});
+
+// Export the main function as the default export
+export default async function run() {
+
+    // Create a new browser instance
+    const browser = await anchorClient.browser.create();
+    const page = browser.contexts()[0].pages()[0];
+
+    // Access input values
+    const targetUrl = process.env.ANCHOR_TARGET_URL;
+    const maxPages = parseInt(process.env.ANCHOR_MAX_PAGES || '10');
+
+    // Implement your automation logic
+    await page.goto(targetUrl);
+    console.log(`Scraping up to ${maxPages} pages from ${targetUrl}`);
+
+    // Always close the browser when done
+    await browser.close();
+
+    // Return a result object with success status and message
+    return {
+        success: true,
+        message: 'Task completed successfully'
+    };
+}
+```
+</CodeGroup>
 
 ### Using the API
 
 Create a new task using the AnchorBrowser API:
-
 ```bash bash
 curl -X POST https://api.anchorbrowser.io/v1/task \
   -H "anchor-api-key: YOUR_API_KEY" \
@@ -72,33 +100,16 @@ curl -X POST https://api.anchorbrowser.io/v1/task \
 }
 ```
 
-## Task Development Workflow
+### 2. Run the Task 
 
-### 1. Create a Draft
-
-Start by creating or updating a draft version:
-
-```bash bash
-curl -X POST https://api.anchorbrowser.io/v1/task/550e8400-e29b-41d4-a716-446655440000/draft \
-  -H "anchor-api-key: YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "code": "Y29uc3QgYW5jaG9yID0gcmVxdWlyZSgnYW5jaG9yYnJvd3NlcicpOwoKYXN5bmMgZnVuY3Rpb24gcnVuKCkgewogIGNvbnN0IHNlc3Npb24gPSBhd2FpdCBhbmNob3IuY3JlYXRlU2Vzc2lvbigpOwogIGF3YWl0IHNlc3Npb24uZ29UbygnaHR0cHM6Ly9leGFtcGxlLmNvbScpOwogIGNvbnN0IHRpdGxlID0gYXdhaXQgc2Vzc2lvbi5nZXRUaXRsZSgpOwogIGNvbnNvbGUubG9nKHRpdGxlKTsKICBhd2FpdCBzZXNzaW9uLmNsb3NlKCk7Cn0KcnVuKCk7",
-    "description": "Updated web scraper with better error handling"
-  }'
-```
-
-### 2. Test the Draft
-
-Run the draft version to test your changes:
-
+Run draft / deploed version with the relevant inputs:
 ```bash bash
 curl -X POST https://api.anchorbrowser.io/v1/task/run \
   -H "anchor-api-key: YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "taskId": "550e8400-e29b-41d4-a716-446655440000",
-    "version": "draft",
+    "version": "draft", 
     "inputs": {
       "ANCHOR_TARGET_URL": "https://example.com",
       "ANCHOR_MAX_PAGES": "10"
@@ -106,7 +117,7 @@ curl -X POST https://api.anchorbrowser.io/v1/task/run \
   }'
 ```
 
-### 3. Deploy to Production
+### 3. Deploy to Anchor Production
 
 Once tested, deploy the task to create a new published version:
 
@@ -119,226 +130,9 @@ curl -X POST https://api.anchorbrowser.io/v1/task/550e8400-e29b-41d4-a716-446655
   }'
 ```
 
-## Running Tasks
-
-### Run by Task ID
-
-Execute a task with a specific version:
-
-```bash bash
-curl -X POST https://api.anchorbrowser.io/v1/task/run \
-  -H "anchor-api-key: YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "taskId": "550e8400-e29b-41d4-a716-446655440000",
-    "version": "1",
-    "sessionId": "optional-existing-session-id",
-    "inputs": {
-      "ANCHOR_TARGET_URL": "https://example.com",
-      "ANCHOR_MAX_PAGES": "10"
-    }
-  }'
-```
-
-### Run by Task Name
-
-Execute a task using its name (always uses latest version):
-
-```bash bash
-curl -X POST https://api.anchorbrowser.io/v1/task/run/web-scraper \
-  -H "anchor-api-key: YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "inputs": {
-      "ANCHOR_TARGET_URL": "https://example.com",
-      "ANCHOR_MAX_PAGES": "10"
-    }
-  }'
-```
-
-## Writing Task Code
-
-When creating tasks, you'll write typescript code that runs in a browser environment. Tasks can receive configuration through environment variables and must follow specific patterns to work correctly.
-
-### Environment Variables
-
-Tasks can receive environment variables as inputs. All environment variable names must be prefixed with `ANCHOR_`:
-
-### Basic Task Example
-
-<CodeGroup>
-```typescript typescript
-import AnchorClient from 'anchorbrowser';
-
-// Initialize the Anchor client with your API key
-const anchorClient = new AnchorClient({
-    apiKey: process.env.ANCHOR_API_KEY,
-});
-
-// Export the main function as the default export
-export default async function run() {
-
-    // Create a new browser instance
-    const browser = await anchorClient.browser.create();
-    const page = browser.contexts()[0].pages()[0];
-
-    // Access environment variables for configuration
-    const targetUrl = process.env.ANCHOR_TARGET_URL;
-    const maxPages = parseInt(process.env.ANCHOR_MAX_PAGES || '10');
-
-    // Implement your automation logic here
-    await page.goto(targetUrl);
-    console.log(`Scraping up to ${maxPages} pages from ${targetUrl}`);
-
-    // Always close the browser when done
-    await browser.close();
-
-    // Return a result object with success status and message
-    return {
-        success: true,
-        message: 'Task completed successfully'
-    };
-}
-```
-</CodeGroup>
-
-## Task Management
-
-### List All Tasks
-
-```bash bash
-curl -X GET "https://api.anchorbrowser.io/v1/task?page=1&limit=10" \
-  -H "anchor-api-key: YOUR_API_KEY"
-```
-
-### Get Task Details
-
-```bash bash
-curl -X GET https://api.anchorbrowser.io/v1/task/550e8400-e29b-41d4-a716-446655440000 \
-  -H "anchor-api-key: YOUR_API_KEY"
-```
-
-### Update Task Metadata
-
-```bash bash
-curl -X PUT https://api.anchorbrowser.io/v1/task/550e8400-e29b-41d4-a716-446655440000 \
-  -H "anchor-api-key: YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "advanced-web-scraper",
-    "description": "Enhanced web scraper with pagination support"
-  }'
-```
-
-### List Task Versions
-
-```bash bash
-curl -X GET https://api.anchorbrowser.io/v1/task/550e8400-e29b-41d4-a716-446655440000/versions \
-  -H "anchor-api-key: YOUR_API_KEY"
-```
-
-## Execution Monitoring
-
-### View Execution History
-
-```bash bash
-curl -X GET "https://api.anchorbrowser.io/v1/task/550e8400-e29b-41d4-a716-446655440000/executions?page=1&limit=10" \
-  -H "anchor-api-key: YOUR_API_KEY"
-```
-
-### Filter by Status
-
-```bash bash
-curl -X GET "https://api.anchorbrowser.io/v1/task/550e8400-e29b-41d4-a716-446655440000/executions?status=success&page=1&limit=10" \
-  -H "anchor-api-key: YOUR_API_KEY"
-```
-
-### Filter by Version
-
-```bash bash
-curl -X GET "https://api.anchorbrowser.io/v1/task/550e8400-e29b-41d4-a716-446655440000/executions?version=1&page=1&limit=10" \
-  -H "anchor-api-key: YOUR_API_KEY"
-```
-
-## Advanced Example
-### E-commerce Product Scraper
-
-<CodeGroup>
-```typescript typescript
-import AnchorClient from 'anchorbrowser'
-
-const anchorClient = new AnchorClient();
-
-export default async function scrapeProducts() {
-    const browser = await anchorClient.browser.create();
-    const browserPage = browser.contexts()[0].pages()[0];
-
-    try {
-        const baseUrl = process.env.ANCHOR_TARGET_URL;
-        const maxPages = parseInt(process.env.ANCHOR_MAX_PAGES || '5');
-        const products = [];
-
-        for (let page = 1; page <= maxPages; page++) {
-            const url = `${baseUrl}?page=${page}`;
-            await browserPage.goto(url);
-            
-            // Wait for products to load
-            await browserPage.waitForSelector('.product-item');
-            
-            // Extract product information
-            const pageProducts = await browserPage.evaluate(() => {
-            return Array.from(document.querySelectorAll('.product-item')).map(item => ({
-                name: item.querySelector('.product-name')?.textContent?.trim(),
-                price: item.querySelector('.product-price')?.textContent?.trim(),
-                image: item.querySelector('.product-image')?.getAttribute('src')
-            }));
-            });
-            
-            products.push(...pageProducts);
-            console.log(`Scraped ${pageProducts.length} products from page ${page}`);
-        }
-
-        console.log(`Total products scraped: ${products.length}`);
-        return {
-            success: true,
-            message: 'Products fetched successfully',
-            products
-        };
-    } finally {
-        await browser.close();
-    }
-}
-```
-</CodeGroup>
-
-## Troubleshooting
-
-### Common Issues
-
-**Task Execution Fails**
-- Check that your code is properly base64 encoded
-- Verify environment variables are correctly formatted
-- Check that the task ID is correct
-
-**Version Not Found**
-- Confirm the version exists and is not deleted
-- Use "latest" to get the most recent published version
-
-**Environment Variables Not Available**
-- Ensure all input keys start with "ANCHOR_"
-- Verify the inputs object is properly formatted
-- Check that variables are passed as strings
-
-### Debugging Tips
-
-1. **Use Draft Mode**: Test changes in draft before deploying
-2. **Check Execution Logs**: Review execution history for error details
-3. **Test Locally**: Validate your code before encoding and uploading
-4. **Monitor Performance**: Track execution times and resource usage
-
 ## Support
 
 For additional help with the Tasks API:
 
-- Check the [API Reference](/api-reference/browser-sessions/start-browser-session/) for detailed endpoint documentation
+- Check the [API Reference](/api-reference/browser-sessions/start-browser-session/) for detailed tasks endpoint documentation
 - Contact Anchor Browser support at support@anchorbrowser.io
