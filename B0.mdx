@@ -18,59 +18,27 @@ B0 takes your prompt and runs the following process:
 <Step title="Exploration">
 B0 passes the prompt to a dedicated exploration agent, which extracts the main goal of the task and break it down to different steps, as well as the expected output.
 </Step>
-<Step title="Browser Creation">
-B0 creates a [Cloud Session](/quickstart/use-via-code).
-</Step>
-<Step title="Human Recording">
-If chosen, B0 will wait for the user to demonstrate the desired flow, during which he will fetch selector-hints for later usage.
+<Step title="Session Recording">
+Whether "Demonstrate Manually" was chosen or not, B0 creates a cloud [Session](/quickstart/use-via-code) and Record the interactions with the browser for later usage.
 </Step>
 <Step title="Deterministic Code Generation">
-B0 uses the selector-hints from last step, extracts selector-hints and using it to generate the deterministic code, and creates a [Task](/advanced/tasks).
-</Step>
-<Step title="Run Deterministic Code">
-B0 runs the created task.
+B0 uses the interaction recordings from last step, and use them to generate a deterministic code, creates a [Task](/advanced/tasks) with that code, and run it.
 </Step>
 <Step title="Evaluation">
-B0 evaluates the results to compare if the code and compare the results with the first execution's results.
-</Step>
-<Step title="Summary">
-B0 summarizes the whole process and show it to the user.
+B0 compares between the results of the 2 execution and determines whether the results are equivalent and summarizes it to the user.
 </Step>
 </Steps>
 <Information>
-The task created in the process is available for usage using the [Task](/advanced/tasks).
+The task created in the process is available in the [Tasks Page](/advanced/tasks) and from the SDK.
 </Information>
 
-## How to demonstrate the flow manually to B0
-<Steps>
+## Manual Demonstration
 
-<Step>
-Type in your prompt in [b0.dev](https://b0.dev)
-</Step>
-<Step>
-Click "Manually demonstrate"
-</Step>
-<Step>
-Press "Enter" or Click the Send button in the right buttom of the input.
-</Step>
-<Step>
-Do the task yourself while B0 record your behavior.
-</Step>
-<Step>
-Click on "Complete Recording" on the top-right of the page.
-</Step>
-<Step>
-Wait for B0 to analyze your actions and repeats them, and generate deterministic code.
-</Step>
-<Step>
-Deploy to Anchor Tasks (A version will be created out of the current draft), also you another deployment options will be shown to you.
-</Step>
-<Step>
-Run your task from Anchor [Tasks page](/advanced/tasks) or in anyway you choose to deploy it.
-</Step>
-</Steps>
+This feature allows you to show B0 the flow you want manually, while recording, B0 analyzes what's done and with the context of the prompt, it will generate the deterministic code as expected.
 
-## Why B0 is Different
+<img src="/images/b0-manual-demonstration.png"  />
+
+## Core Advantages
 
 <CardGroup cols={3}>
   <Card
