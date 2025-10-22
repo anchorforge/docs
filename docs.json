@@ -23,6 +23,7 @@
             "group": "Get Started",
             "pages": [
               "introduction",
+              "B0",
               {
                 "group": "Quickstart",
                 "pages": [
