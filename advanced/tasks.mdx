@@ -68,68 +68,99 @@ export default async function run() {
 ```
 </CodeGroup>
 
-### Using the API
+### Using the SDKs
 
-Create a new task using the AnchorBrowser API:
-```bash bash
-curl -X POST https://api.anchorbrowser.io/v1/task \
-  -H "anchor-api-key: YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "web-scraper",
-    "language": "typescript",
-    "description": "A task to scrape product information from e-commerce sites",
-    "code": "Y29uc3QgYW5jaG9yID0gcmVxdWlyZSgnYW5jaG9yYnJvd3NlcicpOwoKYXN5bmMgZnVuY3Rpb24gcnVuKCkgewogIGNvbnN0IHNlc3Npb24gPSBhd2FpdCBhbmNob3IuY3JlYXRlU2Vzc2lvbigpOwogIGF3YWl0IHNlc3Npb24uZ29UbygnaHR0cHM6Ly9leGFtcGxlLmNvbScpOwogIGNvbnN0IHRpdGxlID0gYXdhaXQgc2Vzc2lvbi5nZXRUaXRsZSgpOwogIGNvbnNvbGUubG9nKHRpdGxlKTsKICBhd2FpdCBzZXNzaW9uLmNsb3NlKCk7Cn0KcnVuKCk7"
-  }'
+Create your task in Anchor:
+<Steps>
+<Step title="Save your typescript code as a .ts file">
+<Warning>
+Make sure it follows the guidelines from above.
+</Warning>
+</Step>
+<Step title="Get the base64 version of the file">
+Run the script to show your base64 file version
+```bash terminal
+# Convert your TypeScript file to base64
+base64 -i your-task.ts
 ```
 
-**Response:**
+Copy the output for later.
+</Step>
+<Step title="Create your Task in Anchor" >
+<CodeGroup>
+```typescript Node.js
+import Anchorbrowser from 'anchorbrowser';
 
-```json
-{
-  "id": "550e8400-e29b-41d4-a716-446655440000",
-  "name": "web-scraper",
-  "teamId": "team-123",
-  "description": "A task to scrape product information from e-commerce sites",
-  "latestVersion": "draft",
-  "code": "Y29uc3QgYW5jaG9yID0gcmVxdWlyZSgnYW5jaG9yYnJvd3NlcicpOwoKYXN5bmMgZnVuY3Rpb24gcnVuKCkgewogIGNvbnN0IHNlc3Npb24gPSBhd2FpdCBhbmNob3IuY3JlYXRlU2Vzc2lvbigpOwogIGF3YWl0IHNlc3Npb24uZ29UbygnaHR0cHM6Ly9leGFtcGxlLmNvbScpOwogIGNvbnN0IHRpdGxlID0gYXdhaXQgc2Vzc2lvbi5nZXRUaXRsZSgpOwogIGNvbnNvbGUubG9nKHRpdGxlKTsKICBhd2FpdCBzZXNzaW9uLmNsb3NlKCk7Cn0KcnVuKCk7",
-  "language": "typescript",
-  "deleted": false,
-  "createdAt": "2024-01-01T00:00:00.000Z",
-  "updatedAt": "2024-01-01T00:00:00.000Z"
-}
+const client = new Anchorbrowser({
+  apiKey: process.env.ANCHORBROWSER_API_KEY,
+});
+
+// Create a new task
+const task = await client.task.create({
+  name: 'example-task',
+  language: 'typescript',
+  description: 'A task to scrape product information from e-commerce sites',
+  code: "<base64-string>" // Replace with the output of the last step.
+});
+
+const taskId = task.data.id
+console.log('Task created:', taskId);
 ```
 
-### 2. Run the Task 
+```python Python
+import os
+from anchorbrowser import Anchorbrowser
 
-Run draft / deploed version with the relevant inputs:
-```bash bash
-curl -X POST https://api.anchorbrowser.io/v1/task/run \
-  -H "anchor-api-key: YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "taskId": "550e8400-e29b-41d4-a716-446655440000",
-    "version": "draft", 
-    "inputs": {
-      "ANCHOR_TARGET_URL": "https://example.com",
-      "ANCHOR_MAX_PAGES": "10"
+client = Anchorbrowser(
+    api_key=os.environ.get("ANCHORBROWSER_API_KEY")
+)
+
+# Create a new task
+task = client.task.create(
+    name="example-task",
+    language="typescript",
+    description="A task to scrape product information from e-commerce sites",
+    code="<base64-string>" # Replace with the output of the last step.
+)
+
+# Save the id for later
+task_id = task.data.id
+print(f"Task created: {task_id}")
+```
+</CodeGroup>
+</Step>
+<Step title="Running Tasks">
+<CodeGroup>
+```typescript Node.js
+// Run the task with inputs
+const execution = await client.task.run({
+  taskId: taskId,
+  version: 'draft',
+  inputs: {
+    ANCHOR_TARGET_URL: 'https://example.com',
+    ANCHOR_MAX_PAGES: '10'
+  }
+});
+
+console.log('Task execution started:', execution.data.id);
+```
+
+```python Python
+# Run the task with inputs
+execution = client.task.run(
+    task_id=task_id,
+    version="draft",
+    inputs={
+        "ANCHOR_TARGET_URL": "https://example.com",
+        "ANCHOR_MAX_PAGES": "10"
     }
-  }'
+)
+
+print(f"Task execution started: {execution.data.id}")
 ```
-
-### 3. Deploy to Anchor Production
-
-Once tested, deploy the task to create a new published version:
-
-```bash bash
-curl -X POST https://api.anchorbrowser.io/v1/task/550e8400-e29b-41d4-a716-446655440000/deploy \
-  -H "anchor-api-key: YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "code": "Y29uc3QgYW5jaG9yID0gcmVxdWlyZSgnYW5jaG9yYnJvd3NlcicpOwoKYXN5bmMgZnVuY3Rpb24gcnVuKCkgewogIGNvbnN0IHNlc3Npb24gPSBhd2FpdCBhbmNob3IuY3JlYXRlU2Vzc2lvbigpOwogIGF3YWl0IHNlc3Npb24uZ29UbygnaHR0cHM6Ly9leGFtcGxlLmNvbScpOwogIGNvbnN0IHRpdGxlID0gYXdhaXQgc2Vzc2lvbi5nZXRUaXRsZSgpOwogIGNvbnNvbGUubG9nKHRpdGxlKTsKICBhd2FpdCBzZXNzaW9uLmNsb3NlKCk7Cn0KcnVuKCk7"
-  }'
-```
-
+</CodeGroup>
+</Step>
+</Steps>
 ## Support
 
 For additional help with the Tasks API:

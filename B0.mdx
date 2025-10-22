@@ -1,0 +1,100 @@
+---
+title: 'B0 - Browser Automation Made Simple'
+description: 'B0 makes browser automation easy. Just describe what you want to do, and B0 does it for you. No coding required.'
+sidebarTitle: B0
+---
+
+B0 is the easiest way to automate anything on the web. Just tell B0 what you want to do in plain English, and it handles the rest.
+
+<video autoPlay loop src="images/b0-preview.mp4" />
+
+## [Try it now!](https://b0.dev)
+
+# How B0 Works
+
+B0 takes your prompt and runs the following process:
+<Steps>
+
+<Step title="Exploration">
+B0 passes the prompt to a dedicated exploration agent, which extracts the main goal of the task and break it down to different steps, as well as the expected output.
+</Step>
+<Step title="Browser Creation">
+B0 creates a [Cloud Session](/quickstart/use-via-code).
+</Step>
+<Step title="Human Recording">
+If chosen, B0 will wait for the user to demonstrate the desired flow, during which he will fetch selector-hints for later usage.
+</Step>
+<Step title="Deterministic Code Generation">
+B0 uses the selector-hints from last step, extracts selector-hints and using it to generate the deterministic code, and creates a [Task](/advanced/tasks).
+</Step>
+<Step title="Run Deterministic Code">
+B0 runs the created task.
+</Step>
+<Step title="Evaluation">
+B0 evaluates the results to compare if the code and compare the results with the first execution's results.
+</Step>
+<Step title="Summary">
+B0 summarizes the whole process and show it to the user.
+</Step>
+</Steps>
+<Information>
+The task created in the process is available for usage using the [Task](/advanced/tasks).
+</Information>
+
+## How to demonstrate the flow manually to B0
+<Steps>
+
+<Step>
+Type in your prompt in [b0.dev](https://b0.dev)
+</Step>
+<Step>
+Click "Manually demonstrate"
+</Step>
+<Step>
+Press "Enter" or Click the Send button in the right buttom of the input.
+</Step>
+<Step>
+Do the task yourself while B0 record your behavior.
+</Step>
+<Step>
+Click on "Complete Recording" on the top-right of the page.
+</Step>
+<Step>
+Wait for B0 to analyze your actions and repeats them, and generate deterministic code.
+</Step>
+<Step>
+Deploy to Anchor Tasks (A version will be created out of the current draft), also you another deployment options will be shown to you.
+</Step>
+<Step>
+Run your task from Anchor [Tasks page](/advanced/tasks) or in anyway you choose to deploy it.
+</Step>
+</Steps>
+
+## Why B0 is Different
+
+<CardGroup cols={3}>
+  <Card
+    title="Reduced Costs"
+    icon="dollar"
+  >
+    Agent costs applied only on task creation. Any additional run doesn't require an agent involvement.
+  </Card>
+  <Card
+    title="Works Every Time"
+    icon="check-circle"
+  >
+    B0 creates reliable automations that work consistently, for generating deterministic code.
+  </Card>
+  <Card
+    title="Supported Authentication"
+    icon="key"
+  >
+    B0 is based on Anchor's SDK, which expose methods for [MFA handling](/advanced/mfa).
+  </Card>
+</CardGroup>
+
+
+
+<Info>
+**Need help?** B0 works best when you describe exactly what you want to do. Be specific about which websites, what actions to take, and what results you expect. You can also show B0 how to do it by demonstrating the steps yourself.
+</Info>
