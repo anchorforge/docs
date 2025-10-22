@@ -199,7 +199,14 @@
           {
             "group": "Additional Details",
             "pages": [
-              "security",
+              {
+                "group": "Trust & Security",
+                "icon": "shield-check",
+                "pages": [
+                  "security",
+                  "security/zdr-mode"
+                ]
+              },
               "pricing"
             ]
           }
