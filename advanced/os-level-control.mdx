@@ -73,29 +73,29 @@ const response = await anchor_client.sessions.mouse.click("Your Session ID", {
 
 ```javascript node.js
   import AnchorBrowser from 'anchorbrowser';
-  const anchor_client = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
+  const anchorClient = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
   const sessionId = "Your Session ID";
 
   // Double-click for text selection
-  await anchor_client.sessions.mouse.doubleClick(sessionId, {
+  await anchorClient.sessions.mouse.doubleClick(sessionId, {
     x: 500, 
     y: 200
   });
 
   // Mouse down and up for custom gestures
-  await anchor_client.sessions.mouse.down(sessionId, {
+  await anchorClient.sessions.mouse.down(sessionId, {
     x: 100, 
     y: 100, 
   });
 
   // Move while holding down (drag)
-  await anchor_client.sessions.mouse.move(sessionId, {
+  await anchorClient.sessions.mouse.move(sessionId, {
     x: 300, 
     y: 300
   });
 
   // Release
-  await anchor_client.sessions.mouse.up(sessionId, {
+  await anchorClient.sessions.mouse.up(sessionId, {
     x: 300, 
     y: 300
   });
@@ -104,19 +104,19 @@ const response = await anchor_client.sessions.mouse.click("Your Session ID", {
   from anchorbrowser import Anchorbrowser
   import os
   anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
-  sessionId = "Your Session ID";
+  session_id = "Your Session ID"
 
   # Double-click for text selection
-  anchor_client.sessions.mouse.double_click(sessionId, x = 500, y = 200)
+  anchor_client.sessions.mouse.double_click(session_id, x = 500, y = 200)
 
   # Mouse down and up for custom gestures
-  anchor_client.sessions.mouse.down(sessionId, x = 100, y = 100)
+  anchor_client.sessions.mouse.down(session_id, x = 100, y = 100)
 
   # Move while holding down (drag)
-  anchor_client.sessions.mouse.move(sessionId, x = 300, y = 300)
+  anchor_client.sessions.mouse.move(session_id, x = 300, y = 300)
 
   # Release
-  anchor_client.sessions.mouse.up(sessionId, x = 300, y = 300)
+  anchor_client.sessions.mouse.up(session_id, x = 300, y = 300)
 ```
 </CodeGroup>
 
@@ -127,11 +127,11 @@ Perform complex drag and drop operations in a single command:
 <CodeGroup>
 ```javascript node.js
   import AnchorBrowser from 'anchorbrowser';
-  const anchor_client = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
-  // const sessionId = "Your Session ID";
+  const anchorClient = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
+  const sessionId = "Your Session ID";
 
   // Drag and Drop
-  await anchor_client.sessions.dragAndDrop(sessionId, {
+  await anchorClient.sessions.dragAndDrop(sessionId, {
     startX: 200,
     startY: 150,
     endX: 600,
@@ -142,10 +142,10 @@ Perform complex drag and drop operations in a single command:
   from anchorbrowser import Anchorbrowser
   import os
   anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
-  sessionId = "Your Session ID";
+  session_id = "Your Session ID"
 
   # Drag and Drop
-  anchor_client.sessions.drag_and_drop(sessionId,
+  anchor_client.sessions.drag_and_drop(session_id,
     start_x = 200,
     start_y = 150,
     end_x = 600,
@@ -161,11 +161,11 @@ Send text and keyboard shortcuts with human-like timing:
 <CodeGroup>
 ```javascript node.js
   import AnchorBrowser from 'anchorbrowser';
-  const anchor_client = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
+  const anchorClient = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
   const sessionId = "Your Session ID";
 
   // Type text with optional delay between keystrokes
-  await anchor_client.sessions.keyboard.type(sessionId, {
+  await anchorClient.sessions.keyboard.type(sessionId, {
     text: "Hello, world!",
     delay: 50 // milliseconds between keystrokes
   });
@@ -174,10 +174,10 @@ Send text and keyboard shortcuts with human-like timing:
   from anchorbrowser import Anchorbrowser
   import os
   anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
-  sessionId = "Your Session ID";
+  session_id = "Your Session ID"
 
   # Type text with optional delay between keystrokes
-  anchor_client.sessions.keyboard.type(sessionId,
+  anchor_client.sessions.keyboard.type(session_id,
     text = "Hello, world!",
     delay = 50 # milliseconds between keystrokes
     )
@@ -187,11 +187,11 @@ Send text and keyboard shortcuts with human-like timing:
 <CodeGroup>
 ```javascript node.js
   import AnchorBrowser from 'anchorbrowser';
-  const anchor_client = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
+  const anchorClient = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
   const sessionId = "Your Session ID";
 
   // Execute keyboard shortcuts
-  anchor_client.sessions.keyboard.shortcut(sessionId, {
+  anchorClient.sessions.keyboard.shortcut(sessionId, {
     keys: ['Ctrl', 'a'], // Select all
     holdTime: 100 // Hold keys for 100ms
   });
@@ -211,10 +211,10 @@ const shortcuts = {
   from anchorbrowser import Anchorbrowser
   import os
   anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
-  sessionId = "Your Session ID";
+  session_id = "Your Session ID"
 
   # Execute keyboard shortcuts
-  anchor_client.sessions.keyboard.shortcut(sessionId,
+  anchor_client.sessions.keyboard.shortcut(session_id,
     keys = ['Ctrl', 'a'],
     hold_time = 100 # Hold keys for 100ms
     )
@@ -228,7 +228,7 @@ const shortcuts = {
     'new_tab': ['Ctrl', 't'],
     'close_tab': ['Ctrl', 'w'],
     'focus_address_bar': ['Ctrl', 'l']
-  };
+  }
 ```
 </CodeGroup>
 
@@ -238,11 +238,11 @@ Control page scrolling with precision:
 
 ```javascript node.js
   import AnchorBrowser from 'anchorbrowser';
-  const anchor_client = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
+  const anchorClient = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
   const sessionId = "Your Session ID";
 
   // Scroll at specific coordinates
-  anchor_client.sessions.scroll(sessionId, {
+  anchorClient.sessions.scroll(sessionId, {
     x: 400,           // Where to perform scroll (cursor position)
     y: 300,           // Where to perform scroll (cursor position)
     deltaX: 0,        // Horizontal scroll amount (does not correlate with pixels)
@@ -254,10 +254,10 @@ Control page scrolling with precision:
   from anchorbrowser import Anchorbrowser
   import os
   anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
-  sessionId = "Your Session ID";
+  session_id = "Your Session ID"
 
   # Scroll at specific coordinates
-  anchor_client.sessions.scroll(sessionId,
+  anchor_client.sessions.scroll(session_id,
     x = 400,           # Where to perform scroll (cursor position)
     y = 300,           # Where to perform scroll (cursor position)
     delta_x = 0,        # Horizontal scroll amount (does not correlate with pixels)
@@ -273,11 +273,11 @@ Capture visual state for AI analysis:
 ```javascript node.js
   import AnchorBrowser from 'anchorbrowser';
   import { writeFile } from 'node:fs/promises';
-  const anchor_client = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
+  const anchorClient = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
   const sessionId = "Your Session ID";
 
   // Take screenshot of current browser state
-  const response = await anchor_client.sessions.retrieveScreenshot(sessionId);
+  const response = await anchorClient.sessions.retrieveScreenshot(sessionId);
   console.log(response);
   const imageBuffer = response.body;
 
@@ -292,10 +292,10 @@ Capture visual state for AI analysis:
   from anchorbrowser import Anchorbrowser
   import os
   anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
-  sessionId = "Your Session ID";
+  session_id = "Your Session ID"
 
   # Take screenshot of current browser state
-  response = anchor_client.sessions.retrieve_screenshot(sessionId)
+  response = anchor_client.sessions.retrieve_screenshot(session_id)
   print(response)
 
   # Save screenshot to file
@@ -316,21 +316,21 @@ Manage clipboard content programmatically:
 <CodeGroup>
 ```javascript node.js
 import AnchorBrowser from 'anchorbrowser';
-const anchor_client = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
+const anchorClient = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
 const sessionId = "Your Session ID";
 
 // Get current clipboard content
-const response = await anchor_client.sessions.clipboard.get(sessionId);
+const response = await anchorClient.sessions.clipboard.get(sessionId);
 console.log('Clipboard content:', response.data.text);
 ```
 ```python python
   from anchorbrowser import Anchorbrowser
   import os
   anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
-  sessionId = "Your Session ID";
+  session_id = "Your Session ID"
 
   # Get current clipboard content
-  response = anchor_client.sessions.clipboard.get(sessionId)
+  response = anchor_client.sessions.clipboard.get(session_id)
   print(response)
 ```
 
@@ -340,19 +340,19 @@ console.log('Clipboard content:', response.data.text);
 <CodeGroup>
 ```javascript node.js
 import AnchorBrowser from 'anchorbrowser';
-const anchor_client = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
+const anchorClient = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
 const sessionId = "Your Session ID";
 
 // Set clipboard content
-await anchor_client.sessions.clipboard.set(sessionId, {
+await anchorClient.sessions.clipboard.set(sessionId, {
   text: "Content to copy"
 });
 
 // Trigger copy operation (copies selected text)
-const copyResponse = await anchor_client.sessions.copy(sessionId);
+const copyResponse = await anchorClient.sessions.copy(sessionId);
 
 // Trigger paste operation
-await anchor_client.sessions.paste(sessionId, {
+await anchorClient.sessions.paste(sessionId, {
   text: "Text to paste"
 });
 ```
@@ -360,16 +360,16 @@ await anchor_client.sessions.paste(sessionId, {
 from anchorbrowser import Anchorbrowser
 import os
 anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
-sessionId = "Your Session ID";
+session_id = "Your Session ID"
 
 # Set clipboard content
-anchor_client.sessions.clipboard.set(sessionId, text="Content to copy")
+anchor_client.sessions.clipboard.set(session_id, text="Content to copy")
 
 # Trigger copy operation (copies selected text)
-copy_response = anchor_client.sessions.copy(sessionId)
+copy_response = anchor_client.sessions.copy(session_id)
 
 # Trigger paste operation
-anchor_client.sessions.paste(sessionId, text="Text to paste")
+anchor_client.sessions.paste(session_id, text="Text to paste")
 ```
 </CodeGroup>
 
@@ -380,11 +380,11 @@ Direct URL navigation at the OS level on the currently selected tab:
 <CodeGroup>
 ```javascript node.js
 import AnchorBrowser from 'anchorbrowser';
-const anchor_client = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
+const anchorClient = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
 const sessionId = "Your Session ID";
 
 // Navigate to a specific URL (completely OS-level, operates on selected tab)
-const response = await anchor_client.sessions.goto(sessionId, {
+const response = await anchorClient.sessions.goto(sessionId, {
   url: "https://example.com"
 });
 console.log("Navigation response:", response);
@@ -393,10 +393,10 @@ console.log("Navigation response:", response);
 from anchorbrowser import Anchorbrowser
 import os
 anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
-sessionId = "Your Session ID";
+session_id = "Your Session ID"
 
 # Navigate to a specific URL (completely OS-level, operates on selected tab)
-response = anchor_client.sessions.goto(sessionId, url="https://example.com")
+response = anchor_client.sessions.goto(session_id, url="https://example.com")
 print("Navigation response:", response)
 ```
 

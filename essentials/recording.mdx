@@ -18,7 +18,8 @@ Recordings are accessible both through our API and the web UI (see below).
 ## Record a Session
 
 Recording is enabled by default when creating a session.
-Start a session using the [SDK](/sdk-reference/browser-sessions/start-browser-session), you can enable recording by setting `recording: true` in the request body.
+Start a session using the [SDK](/quickstart/use-via-sdk), you can enable recording by setting:
+`recording` -> `active` -> `true` in the request body.
 
 
 <CodeGroup>
@@ -27,14 +28,17 @@ Start a session using the [SDK](/sdk-reference/browser-sessions/start-browser-se
 import AnchorBrowser from 'anchorbrowser';
 
 (async () => {
-  const anchor_client = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
+  const anchorClient = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
   
-  const response = await anchor_client.sessions.create({
+  const response = await anchorClient.sessions.create({
     session: {
-      recording: true  // Enable recording (default)
+      recording: {
+        active: true   // Enable recording (default)
+      }
     }
   });
   
+  const sessionId = response.data.id
   console.log("Session created:", response.data);
 })().catch(console.error);
 ```
@@ -47,10 +51,14 @@ anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
 
 response = anchor_client.sessions.create(
     session={
-        "recording": True  # Enable recording (default)
+        "recording": {
+            "active": True  # Enable recording (default)
+        }
     }
 )
-print("Session created:", response.data)
+
+session_id = response.data.id
+print("Session created:", session_id)
 ```
 
 </CodeGroup>
@@ -65,10 +73,9 @@ Retrieve recordings for a specific session:
 import AnchorBrowser from 'anchorbrowser';
 
 (async () => {
-  const anchor_client = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
-  const sessionId = 'your-session-id'; // Replace with actual session ID
+  const anchorClient = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
   
-  const recordings = await anchor_client.sessions.recordings.list(sessionId);
+  const recordings = await anchorClient.sessions.recordings.list(sessionId);
   console.log("Recordings:", recordings.data);
 })().catch(console.error);
 ```
@@ -78,7 +85,6 @@ import os
 from anchorbrowser import Anchorbrowser
 
 anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
-session_id = "your-session-id"  # Replace with actual session ID
 
 recordings = anchor_client.sessions.recordings.list(session_id)
 print("Recordings:", recordings.data)
@@ -97,10 +103,10 @@ Download a specific recording file:
   import { writeFile } from 'node:fs/promises';
   
   (async () => {
-    const anchor_client = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
+    const anchorClient = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
     // const sessionId = 'your-session-id'; // Replace with actual session ID
     
-    const recording = await anchor_client.sessions.recordings.primary.get(sessionId);
+    const recording = await anchorClient.sessions.recordings.primary.get(sessionId);
     
     // Save to file
     const buffer = await recording.arrayBuffer();
@@ -139,9 +145,9 @@ In order to create a session through the UI with recording enabled use the [play
 
 <img
   className="mx-auto"
-  src="/images/start-session-ui.png"
+  src="/images/recording-ui-start-session.png"
   alt="Starting a session to be recorded in the playground"
-  width="600"
+  width="700"
 />
 
 ## Session Recordings
@@ -155,9 +161,9 @@ If a session is still running, the link in the session history page will take yo
 
 <img
   className="mx-auto"
-  src="/images/session-history-recordings.png"
+  src="/images/recording-ui-session-history.png"
   alt="Session history dashboard showing list of sessions"
-  width="800"
+  
 />
 
 
@@ -167,7 +173,7 @@ You can use it to view the recording, navigate through it, and download it as MP
 
 <img
   className="mx-auto"
-  src="/images/session-history-download.png"
+  src="/images/recording-ui-session-history-download.png"
   alt="Recording playback interface with video controls"
   width="800"
 />
