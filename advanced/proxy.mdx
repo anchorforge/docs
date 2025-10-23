@@ -22,8 +22,7 @@ import AnchorBrowser from 'anchorbrowser';
     session: {
       proxy: {
         active: true,
-        country_code: 'us',
-        type: 'anchor_residential'
+        country_code: 'gb',
       }
     }
   });
@@ -42,8 +41,7 @@ session = anchor_client.sessions.create(
     session={
         'proxy': {
             'active': True,
-            'country_code': 'us',
-            'type': 'anchor_residential'
+            'country_code': 'gb',
         }
     }
 )
@@ -86,16 +84,16 @@ Anchor Browser supports the following proxy protocols:
 import AnchorBrowser from 'anchorbrowser';
 
 (async () => {
-  const anchor_client = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
+  const anchorClient = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
   
-  const response = await anchor_client.sessions.create({
+  const response = await anchorClient.sessions.create({
     session: {
       proxy: {
+        active: true
         type: 'custom',
         server: 'proxy.example.com',
         username: 'myUser',
         password: 'myPassword',
-        active: true
       }
     }
   });
@@ -114,11 +112,11 @@ anchor_client = Anchorbrowser(api_key=os.getenv('ANCHOR_API_KEY'))
 response = anchor_client.sessions.create(
     session={
         'proxy': {
+            'active': True
             'type': 'custom',
             'server': 'proxy.example.com',
             'username': 'myUser',
             'password': 'myPassword',
-            'active': True
         }
     }
 )
@@ -151,9 +149,9 @@ For even more precise geographic targeting, you can specify both `region` and `c
 import AnchorBrowser from 'anchorbrowser';
 
 (async () => {
-  const anchor_client = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
+  const anchorClient = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
   
-  const response = await anchor_client.sessions.create({
+  const response = await anchorClient.sessions.create({
     session: {
       proxy: {
         active: true,
@@ -239,186 +237,13 @@ print(response.data)
 |Denmark|dk|Macedonia|mk|Turks and Caicos Islands|tc|
 |Dominica|dm|Mali|ml|Ukraine|ua|
 |Dominican Republic|do|Malta|mt|United Arab Emirates|ae|
-|Ecuador|ec|Martinique|mq|United States|us|
-|Egypt|eg|Mauritania|mr|Uruguay|uy|
-|El Salvador|sv|Mexico|mx|Uzbekistan|uz|
-|Estonia|ee|Moldova|md|Venezuela|ve|
-|Ethiopia|et|Monaco|mc|Yemen|ye|
-|Faroe Islands|fo|Montenegro|me|
+|Ecuador|ec|Martinique|mq|United Kingdom|gb|
+|Egypt|eg|Mauritania|mr|United States|us|
+|El Salvador|sv|Mexico|mx|Uruguay|uy|
+|Estonia|ee|Moldova|md|Uzbekistan|uz|
+|Ethiopia|et|Monaco|mc|Venezuela|ve|
+|Faroe Islands|fo|Montenegro|me|Yemen|ye|
 |Finland|fi|Morocco|ma|
-
-</Tab>
-<Tab title="Residential Proxy">
-|||||||
-|---|---|---|---|---|---|
-|Afghanistan|af|Gambia|gm|Oman|om|
-|Albania|al|Georgia|ge|Pakistan|pk|
-|Algeria|dz|Germany|de|Panama|pa|
-|Andorra|ad|Ghana|gh|Papua New Guinea|pg|
-|Angola|ao|Greece|gr|Paraguay|py|
-|Antigua and Barbuda|ag|Grenada|gd|Peru|pe|
-|Argentina|ar|Guatemala|gt|Philippines|ph|
-|Armenia|am|Guinea|gn|Poland|pl|
-|Aruba|aw|Guyana|gy|Portugal|pt|
-|Australia|au|Haiti|ht|Puerto Rico|pr|
-|Austria|at|Honduras|hn|Qatar|qa|
-|Azerbaijan|az|Hong Kong|hk|Romania|ro|
-|Bahamas|bs|Hungary|hu|Russia|ru|
-|Bahrain|bh|Iceland|is|Rwanda|rw|
-|Bangladesh|bd|India|in|Saint Lucia|lc|
-|Barbados|bb|Indonesia|id|Samoa|ws|
-|Belarus|by|Iran|ir|San Marino|sm|
-|Belgium|be|Iraq|iq|Saudi Arabia|sa|
-|Belize|bz|Ireland|ie|Senegal|sn|
-|Benin|bj|Israel|il|Serbia|rs|
-|Bermuda|bm|Italy|it|Sierra Leone|sl|
-|Bolivia|bo|Jamaica|jm|Singapore|sg|
-|Bosnia and Herzegovina|ba|Japan|jp|Slovakia|sk|
-|Botswana|bw|Jordan|jo|Slovenia|si|
-|Brazil|br|Kazakhstan|kz|Somalia|so|
-|Brunei Darussalam|bn|Kenya|ke|South Africa|za|
-|Bulgaria|bg|Kuwait|kw|South Korea|kr|
-|Burkina Faso|bf|Kyrgyzstan|kg|South Sudan|ss|
-|Burundi|bi|Laos|la|Spain|es|
-|Cambodia|kh|Latvia|lv|Sri Lanka|lk|
-|Cameroon|cm|Lebanon|lb|Sudan|sd|
-|Canada|ca|Lesotho|ls|Suriname|sr|
-|Cape Verde|cv|Liberia|lr|Sweden|se|
-|Chad|td|Libya|ly|Switzerland|ch|
-|Chile|cl|Lithuania|lt|Syria|sy|
-|China|cn|Luxembourg|lu|São Tomé and Príncipe|st|
-|Colombia|co|Macedonia|mk|Taiwan|tw|
-|Congo|cg|Madagascar|mg|Tajikistan|tj|
-|Costa Rica|cr|Malawi|mw|Tanzania|tz|
-|Côte d’Ivoire|ci|Malaysia|my|Thailand|th|
-|Croatia|hr|Maldives|mv|Timor Leste (East Timor)|tl|
-|Cuba|cu|Mali|ml|Turkey|tr|
-|Cyprus|cy|Malta|mt|Togo|tg|
-|Czech Republic|cz|Mauritania|mr|Trinidad and Tobago|tt|
-|Denmark|dk|Mexico|mx|Tunisia|tn|
-|Djibouti|dj|Moldova|md|Turkmenistan|tm|
-|Dominica|dm|Mongolia|mn|Uganda|ug|
-|Dominican Republic|do|Montenegro|me|Ukraine|ua|
-|Ecuador|ec|Morocco|ma|United Kingdom|gb|
-|Egypt|eg|Mozambique|mz|United States|us|
-|El Salvador|sv|Myanmar|mm|Uruguay|uy|
-|Equatorial Guinea|gq|Namibia|na|Uzbekistan|uz|
-|Estonia|ee|Nepal|np|Vanuatu|vu|
-|Eswatini|sz|Netherlands|nl|Venezuela|ve|
-|Ethiopia|et|New Caledonia|nc|Vietnam|vn|
-|Fiji|fj|New Zealand|nz|Yemen|ye|
-|Finland|fi|Nicaragua|ni|Zambia|zm|
-|France|fr|Niger|ne|Zimbabwe|zw|
-|French Polynesia|pf|Nigeria|ng|||
-|Gabon|ga|Norway|no|||
-</Tab>
-<Tab title="Mobile Proxy">
-|||||||
-|---|---|---|---|---|---|
-|Afghanistan|af|Georgia|ge|Nigeria|ng|
-|Albania|al|Germany|de|Norway|no|
-|Algeria|dz|Ghana|gh|Oman|om|
-|Angola|ao|Greece|gr|Pakistan|pk|
-|Antigua and Barbuda|ag|Guatemala|gt|Panama|pa|
-|Argentina|ar|Guinea-Bissau|gw|Paraguay|py|
-|Armenia|am|Guyana|gy|Peru|pe|
-|Australia|au|Haiti|ht|Philippines|ph|
-|Austria|at|Honduras|hn|Poland|pl|
-|Azerbaijan|az|Hungary|hu|Portugal|pt|
-|Bahamas|bs|Iceland|is|Qatar|qa|
-|Bahrain|bh|India|in|Romania|ro|
-|Bangladesh|bd|Indonesia|id|Russia|ru|
-|Barbados|bb|Iraq|iq|Rwanda|rw|
-|Belgium|be|Ireland|ie|Saudi Arabia|sa|
-|Belize|bz|Israel|il|Senegal|sn|
-|Benin|bj|Italy|it|Serbia|rs|
-|Bhutan|bt|Jamaica|jm|Sierra Leone|sl|
-|Bolivia|bo|Japan|jp|Singapore|sg|
-|Bosnia and Herzegovina|ba|Jordan|jo|Slovakia|sk|
-|Botswana|bw|Kazakhstan|kz|Slovenia|si|
-|Brazil|br|Kenya|ke|South Africa|za|
-|Bulgaria|bg|Kuwait|kw|South Korea|kr|
-|Burkina Faso|bf|Kyrgyzstan|kg|Spain|es|
-|Cambodia|kh|Laos|la|Sri Lanka|lk|
-|Cameroon|cm|Latvia|lv|Sudan|sd|
-|Canada|ca|Lebanon|lb|Sweden|se|
-|Cape Verde|cv|Liberia|lr|Switzerland|ch|
-|Chile|cl|Libya|ly|Syria|sy|
-|China|cn|Lithuania|lt|Taiwan|tw|
-|Colombia|co|Macedonia|mk|Tajikistan|tj|
-|Congo|cg|Malawi|mw|Tanzania|tz|
-|Côte d’Ivoire|ci|Malaysia|my|Thailand|th|
-|Croatia|hr|Maldives|mv|Togo|tg|
-|Cuba|cu|Mali|ml|Trinidad and Tob
-|Cyprus|cy|Malta|mt|Tunisia|tn|
-|Czech Republic|cz|Mauritius|mu|Turkey|tr|
-|Denmark|dk|Mexico|mx|Uganda|ug|
-|Dominican Republic|do|Moldova|md|Ukraine|ua|
-|Ecuador|ec|Mongolia|mn|United Arab Emirates|ae
-|Egypt|eg|Montenegro|me|United Kingdom|gb|
-|El Salvador|sv|Morocco|ma|United States|us|
-|Estonia|ee|Mozambique|mz|Uruguay|uy|
-|Ethiopia|et|Nepal|np|Uzbekistan|uz|
-|Fiji|fj|Netherlands|nl|Venezuela|ve|
-|Finland|fi|New Caledonia|nc|Vietnam|vn|
-|France|fr|New Zealand|nz|Yemen|ye|
-|Gabon|ga|Namibia|na|Zambia|zm|
-|Gambia|gm|Nicaragua|ni|Zimbabwe|zw|
-
-</Tab>
-<Tab title="Gov Proxy">
-|||||||
-|---|---|---|---|---|---|
-|Afghanistan|af|France|fr|Netherlands|nl|
-|Albania|al|French Guiana|gf|New Zealand|nz|
-|Algeria|dz|French Polynesia|pf|Nicaragua|ni|
-|Andorra|ad|Gabon|ga|Nigeria|ng|
-|Angola|ao|Gambia|gm|Norway|no|
-|American Samoa|as|Georgia|ge|Pakistan|pk|
-|Antigua and Barbuda|ag|Germany|de|Panama|pa|
-|Argentina|ar|Ghana|gh|Paraguay|py|
-|Armenia|am|Gibraltar|gi|Peru|pe|
-|Aruba|aw|Greece|gr|Philippines|ph|
-|Australia|au|Grenada|gd|Poland|pl|
-|Austria|at|Guadeloupe|gp|Portugal|pt|
-|Azerbaijan|az|Guatemala|gt|Puerto Rico|pr|
-|Bahamas|bs|Guernsey|gg|Qatar|qa|
-|Bahrain|bh|Guinea|gn|Romania|ro|
-|Barbados|bb|Guinea-Bissau|gw|Saint Lucia|lc|
-|Belarus|by|Guyana|gy|San Marino|sm|
-|Belgium|be|Haiti|ht|Saudi Arabia|sa|
-|Belize|bz|Honduras|hn|Senegal|sn|
-|Benin|bj|Hungary|hu|Serbia|rs|
-|Bermuda|bm|Iceland|is|Seychelles|sc|
-|Bolivia|bo|India|in|Sierra Leone|sl|
-|Bosnia and Herzegovina|ba|Iran|ir|Slovakia|sk|
-|Brazil|br|Iraq|iq|Slovenia|si|
-|Bulgaria|bg|Ireland|ie|Somalia|so|
-|Burkina Faso|bf|Israel|il|South Africa|za|
-|Cameroon|cm|Italy|it|South Korea|kr|
-|Canada|ca|Jamaica|jm|Spain|es|
-|Cape Verde|cv|Japan|jp|Suriname|sr|
-|Chad|td|Jordan|jo|Sweden|se|
-|Chile|cl|Kazakhstan|kz|Switzerland|ch|
-|Colombia|co|Kuwait|kw|Syria|sy|
-|Congo|cg|Kyrgyzstan|kg|São Tomé and Príncipe|st|
-|Costa Rica|cr|Latvia|lv|Taiwan|tw|
-|Côte d’Ivoire|ci|Lebanon|lb|Tajikistan|tj|
-|Croatia|hr|Libya|ly|Togo|tg|
-|Cuba|cu|Liechtenstein|li|Trinidad and Tobago|tt|
-|Cyprus|cy|Lithuania|lt|Tunisia|tn|
-|Czech Republic|cz|Luxembourg|lu|Turkey|tr|
-|Denmark|dk|Macedonia|mk|Turks and Caicos Islands|tc|
-|Dominica|dm|Mali|ml|Ukraine|ua|
-|Dominican Republic|do|Malta|mt|United Arab Emirates|ae|
-|Ecuador|ec|Martinique|mq|United States|us|
-|Egypt|eg|Mauritania|mr|Uruguay|uy|
-|El Salvador|sv|Mexico|mx|Uzbekistan|uz|
-|Estonia|ee|Moldova|md|Venezuela|ve|
-|Ethiopia|et|Monaco|mc|Yemen|ye|
-|Faroe Islands|fo|Montenegro|me|
-|Finland|fi|Morocco|ma|
-
 </Tab>
 </Tabs>
 {/* # Anchor Proxy
