@@ -12,19 +12,22 @@ Anchor browser solves CAPTCHA challenges using a vision-based approach, along wi
 
 For the full list of available options, view the [interactive api documentation](/api-reference)
 
-### Code Example
+### CAPTCHA solving Configuration
 
 <CodeGroup>
 ```javascript node.js
 import AnchorBrowser from 'anchorbrowser';
 
 (async () => {
-  const anchor_client = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
+  const anchorClient = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
   
-  const session = await anchor_client.sessions.create({
+  const session = await anchorClient.sessions.create({
     browser: {
       captcha_solver: {
-        active: true
+        active: true, // Visual CAPTCHA solving
+        // Optional: Text-based CAPTCHA (both selectors below)
+        image_selector: 'ol_capcha img',
+        input_selector: 'ol-captcha'
       }
     }
   });
@@ -42,7 +45,10 @@ anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
 session = anchor_client.sessions.create(
     browser={
         "captcha_solver": {
-            "active": True
+            "active": True,   # Visual CAPTCHA solving
+            # Optional: Text-based CAPTCHA (defaults to false)
+	     "image_selector": 'ol_capcha img',
+            "input_selector": 'ol-captcha'
         }
     }
 )
