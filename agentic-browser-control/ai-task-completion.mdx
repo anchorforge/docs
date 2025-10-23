@@ -25,7 +25,61 @@ This capability allows to use the browser without any coding.
 
 **For advanced usage**, use it through the playwright CDP connection (all languages supported by PW are supported)
 
-#### Available Models
+## Quick Start Example
+
+Here's a simple example of using the AI object to perform a web task:
+
+<CodeGroup>
+
+```javascript node.js
+import { chromium } from "playwright-core";
+import Anchorbrowser from "anchorbrowser";
+
+(async () => {
+const anchorClient = new Anchorbrowser();
+const session = await anchorClient.sessions.create({
+    apiKey: process.env.ANCHORBROWSER_API_KEY,
+});
+const cdpUrl = session?.data?.cdp_url;
+const browser = await chromium.connectOverCDP(cdpUrl);
+const context = browser.contexts()[0];
+const ai = context.serviceWorkers()[0];
+const page = context.pages()[0];
+
+await page.goto("https://example.com");
+const result = await ai.evaluate('What is the main heading on this page?');
+
+await page.close();
+console.log(result);
+})();
+```
+
+```python python
+from playwright.sync_api import sync_playwright
+from anchorbrowser import Anchorbrowser
+import os
+
+anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
+session = anchor_client.sessions.create()
+cdp_url = session.data.cdp_url
+
+with sync_playwright() as p:
+   browser = p.chromium.connect_over_cdp(cdp_url)
+   context = browser.contexts[0]
+   ai = next((sw for sw in context.service_workers if sw.url.startswith("chrome-extension://bppehibnhionalpjigdjdilknbljaeai")), None)
+   page = context.pages[0]
+   
+   page.goto("https://example.com")
+   result = ai.evaluate('What is the main heading on this page?')
+   print(result)
+```
+</CodeGroup>
+
+## LLM Models
+
+Anchor Browser supports multiple AI providers and models. You can specify which model to use by passing the `model` parameter to the AI object.
+
+### Available Models
 <Expandable title="Available Models" defaultOpen>
   <Tabs>
     <Tab title="OpenAI">
@@ -42,10 +96,10 @@ This capability allows to use the browser without any coding.
 
     <Tab title="Gemini">
       <div className="grid grid-cols-3 gap-2">
-        <div>gemini-2.0-flash</div>
-        <div>gemini-2.0-flash-exp</div>
-        <div>gemini-2.0-flash-lite-preview-02-05</div>
         <div>gemini-2.5-flash</div>
+        <div>gemini-2.0-flash-exp</div>
+        <div>gemini-2.0-flash</div>
+        <div>gemini-2.0-flash-lite-preview-02-05</div>
       </div>
     </Tab>
 
@@ -69,7 +123,9 @@ This capability allows to use the browser without any coding.
   </Tabs>
 </Expandable>
 
-### Code Example
+### Using Different Models
+
+You can specify different models and providers by passing the `model` parameter:
 
 <CodeGroup>
 
@@ -78,8 +134,8 @@ import { chromium } from "playwright-core";
 import Anchorbrowser from "anchorbrowser";
 
 (async () => {
-const anchor_client = new Anchorbrowser();
-const session = await anchor_client.sessions.create({
+const anchorClient = new Anchorbrowser();
+const session = await anchorClient.sessions.create({
     apiKey: process.env.ANCHORBROWSER_API_KEY,
 });
 const cdpUrl = session?.data?.cdp_url;
@@ -88,14 +144,33 @@ const context = browser.contexts()[0];
 const ai = context.serviceWorkers()[0];
 const page = context.pages()[0];
 
-// Combine regular playwright and AI actions to benefit from both options
+// Use OpenAI GPT-5
 await page.goto("http://docs.anchorbrowser.io/", {waitUntil:'domcontentloaded'});
+const result1 = await ai.evaluate(JSON.stringify({
+    prompt: 'Find the last game played by Milwaukee in the NBA and return the result',
+    model: 'gpt-5',
+    provider: 'openai'
+}));
+console.log('GPT-5 result:', result1);
 
-// Use the embedded 'ai' object
-const result = await ai.evaluate('Find the last game played by Milwaukee in the NBA and return the result')
-console.log(result);
+// Use Gemini 2.5 Flash
+const result2 = await ai.evaluate(JSON.stringify({
+    prompt: 'Find the last game played by Milwaukee in the NBA and return the result',
+    model: 'gemini-2.5-flash',
+    provider: 'gemini'
+}));
+console.log('Gemini result:', result2);
+
+// Use Groq powered model
+const result3 = await ai.evaluate(JSON.stringify({
+    prompt: 'Find the last game played by Milwaukee in the NBA and return the result',
+    model: 'openai/gpt-oss-120b',
+    provider: 'groq'
+}));
+
+await page.close();
+console.log('Groq result:', result3);
 })();
-
 ```
 ```python python
 from playwright.sync_api import sync_playwright
@@ -110,10 +185,33 @@ with sync_playwright() as p:
    browser = p.chromium.connect_over_cdp(cdp_url)
    context = browser.contexts[0]
    ai = next((sw for sw in context.service_workers if sw.url.startswith("chrome-extension://bppehibnhionalpjigdjdilknbljaeai")), None)
+   page = context.pages[0]
             
-   # Use the embedded 'ai' object
-   result = ai.evaluate('Find the last game played by Milwaukee in the NBA and return the result')
-   print(result)
+   page.goto("http://docs.anchorbrowser.io/", wait_until='domcontentloaded')
+   
+   # Use OpenAI GPT-5
+   result1 = ai.evaluate(json.dumps({
+       'prompt': 'Find the last game played by Milwaukee in the NBA and return the result',
+       'model': 'gpt-5',
+       'provider': 'openai'
+   }))
+   print('GPT-5 result:', result1)
+   
+   # Use Gemini 2.5 Flash
+   result2 = ai.evaluate(json.dumps({
+       'prompt': 'Find the last game played by Milwaukee in the NBA and return the result',
+       'model': 'gemini-2.5-flash',
+       'provider': 'gemini'
+   }))
+   print('Gemini result:', result2)
+   
+   # Use Groq powered model
+   result3 = ai.evaluate(json.dumps({
+       'prompt': 'Find the last game played by Milwaukee in the NBA and return the result',
+       'model': 'openai/gpt-oss-120b',
+       'provider': 'groq'
+   }))
+   print('Groq result:', result3)
 ```
 </CodeGroup>
 
@@ -130,38 +228,37 @@ import { z } from "zod";
 import Anchorbrowser from "anchorbrowser";
 
 (async () => {
-const anchor_client = new Anchorbrowser();
-const session = await anchor_client.sessions.create({
-    apiKey: process.env.ANCHORBROWSER_API_KEY,
-});
-const cdpUrl = session?.data?.cdp_url;
-const browser = await chromium.connectOverCDP(cdpUrl);
-const context = browser.contexts()[0];
-const ai = context.serviceWorkers()[0];
-const page = context.pages()[0];
+  const anchorClient = new Anchorbrowser();
+  const session = await anchorClient.sessions.create({
+      apiKey: process.env.ANCHORBROWSER_API_KEY,
+  });
+  const cdpUrl = session?.data?.cdp_url;
+  const browser = await chromium.connectOverCDP(cdpUrl);
+  const context = browser.contexts()[0];
+  const ai = context.serviceWorkers()[0];
+  const page = context.pages()[0];
 
-const outputSchema = z.object({
-  nodes_cpu_usage: z.array(
-    z.object({
-      node: z.string(),
-      cluster: z.string(),
-      cpu_avg_percentage: z.number(),
-    })
-  )
-});
+  const outputSchema = z.object({
+      nodes_cpu_usage: z.array(
+        z.object({
+          node: z.string(),
+          cluster: z.string(),
+          cpu_avg_percentage: z.number(),
+        })
+      )
+  });
+  const jsonSchema = z.toJSONSchema(outputSchema);
+  const taskPayload = {
+    output_schema: jsonSchema,
+    prompt: 'Collect the node names and their CPU average %',
+  };
 
-const jsonSchema = z.toJSONSchema(outputSchema);
-const taskPayload = {
-  output_schema: jsonSchema,
-  prompt: 'Collect the node names and their CPU average %',
-};
+  await page.goto("https://play.grafana.org/a/grafana-k8s-app/navigation/nodes?from=now-1h&to=now&refresh=1m");
 
-await page.goto("https://play.grafana.org/a/grafana-k8s-app/navigation/nodes?from=now-1h&to=now&refresh=1m");
+  const result = await ai.evaluate(JSON.stringify(taskPayload));
 
-const result = await ai.evaluate(JSON.stringify(taskPayload));
-console.info(result);
-
-browser.close();
+  console.info(result);
+  await browser.close();
 })();
 ```
 ```python python
