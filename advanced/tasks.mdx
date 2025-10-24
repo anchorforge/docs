@@ -142,7 +142,7 @@ const execution = await client.task.run({
   }
 });
 
-console.log('Task execution started:', execution.data.id);
+console.log('Task execution started:', execution.data);
 ```
 
 ```python Python
@@ -156,7 +156,7 @@ execution = client.task.run(
     }
 )
 
-print(f"Task execution started: {execution.data.id}")
+print(f"Task execution started: {execution.data}")
 ```
 </CodeGroup>
 </Step>
