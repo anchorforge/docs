@@ -38,6 +38,62 @@ The AI agent can be configured with the following parameters:
 - **highlight_elements** (boolean): Highlight elements during task execution for better visibility
 - **output_schema** (object): JSON Schema defining the expected structure of the output data
 
+### API Usage Example
+
+<CodeGroup>
+
+```javascript node.js
+const anchorClient = new Anchorbrowser();
+
+const response = await anchorClient.post('/v1/tools/perform-web-task', {
+  query: {
+    sessionId: latestSessionData?.sessionId || '',
+  },
+  body: {
+    detect_elements: true,
+    human_intervention: true,
+    prompt: 'Navigate to example.com and extract the main heading',
+    provider: 'groq',
+    model: 'openai/gpt-oss-120b',
+    max_steps: 25,
+    secret_values: {
+      API_KEY: 'your-secret-key'
+    },
+  },
+  timeout: 480000,
+});
+
+console.log(response.data.result);
+```
+
+```python python
+from anchorbrowser import Anchorbrowser
+
+anchor_client = Anchorbrowser()
+
+response = anchor_client.post('/v1/tools/perform-web-task', 
+  query={
+    'sessionId': latest_session_data.session_id if latest_session_data else ''
+  },
+  body={
+    'detect_elements': True,
+    'human_intervention': True,
+    'prompt': 'Navigate to example.com and extract the main heading',
+    'provider': 'groq',
+    'model': 'openai/gpt-oss-120b',
+    'max_steps': 25,
+    'secret_values': {
+      'API_KEY': 'your-secret-key'
+    }
+  },
+  timeout=480000
+)
+
+print(response.data.result)
+```
+
+</CodeGroup>
+
 #### Available Models
 <Expandable title="Available Models" defaultOpen>
   <Tabs>
