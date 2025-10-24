@@ -25,6 +25,19 @@ This capability allows to use the browser without any coding.
 
 **For advanced usage**, use it through the playwright CDP connection (all languages supported by PW are supported)
 
+### Configuration Options
+
+The AI agent can be configured with the following parameters:
+
+- **detect_elements** (boolean): Enable element detection for better interaction accuracy
+- **human_intervention** (boolean): Allow human intervention during task execution
+- **provider** (string): AI provider to use (`openai`, `gemini`, `groq`, `azure`, `xai`)
+- **model** (string): Specific model to use (see [Available Models](#available-models) below)
+- **max_steps** (integer): Maximum number of steps the agent can take (default: 25)
+- **secret_values** (object): Secret values to pass to the agent for secure credential handling
+- **highlight_elements** (boolean): Highlight elements during task execution for better visibility
+- **output_schema** (object): JSON Schema defining the expected structure of the output data
+
 #### Available Models
 <Expandable title="Available Models" defaultOpen>
   <Tabs>
