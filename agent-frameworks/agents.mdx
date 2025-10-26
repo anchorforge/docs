@@ -4,21 +4,19 @@ description: 'Configure AI agents for browser automation tasks'
 icon: 'robot'
 ---
 
-Anchor Browser supports three AI agents for browser automation. Choose the right agent for your use case:
+Anchor Browser includes three pre-configured AI agents for browser automation. Choose the one that best fits your workflow:
 
 ## Available Agents
 
 ### Browser-Use (Default)
-<!-- Light mode image -->
+
 <img src="/images/agent-browser-use-icon-light.svg" alt="Browser-Use" width="80" noZoom className="float-right ml-3 block dark:hidden" />
-<!-- Dark mode image -->
 <img src="/images/agent-browser-use-icon-dark.svg" alt="Browser-Use" width="80" noZoom className="float-right ml-3 hidden dark:block" />
-Browser-Use is a versatile, autonomous browser agent with pause/resume, human-in-the-loop controls, and structured outputs. It supports multiple providers including OpenAI (and Azure OpenAI), Gemini, and Groq, making it ideal for complex, multi-step workflows.
+Browser-Use is a versatile fast, DOM based, autonomous browser agent with pause/resume, human-in-the-loop controls, and structured outputs. It supports multiple providers including OpenAI (and Azure OpenAI), Gemini, and Groq, making it ideal for complex, multi-step workflows.
+It is a fork of the [browser-use open-source repository](https://github.com/browser-use/browser-use) 
 
 ### OpenAI CUA 
-<!-- Light mode image -->
 <img src="/images/agent-openai-light.svg" alt="OpenAI CUA" width="80" noZoom className="float-right ml-3 block dark:hidden" />
-<!-- Dark mode image -->
 <img src="/images/agent-openai-dark.svg" alt="OpenAI CUA" width="80" noZoom className="float-right ml-3 hidden dark:block" />
 OpenAI’s Computer Use Agent offers high-accuracy, screenshot-driven interactions for direct, task-focused automation. Provider: OpenAI only.
 
@@ -26,6 +24,8 @@ OpenAI’s Computer Use Agent offers high-accuracy, screenshot-driven interactio
 <img src="/images/agent-gemini-color.png" alt="Gemini Computer Use" width="80" noZoom className="float-right ml-3" />
 Google’s Gemini Computer Use agent enables multi-turn interactions and structured outputs tightly integrated with the Gemini platform. Provider: Google Gemini only.
 
+### Other Playwright-Based Agent
+Anchor Browser supports any Playwright-based agent, so if you prefer a different agent than the three above, you can integrate your own custom agent.
 ## Quick Start
 
 <Accordion title="Code example - Using Agents" defaultOpen>
@@ -90,9 +90,9 @@ const anchorClient = new Anchorbrowser({
 | `output_schema` / `outputSchema` | object | JSON schema for structured output |
 | `on_agent_step` / `onAgentStep` | function | Callback for step-by-step execution logs |
 
-### tools/perform_web_task Parameters
+### tools.perform_web_task() Parameters
 | Agent | Required | Optional |
 |-------|----------|----------|
 | **browser-use** | `prompt` | `agent`, `url`, `provider`, `model`, `max_steps`, `highlight_elements`, `detect_elements`, `human_intervention` |
 | **openai-cua** | `prompt` | `agent`, `url` |
-| **gemini-computer-use** | `prompt` | `agent`, `url`, `model`, `human_intervention` |
+| **gemini-computer-use** | `prompt` | `agent`, `url` |
