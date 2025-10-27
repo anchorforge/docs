@@ -15,55 +15,42 @@ Anchor Browser delivers a state-of-the-art 89% Score on the industry-standard be
   src="/images/video-playground.mp4"
 ></video>
 
-## The browser AI object
+## The perform web task method
 
-Anchor Browser comes with an embedded AI component, that allows to control the browser or extract data using natural language.
+Anchor Browser provides within its SDK the `tools.perform_web_task` method that enables natural language control over web browsing sessions. This capability allows you to **automate complex web tasks without coding the whole flow.**
+<Info>
+Looking for Tasks? Visit the [Tasks Page](/advanced/tasks).
+</Info>
 
-This capability allows to use the browser without any coding.
-
-**For basic usage**, the [Perform Web Task Tool](/api-reference/ai-tools/perform-web-task) exposes these capabilities through a single API request.
-
-**For advanced usage**, use it through the playwright CDP connection (all languages supported by PW are supported)
-
-### Configuration Options
-
-The AI agent can be configured with the following parameters:
-
-- **detect_elements** (boolean): Enable element detection for better interaction accuracy
-- **human_intervention** (boolean): Allow human intervention during task execution
-- **provider** (string): AI provider to use (`openai`, `gemini`, `groq`, `azure`, `xai`)
-- **model** (string): Specific model to use (see [Available Models](#available-models) below)
-- **max_steps** (integer): Maximum number of steps the agent can take (default: 25)
-- **secret_values** (object): Secret values to pass to the agent for secure credential handling
-- **highlight_elements** (boolean): Highlight elements during task execution for better visibility
-- **output_schema** (object): JSON Schema defining the expected structure of the output data
-
-### API Usage Example
+### Code Example
 
 <CodeGroup>
 
 ```javascript node.js
-const anchorClient = new Anchorbrowser();
+import Anchorbrowser from 'anchorbrowser';
 
-const response = await anchorClient.post('/v1/tools/perform-web-task', {
-  query: {
-    sessionId: latestSessionData?.sessionId || '',
-  },
-  body: {
-    detect_elements: true,
-    human_intervention: true,
-    prompt: 'Navigate to example.com and extract the main heading',
-    provider: 'groq',
-    model: 'openai/gpt-oss-120b',
-    max_steps: 25,
+(async () => {
+  const anchorClient = new Anchorbrowser();
+
+  const response = await anchorClient.agent.performWebTask({
+    prompt: 'Extract the main heading',           // Required
+    // sessionId: latestSessionData?.sessionId,   // Either sessionId or url is required
+    url: 'https://example.com',                   // Either sessionId or url is required
+    human_intervention: true,                     // Allow human intervention during task execution.
+    detect_elements: true,                        // Improves the agent's ability to identify and interact with UI elements.
+    max_steps: 40,
+    agent: 'browser-use',                         // browser-use (default), openai-cua, or gemini-computer-use
+    provider: 'groq',                             // For browser-use agent only, openai, gemini, groq, azure, xai
+    model: 'openai/gpt-oss-120b',                 // For browser-use agent only, see model list below
+    extended_system_message: 'Focus on extracting the main heading from the page',
+    use_vision: true,                             // For vision-supporting models only
     secret_values: {
       API_KEY: 'your-secret-key'
-    },
-  },
-  timeout: 480000,
-});
+    }
+  });
 
-console.log(response.data.result);
+  console.log(response.data.result);
+})();
 ```
 
 ```python python
@@ -71,119 +58,26 @@ from anchorbrowser import Anchorbrowser
 
 anchor_client = Anchorbrowser()
 
-response = anchor_client.post('/v1/tools/perform-web-task', 
-  query={
-    'sessionId': latest_session_data.session_id if latest_session_data else ''
-  },
-  body={
-    'detect_elements': True,
-    'human_intervention': True,
-    'prompt': 'Navigate to example.com and extract the main heading',
-    'provider': 'groq',
-    'model': 'openai/gpt-oss-120b',
-    'max_steps': 25,
-    'secret_values': {
-      'API_KEY': 'your-secret-key'
+response = await anchor_client.tools.perform_web_task(
+    prompt='Extract the main heading',  # Required
+    # session_id=latest_session_data.session_id if latest_session_data else '',  # Either session_id or url is required
+    url='https://example.com',  # Either session_id or url is required
+    human_intervention=True,  # Allow human intervention during task execution.
+    detect_elements=True,  # Improves the agent's ability to identify and interact with UI elements.
+    max_steps=40,
+    agent='browser-use',  # browser-use (default), openai-cua, or gemini-computer-use
+    provider='groq',  # For browser-use agent only, openai, gemini, groq, azure, xai
+    model='openai/gpt-oss-120b',  # For browser-use agent only, see model list below
+    extended_system_message='Focus on extracting the main heading from the page',
+    use_vision=True,  # For vision-supporting models only
+    secret_values={
+        'API_KEY': 'your-secret-key'
     }
-  },
-  timeout=480000
 )
 
 print(response.data.result)
 ```
 
-</CodeGroup>
-
-#### Available Models
-<Expandable title="Available Models" defaultOpen>
-  <Tabs>
-    <Tab title="OpenAI">
-      <div className="grid grid-cols-3 gap-2">
-        <div>gpt-5</div>
-        <div>gpt-5-mini</div>
-        <div>gpt-5-nano</div>
-        <div>gpt-4o</div>
-        <div>gpt-4o-mini</div>
-        <div>gpt-4.1</div>
-        <div>gpt-4.1-mini</div>
-      </div>
-    </Tab>
-
-    <Tab title="Gemini">
-      <div className="grid grid-cols-3 gap-2">
-        <div>gemini-2.0-flash</div>
-        <div>gemini-2.0-flash-exp</div>
-        <div>gemini-2.0-flash-lite-preview-02-05</div>
-        <div>gemini-2.5-flash</div>
-      </div>
-    </Tab>
-
-    <Tab title="Groq">
-      <div className="grid grid-cols-3 gap-2">
-        <div>openai/gpt-oss-120b</div>
-        <div>meta-llama/llama-4-maverick-17b-128e-instruct</div>
-        <div>meta-llama/llama-4-scout-17b-16e-instruct</div>
-        <div>moonshotai/kimi-k2-instruct</div>
-      </div>
-    </Tab>
-
-    <Tab title="Azure">
-      <div className="grid grid-cols-3 gap-2">
-        <div>o4-mini</div>
-        <div>o3</div>
-        <div>o3-mini</div>
-        <div>o1</div>
-      </div>
-    </Tab>
-  </Tabs>
-</Expandable>
-
-### Code Example
-
-<CodeGroup>
-
-```javascript node.js
-import { chromium } from "playwright-core";
-import Anchorbrowser from "anchorbrowser";
-
-(async () => {
-const anchor_client = new Anchorbrowser();
-const session = await anchor_client.sessions.create({
-    apiKey: process.env.ANCHORBROWSER_API_KEY,
-});
-const cdpUrl = session?.data?.cdp_url;
-const browser = await chromium.connectOverCDP(cdpUrl);
-const context = browser.contexts()[0];
-const ai = context.serviceWorkers()[0];
-const page = context.pages()[0];
-
-// Combine regular playwright and AI actions to benefit from both options
-await page.goto("http://docs.anchorbrowser.io/", {waitUntil:'domcontentloaded'});
-
-// Use the embedded 'ai' object
-const result = await ai.evaluate('Find the last game played by Milwaukee in the NBA and return the result')
-console.log(result);
-})();
-
-```
-```python python
-from playwright.sync_api import sync_playwright
-from anchorbrowser import Anchorbrowser
-import os
-
-anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
-session = anchor_client.sessions.create()
-cdp_url = session.data.cdp_url
-
-with sync_playwright() as p:
-   browser = p.chromium.connect_over_cdp(cdp_url)
-   context = browser.contexts[0]
-   ai = next((sw for sw in context.service_workers if sw.url.startswith("chrome-extension://bppehibnhionalpjigdjdilknbljaeai")), None)
-            
-   # Use the embedded 'ai' object
-   result = ai.evaluate('Find the last game played by Milwaukee in the NBA and return the result')
-   print(result)
-```
 </CodeGroup>
 
 ## Structured Output
@@ -199,38 +93,38 @@ import { z } from "zod";
 import Anchorbrowser from "anchorbrowser";
 
 (async () => {
-const anchor_client = new Anchorbrowser();
-const session = await anchor_client.sessions.create({
-    apiKey: process.env.ANCHORBROWSER_API_KEY,
-});
-const cdpUrl = session?.data?.cdp_url;
-const browser = await chromium.connectOverCDP(cdpUrl);
-const context = browser.contexts()[0];
-const ai = context.serviceWorkers()[0];
-const page = context.pages()[0];
+  const anchorClient = new Anchorbrowser();
+  const session = await anchorClient.sessions.create({
+      apiKey: process.env.ANCHORBROWSER_API_KEY,
+  });
+  const cdpUrl = session?.data?.cdp_url;
+  const browser = await chromium.connectOverCDP(cdpUrl);
+  const context = browser.contexts()[0];
+  const ai = context.serviceWorkers()[0];
+  const page = context.pages()[0];
 
-const outputSchema = z.object({
-  nodes_cpu_usage: z.array(
-    z.object({
-      node: z.string(),
-      cluster: z.string(),
-      cpu_avg_percentage: z.number(),
-    })
-  )
-});
+  const outputSchema = z.object({
+    nodes_cpu_usage: z.array(
+      z.object({
+        node: z.string(),
+        cluster: z.string(),
+        cpu_avg_percentage: z.number(),
+      })
+    )
+  });
 
-const jsonSchema = z.toJSONSchema(outputSchema);
-const taskPayload = {
-  output_schema: jsonSchema,
-  prompt: 'Collect the node names and their CPU average %',
-};
+  const jsonSchema = z.toJSONSchema(outputSchema);
+  const taskPayload = {
+    output_schema: jsonSchema,
+    prompt: 'Collect the node names and their CPU average %',
+  };
 
-await page.goto("https://play.grafana.org/a/grafana-k8s-app/navigation/nodes?from=now-1h&to=now&refresh=1m");
+  await page.goto("https://play.grafana.org/a/grafana-k8s-app/navigation/nodes?from=now-1h&to=now&refresh=1m");
 
-const result = await ai.evaluate(JSON.stringify(taskPayload));
-console.info(result);
+  const result = await ai.evaluate(JSON.stringify(taskPayload));
+  console.info(result);
 
-browser.close();
+  browser.close();
 })();
 ```
 ```python python
@@ -271,3 +165,123 @@ with sync_playwright() as p:
 
 ```
 </CodeGroup>
+
+<Expandable title="">
+## The browser AI object
+
+Anchor Browser comes with an embedded AI component, that allows to control the browser or extract data using natural language. This capability allows to **use the browser without any coding.**
+
+
+### Code Example
+
+<CodeGroup>
+```javascript node.js
+import Anchorbrowser from "anchorbrowser";
+
+(async () => {
+  const anchor_client = new Anchorbrowser({apiKey: process.env.ANCHORBROWSER_API_KEY});
+  
+  // Create a browser session
+  const browser = await anchor_client.browser.create();
+  const page = browser.contexts()[0].pages()[0];
+  
+  // Get the AI service worker
+  const ai = context.serviceWorkers().find(sw => 
+    sw.url().includes('chrome-extension://bppehibnhionalpjigdjdilknbljaeai/background.js')
+  );
+
+  await page.goto("http://docs.anchorbrowser.io/", {waitUntil:'domcontentloaded'});
+
+  // Use the embedded 'ai' object
+  const result = await ai.evaluate('Find the last game played by Milwaukee in the NBA and return the result');
+
+  await browser.close();
+  console.log(result);
+})();
+```
+```python python
+from anchorbrowser import Anchorbrowser
+
+anchor_client = Anchorbrowser(api_key='your-api-key')
+
+# Create a browser session
+browser = await anchor_client.browser.create()
+page = browser.contexts()[0].pages()[0]
+
+# Get the AI service worker
+context = browser.contexts()[0]
+ai = next((sw for sw in context.service_workers if sw.url.startswith("chrome-extension://bppehibnhionalpjigdjdilknbljaeai")), None)
+
+await page.goto("http://docs.anchorbrowser.io/", wait_until='domcontentloaded')
+
+# Use the embedded 'ai' object
+result = await ai.evaluate('Find the last game played by Milwaukee in the NBA and return the result')
+
+await browser.close()
+print(result)
+
+```
+</CodeGroup>
+</Expandable>
+<Expandable title="Configuration Options">
+
+## Configuration Options
+The AI agent can be configured with the following parameters:
+
+- **agent** (string): AI agent to use (`browser-use`, `openai-cua`, `gemini-computer-use`). Defaults to `browser-use`.
+- **secret_values** (object): Secret values to pass to the agent for secure credential handling.
+- **human_intervention** (boolean): Allow human intervention during task execution.
+- **provider** (string): AI provider to use (`openai`, `gemini`, `groq`, `azure`, `xai`).
+- **model** (string): Specific model to use (see [Available Models](#available-models) below).
+- **url** (string): Target URL to navigate to before executing the task.
+- **output_schema** (object): JSON Schema defining the expected structure of the output data.
+- **max_steps** (integer): Maximum number of steps the agent can take (default: 40).
+- **detect_elements** (boolean): Enable element detection for better interaction accuracy.
+- **extended_system_message** (string): Custom system message to provide additional context or instructions to the agent.
+- **use_vision** (boolean): Enable vision capabilities for enhanced visual understanding.
+
+
+</Expandable>
+#### Available Models For Browser-Use
+<Expandable title="Available Models" defaultOpen>
+  <Tabs>
+    <Tab title="OpenAI">
+      <div className="grid grid-cols-3 gap-2">
+        <div>gpt-5</div>
+        <div>gpt-5-mini</div>
+        <div>gpt-5-nano</div>
+        <div>gpt-4o</div>
+        <div>gpt-4o-mini</div>
+        <div>gpt-4.1</div>
+        <div>gpt-4.1-mini</div>
+      </div>
+    </Tab>
+
+    <Tab title="Gemini">
+      <div className="grid grid-cols-3 gap-2">
+        <div>gemini-2.5-flash</div>
+        <div>gemini-2.0-flash</div>
+        <div>gemini-2.0-flash-exp</div>
+        <div>gemini-2.0-flash-lite-preview-02-05</div>
+      </div>
+    </Tab>
+
+    <Tab title="Groq">
+      <div className="grid grid-cols-3 gap-2">
+        <div>openai/gpt-oss-120b</div>
+        <div>meta-llama/llama-4-maverick-17b-128e-instruct</div>
+        <div>meta-llama/llama-4-scout-17b-16e-instruct</div>
+        <div>moonshotai/kimi-k2-instruct</div>
+      </div>
+    </Tab>
+
+    <Tab title="Azure">
+      <div className="grid grid-cols-3 gap-2">
+        <div>o4-mini</div>
+        <div>o3</div>
+        <div>o3-mini</div>
+        <div>o1</div>
+      </div>
+    </Tab>
+  </Tabs>
+</Expandable>
