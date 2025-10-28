@@ -62,12 +62,11 @@ Anchor Browser allows you to use your own proxy servers, giving you complete con
 
 To use a custom proxy, you need to provide the following information:
 
+- **`active`**: Set to `true` to enable the proxy
 - **`type`**: Set to `"custom"` to indicate you're using your own proxy
-- **`server`**: The hostname or IP address of your proxy server
-- **`port`**: The port number your proxy server listens on (optional, defaults to 80 for HTTP, 443 for HTTPS)
+- **`server`**: The hostname or IP address of your proxy server, appended by the port (SERVER:PORT)
 - **`username`**: Your proxy authentication username (if required)
 - **`password`**: Your proxy authentication password (if required)
-- **`active`**: Set to `true` to enable the proxy
 
 ### Supported Proxy Protocols
 
@@ -91,7 +90,7 @@ import AnchorBrowser from 'anchorbrowser';
       proxy: {
         active: true
         type: 'custom',
-        server: 'proxy.example.com',
+        server: 'proxy.example.com:port',
         username: 'myUser',
         password: 'myPassword',
       }
