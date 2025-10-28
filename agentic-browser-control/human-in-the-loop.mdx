@@ -1,0 +1,60 @@
+---
+title: 'Human-in-the-Loop'
+description: 'Enable human intervention during AI agent task execution'
+icon: 'user-check'
+---
+
+Enabling Human-in-the-loop (HITL) allows the AI agent to pause execution and request human intervention when needed. This feature is essential for tasks that require human judgment, approval, or handling of unexpected situations.
+
+## Basic Usage
+
+<CodeGroup>
+
+```javascript node.js
+import Anchorbrowser from 'anchorbrowser';
+
+(async () => {
+  const anchorClient = new Anchorbrowser({
+    apiKey: process.env.ANCHOR_API_KEY
+  });
+
+  const response = await anchorClient.agent.task(
+    'Research information about Python programming on Wikipedia and create a summary. Ask for human verification if you find any controversial or disputed information.',
+    {
+      taskOptions: {
+        url: 'https://en.wikipedia.org/wiki/Python_(programming_language)',
+        humanIntervention: true,
+        maxSteps: 30,
+        extendedSystemMessage: 'Request human intervention when you encounter disputed or controversial claims about Python'
+      }
+    }
+  );
+
+  console.log(response);
+})();
+```
+
+```python python
+from anchorbrowser import Anchorbrowser
+import os
+
+anchor_client = Anchorbrowser(api_key=os.environ.get("ANCHOR_API_KEY"))
+
+response = anchor_client.agent.task(
+    'Research information about Python programming on Wikipedia and create a summary. Ask for human verification if you find any controversial or disputed information.',
+    task_options={
+        'url': 'https://en.wikipedia.org/wiki/Python_(programming_language)',
+        'human_intervention': True,
+        'max_steps': 30,
+        'extended_system_message': 'Request human intervention when you encounter disputed or controversial claims about Python'
+    }
+)
+
+print(response)
+```
+
+</CodeGroup>
+
+<Tip>
+Human-in-the-loop is most effective when combined with clear system messages that define specific intervention triggers and provide context for decision-making.
+</Tip>

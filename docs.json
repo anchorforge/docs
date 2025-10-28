@@ -51,6 +51,7 @@
                 "icon": "robot",
                 "pages": [
                   "agentic-browser-control/ai-task-completion",
+                  "agentic-browser-control/secret-values",
                   "agentic-browser-control/agentic-file-usage"
                 ]
               },
