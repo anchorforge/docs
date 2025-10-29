@@ -7,6 +7,9 @@ icon: 'user-check'
 Enabling Human-in-the-loop (HITL) allows the AI agent to pause execution and request human intervention when needed. This feature is essential for tasks that require human judgment, approval, or handling of unexpected situations.
 
 ## Basic Usage
+### How It Works
+
+When HITL is enabled, the agent sends its intervention requests to a session-specific queue. The agent then continues execution based on your instructions.
 
 <CodeGroup>
 
@@ -24,7 +27,6 @@ import Anchorbrowser from 'anchorbrowser';
       taskOptions: {
         url: 'https://en.wikipedia.org/wiki/Python_(programming_language)',
         humanIntervention: true,
-        maxSteps: 30,
         extendedSystemMessage: 'Request human intervention when you encounter disputed or controversial claims about Python'
       }
     }
@@ -45,7 +47,6 @@ response = anchor_client.agent.task(
     task_options={
         'url': 'https://en.wikipedia.org/wiki/Python_(programming_language)',
         'human_intervention': True,
-        'max_steps': 30,
         'extended_system_message': 'Request human intervention when you encounter disputed or controversial claims about Python'
     }
 )
@@ -58,7 +59,7 @@ print(response)
 Human-in-the-loop is most effective when combined with clear system messages that define specific intervention triggers and provide context for decision-making.
 </Tip>
 
-## Get Pending Intervention Requests
+## Get Pending Requests
 
 To retrieve pending human intervention requests from the agent, use the GET endpoint:
 
