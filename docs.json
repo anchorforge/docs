@@ -105,6 +105,7 @@
                 ]
               },
               "integrations/browseruse-deployment",
+              "integrations/stagehand",
               "integrations/groq",
               "advanced/cloudflare-web-bot-auth",
               "integrations/n8n",
