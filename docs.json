@@ -77,6 +77,7 @@
               "advanced/session-timeout",
               "essentials/recording",
               "advanced/captcha-solving",
+              "advanced/adblocker",
               "advanced/browser-live-view",
               "essentials/tool-building",
               {
