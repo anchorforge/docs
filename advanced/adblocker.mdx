@@ -4,7 +4,7 @@ description: 'Block ads, trackers, and unwanted content in your browser sessions
 icon: 'shield'
 ---
 
-Ad blocking is enabled by default in Anchor Browser using **uBlock Origin Lite**. It blocks ads, trackers, and malicious content to improve page load times and create cleaner automation.
+Ad blocking is enabled by default in Anchor Browser. It blocks ads, trackers, and malicious content to improve page load times and create cleaner automation.
 
 <Info>
 Ad blocking is enabled by default. Disable it only if you need to test ad-related functionality.
@@ -13,13 +13,14 @@ Ad blocking is enabled by default. Disable it only if you need to test ad-relate
 ## Quick Start
 
 <CodeGroup>
-```javascript Node.js
+```javascript node.js
 import AnchorBrowser from 'anchorbrowser';
 
 (async () => {
   const anchorClient = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
   
   const session = await anchorClient.sessions.create({
+    // Optional: ad blocking is enabled by default, so this configuration is not required
     browser: {
       adblock: {
         active: true  // Set to false to disable ad blocking
@@ -31,13 +32,14 @@ import AnchorBrowser from 'anchorbrowser';
 })().catch(console.error);
 ```
 
-```python Python
+```python python
 import os
 from anchorbrowser import Anchorbrowser
 
 anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
 
 session = anchor_client.sessions.create(
+    # Optional: ad blocking is enabled by default, so this configuration is not required
     browser={
         "adblock": {
             "active": True  # Set to False to disable ad blocking
@@ -49,10 +51,12 @@ print("Session:", session.data.id)
 ```
 </CodeGroup>
 
-## Popup Blocking
+## Disabling Ad Blocker
+
+To disable ad blocking for a session, set `active: false` in the adblock configuration:
 
 <CodeGroup>
-```javascript Node.js
+```javascript node.js
 import AnchorBrowser from 'anchorbrowser';
 
 (async () => {
@@ -61,10 +65,7 @@ import AnchorBrowser from 'anchorbrowser';
   const session = await anchorClient.sessions.create({
     browser: {
       adblock: {
-        active: true  // Required for popup blocking
-      },
-      popup_blocker: {
-        active: true  // Blocks popups and cookie banners
+        active: false  // Disables ad blocking for this session
       }
     }
   });
@@ -73,7 +74,7 @@ import AnchorBrowser from 'anchorbrowser';
 })().catch(console.error);
 ```
 
-```python Python
+```python python
 import os
 from anchorbrowser import Anchorbrowser
 
@@ -82,10 +83,7 @@ anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
 session = anchor_client.sessions.create(
     browser={
         "adblock": {
-            "active": True  # Required for popup blocking
-        },
-        "popup_blocker": {
-            "active": True  # Blocks popups and cookie banners
+            "active": False  # Disables ad blocking for this session
         }
     }
 )
@@ -94,12 +92,8 @@ print("Session:", session.data.id)
 ```
 </CodeGroup>
 
-<Warning>
-Popup blocking requires ad blocking to be active. Disabling ad blocking also disables popup blocking.
-</Warning>
-
 ## Related Features
 
+- [Popup Blocker](/advanced/popup-blocker) - Block cookie banners and consent dialogs
 - [Captcha Solving](/advanced/captcha-solving) - Solve CAPTCHAs that may appear when ad blocking is detected
-- [Extra Stealth Mode](/advanced/stealth) - Additional anti-detection features
-- [Browser Extensions](/advanced/extensions) - Upload custom extensions
+

@@ -78,6 +78,7 @@
               "essentials/recording",
               "advanced/captcha-solving",
               "advanced/adblocker",
+              "advanced/popup-blocker",
               "advanced/browser-live-view",
               "essentials/tool-building",
               {
