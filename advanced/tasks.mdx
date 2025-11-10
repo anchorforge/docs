@@ -8,10 +8,12 @@ icon: "code"
 
 The Tasks API enables you to **create, version, and execute reusable browser automation code** in your Anchor Browser sessions. Tasks allow you to:
 
-- **Write once, run anywhere**: Create reusable automation scripts that can be executed across multiple sessions
-- **Execution tracking**: Monitor task execution history, performance, and results
-- **Input**: Pass dynamic inputs to your tasks for flexible execution
-- **Output**: Return exactly what you need: status, messages, and domain data tailored to your use case.
+<img
+  className="mx-auto"
+  src="/images/tasks-dashboard.webp"
+  alt="Tasks dashboard showing task management interface"
+  
+/>
 
 <Info>
 Tasks are executed in a secure sandbox environment and can access the full Anchor Browser API for automation capabilities.
@@ -88,7 +90,7 @@ Copy the output for later.
 </Step>
 <Step title="Create your Task in Anchor" >
 <CodeGroup>
-```typescript Node.js
+```typescript node.js
 import Anchorbrowser from 'anchorbrowser';
 
 const client = new Anchorbrowser({
@@ -107,7 +109,7 @@ const taskId = task.data.id
 console.log('Task created:', taskId);
 ```
 
-```python Python
+```python python
 import os
 from anchorbrowser import Anchorbrowser
 
@@ -130,8 +132,9 @@ print(f"Task created: {task_id}")
 </CodeGroup>
 </Step>
 <Step title="Running Tasks">
+
 <CodeGroup>
-```typescript Node.js
+```typescript node.js
 // Run the task with inputs
 const execution = await client.task.run({
   taskId: taskId,
@@ -145,7 +148,7 @@ const execution = await client.task.run({
 console.log('Task execution started:', execution.data);
 ```
 
-```python Python
+```python python
 # Run the task with inputs
 execution = client.task.run(
     task_id=task_id,
@@ -159,8 +162,240 @@ execution = client.task.run(
 print(f"Task execution started: {execution.data}")
 ```
 </CodeGroup>
+<img
+  className="mx-auto"
+  src="/images/tasks-run.webp"
+  alt="Running a task with inputs"
+/>
+
+</Step>
+<Step title="Deploy Task">
+<CodeGroup>
+```typescript node.js
+// Deploy the task to make it available for production use
+const deployment = await client.task.deploy({
+  taskId: taskId,
+  code: "<base64-string>", // Replace with the base64 encoded code
+  language: 'typescript',
+  description: 'Optional description for this version'
+});
+
+console.log('Task deployed:', deployment.data);
+```
+```python python
+# Deploy the task to make it available for production use
+deployment = client.task.deploy(
+    task_id=task_id,
+    code="<base64-string>",  # Replace with the base64 encoded code
+    language="typescript",
+    description="Optional description for this version"
+)
+
+print(f"Task deployed: {deployment.data}")
+```
+</CodeGroup>
 </Step>
 </Steps>
+
+## Async Task
+
+By default, task execution is **synchronous** - the API call waits for the task to complete before returning results. For long-running tasks, you can use **asynchronous execution** to start the task and check results later.
+
+### Running Tasks Asynchronously
+
+When you set `async: true`, the API returns immediately with a confirmation that the task has started. You can then poll for execution results using the task execution history endpoint.
+
+<CodeGroup>
+```typescript node.js
+// Run the task asynchronously
+const execution = await client.task.run({
+  taskId: taskId,
+  version: '1',
+  async: true, // Enable async execution
+  inputs: {
+    ANCHOR_TARGET_URL: 'https://example.com',
+    ANCHOR_MAX_PAGES: '10'
+  }
+});
+
+console.log('Task execution started:', execution.data);
+// Response: { async: true, success: true, message: 'Task execution started', taskId: '...' }
+```
+
+```python python
+# Run the task asynchronously
+execution = client.task.run(
+    task_id=task_id,
+    version="1",
+    async=True,  # Enable async execution
+    inputs={
+        "ANCHOR_TARGET_URL": "https://example.com",
+        "ANCHOR_MAX_PAGES": "10"
+    }
+)
+
+print(f"Task execution started: {execution.data}")
+# Response: {'async': True, 'success': True, 'message': 'Task execution started', 'taskId': '...'}
+```
+</CodeGroup>
+
+### Checking Execution Results
+
+After starting an async task, you can check its execution status and results by querying the task's execution history endpoint:
+
+<CodeGroup>
+```typescript node.js
+// Get execution results
+const response = await fetch(`https://api.anchorbrowser.io/v1/task/${taskId}/executions?page=1&limit=1&version=1`, {
+  headers: {
+    'anchor-api-key': process.env.ANCHORBROWSER_API_KEY,
+    'Content-Type': 'application/json'
+  }
+});
+
+const results = await response.json();
+console.log('Execution results:', results.data);
+```
+
+```python python
+import os
+import requests
+
+# Get execution results
+response = requests.get(
+    f"https://api.anchorbrowser.io/v1/task/{task_id}/executions",
+    params={
+  #     "status": "success",  #Optional: filter by status (success, failure, timeout, cancelled)
+        "page": 1,
+        "limit": 1,
+        "version": "1"    # Optional: filter by version
+    },
+    headers={
+        "anchor-api-key": os.environ.get("ANCHORBROWSER_API_KEY"),
+        "Content-Type": "application/json"
+    }
+)
+
+results = response.json()
+print(f"Execution results: {results['data']}")
+```
+</CodeGroup>
+
+**Example response:**
+```json
+{
+  "data": {
+    "results": [
+      {
+        "id": "550e8400-e29b-41d4-a716-446655440000",
+        "status": "success",
+        "executionTime": 5234,
+        "output": "{\"success\": true, \"message\": \"Task completed successfully\"}",
+        "errorMessage": null,
+        "startTime": "2024-01-15T10:30:00Z"
+      }
+    ],
+    "pagination": {
+      "page": 1,
+      "limit": 1,
+      "total": 1,
+      "totalPages": 1
+    }
+  }
+}
+```
+
+<Warning>
+Async task executions have a maximum duration of **3 hours**. Tasks that exceed this limit will be automatically cancelled.
+
+**Note:** Tasks must be deployed (not just in draft) to appear in the execution results list.
+</Warning>
+
+### Polling for Results
+
+For async tasks, you can implement polling to wait for completion:
+
+<CodeGroup>
+```typescript node.js
+// Poll for task completion
+async function waitForTaskCompletion(taskId: string, maxAttempts: number = 60) {
+  for (let i = 0; i < maxAttempts; i++) {
+    const response = await fetch(`https://api.anchorbrowser.io/v1/task/${taskId}/executions?page=1&limit=1`, {
+      headers: {
+        'anchor-api-key': process.env.ANCHORBROWSER_API_KEY,
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    const results = await response.json();
+    const latestResult = results.data?.results?.[0];
+    if (latestResult) {
+      if (latestResult.status === 'success' || latestResult.status === 'failure') {
+        return latestResult;
+      }
+    }
+    
+    // Wait 2 seconds before next poll
+    await new Promise(resolve => setTimeout(resolve, 2000));
+  }
+  
+  throw new Error('Task execution timeout');
+}
+
+// Usage
+const execution = await client.task.run({
+  taskId: taskId,
+  version: '1',
+  async: true,
+  inputs: { ANCHOR_TARGET_URL: 'https://example.com' }
+});
+
+const result = await waitForTaskCompletion(taskId);
+console.log('Task completed:', result);
+```
+
+```python python
+import os
+import time
+import requests
+
+# Poll for task completion
+def wait_for_task_completion(task_id: str, max_attempts: int = 60):
+    for _ in range(max_attempts):
+        response = requests.get(
+            f"https://api.anchorbrowser.io/v1/task/{task_id}/executions",
+            params={"page": 1, "limit": 1},
+            headers={
+                "anchor-api-key": os.environ.get("ANCHORBROWSER_API_KEY"),
+                "Content-Type": "application/json"
+            }
+        )
+        
+        results = response.json()
+        latest_result = results['data']['results'][0] if results['data']['results'] else None
+        if latest_result:
+            if latest_result['status'] in ['success', 'failure']:
+                return latest_result
+        
+        # Wait 2 seconds before next poll
+        time.sleep(2)
+    
+    raise Exception('Task execution timeout')
+
+# Usage
+execution = client.task.run(
+    task_id=task_id,
+    version="1",
+    async=True,
+    inputs={"ANCHOR_TARGET_URL": "https://example.com"}
+)
+
+result = wait_for_task_completion(task_id)
+print(f"Task completed: {result}")
+```
+</CodeGroup>
+
+
 ## Support
 
 For additional help with the Tasks API:
