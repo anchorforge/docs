@@ -227,7 +227,7 @@
             "version": "Latest - v1",
             "default": true,
             "openapi": {
-              "source": "/openapi.yaml",
+              "source": "/openapi-mintlify.yaml",
               "directory": "api-reference"
             }
           },
