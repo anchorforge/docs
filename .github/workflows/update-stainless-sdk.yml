@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  OAS_PATH: openapi.yaml
+  OAS_PATH: openapi-stainless.yaml
 
 jobs:
   preview:
