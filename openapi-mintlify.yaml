@@ -4313,6 +4313,51 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /v1/task/{taskId}/executions/{executionId}:
+    get:
+      summary: Get Task Execution Result
+      description: |
+        Retrieves a single execution result by its ID. This endpoint is useful for polling
+        execution status in async mode or retrieving detailed execution information.
+      security:
+        - api_key_header: []
+      tags:
+        - Tasks
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          description: The ID of the task
+          schema:
+            type: string
+            format: uuid
+        - name: executionId
+          in: path
+          required: true
+          description: The ID of the execution result
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Execution result retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskExecutionResultResponse'
+        '404':
+          description: Task or execution result not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Failed to retrieve execution result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /v1/task/{taskId}/{taskVersion}:
     get:
       summary: Get Task Version
