@@ -1387,14 +1387,6 @@ components:
           type: string
           pattern: '^(draft|latest|\d+)$'
           description: Version to run (draft, latest, or version number)
-        sessionId:
-          type: string
-          format: uuid
-          description: Optional existing session ID to use
-        taskSessionId:
-          type: string
-          format: uuid
-          description: Optional task-specific session ID
         async:
           type: boolean
           description: Whether to run the task asynchronously.
@@ -1414,14 +1406,6 @@ components:
     RunTaskByNameRequest:
       type: object
       properties:
-        sessionId:
-          type: string
-          format: uuid
-          description: Optional existing session ID to use
-        taskSessionId:
-          type: string
-          format: uuid
-          description: Optional task-specific session ID
         async:
           type: boolean
           description: Whether to run the task asynchronously
