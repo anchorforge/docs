@@ -328,7 +328,7 @@ components:
               description: Whether to disable web security features (CORS, same-origin policy, etc.). Allows accessing iframes and resources from different origins. Defaults to `false`.
         extra_stealth:
           type: object
-          description: Configuration for extra stealth mode to enhance browser fingerprinting protection.
+          description: Enables our dedicated patched Chromium build, designed to avoid bot detection and blocking. Works with Anchor Proxy enabled only.
           properties:
             active:
               type: boolean
