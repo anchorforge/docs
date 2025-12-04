@@ -640,18 +640,6 @@ components:
               description: Mouse button to use
               enum: [left, middle, right]
 
-    MouseClickDomElementRequestSchema:
-      type: object
-      required:
-        - selector
-      properties:
-        selector:
-          type: string
-          description: A valid CSS selector for requested element
-        timeout:
-          type: integer
-          description: timeout in ms for waiting for dom element to be selected. default to 10000 (10 seconds)
-
     DragDropRequestSchema:
       type: object
       required:
@@ -2406,45 +2394,6 @@ paths:
           description: Session not found
         '500':
           description: Failed to perform mouse up
-
-  /v1/sessions/{sessionId}/mouse/clickDomElement:
-    post:
-      summary: Mouse Click DOM Element
-      description: Performs a mouse click at the center of a DOM elemrnt select by the selector
-      security:
-        - api_key_header: []
-      tags:
-        - OS Level Control
-      parameters:
-        - name: sessionId
-          in: path
-          required: true
-          description: The ID of the browser session
-          schema:
-            type: string
-            format: uuid
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/MouseClickDomElementRequestSchema'
-      responses:
-        '200':
-          description: Click performed successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-        '400':
-          description: Missing required parameter selector
-        '404':
-          description: Session not found
-        '500':
-          description: Failed to perform click
 
   /v1/sessions/{sessionId}/mouse/move:
     post:
