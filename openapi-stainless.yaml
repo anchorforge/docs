@@ -849,6 +849,41 @@ components:
           $ref: '#/components/schemas/ExtensionResponseSchema'
 
     # ==============================
+    # IDENTITY CREDENTIALS SCHEMAS
+    # ==============================
+
+    IdentityCredentialsResponseSchema:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The ID of the identity
+        name:
+          type: string
+          description: The name of the identity
+        source:
+          type: string
+          description: The url related to the identity
+        credentials:
+          type: array
+          items:
+            $ref: '#/components/schemas/CredentialSchema'
+    
+    CredentialSchema:
+      type: object
+      properties:
+        type:
+          type: string
+          description: The type of credential
+        username:
+          type: string
+          description: The username of the credential
+        password:
+          type: string
+          description: The password of the credential
+
+    # ==============================
     # BATCH SESSION SCHEMAS
     # ==============================
     # Schemas related to batch browser session management
