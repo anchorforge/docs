@@ -631,6 +631,16 @@ components:
           description: Y coordinate
 
     MouseClickRequestSchema:
+      allOf:
+        - $ref: '#/components/schemas/CoordinatesRequestSchema'
+        - type: object
+          properties:
+            button:
+              type: string
+              description: Mouse button to use
+              enum: [left, middle, right]
+
+    MouseSingleClickRequestSchema:
       type: object
       description: Mouse click request. Must provide either (x, y) coordinates or a selector, but not both.
       properties:
@@ -2349,7 +2359,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MouseClickRequestSchema'
+              $ref: '#/components/schemas/MouseSingleClickRequestSchema'
       responses:
         '200':
           description: Click performed successfully
