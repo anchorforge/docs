@@ -631,14 +631,28 @@ components:
           description: Y coordinate
 
     MouseClickRequestSchema:
-      allOf:
-        - $ref: '#/components/schemas/CoordinatesRequestSchema'
-        - type: object
-          properties:
-            button:
-              type: string
-              description: Mouse button to use
-              enum: [left, middle, right]
+      type: object
+      description: Mouse click request. Must provide either (x, y) coordinates or a selector, but not both.
+      properties:
+        x:
+          type: number
+          description: X coordinate
+        y:
+          type: number
+          description: Y coordinate
+        button:
+          type: string
+          description: Mouse button to use
+          enum: [left, middle, right]
+        selector:
+          type: string
+          description: A valid CSS selector for the requested element
+        timeout:
+          type: number
+          description: If a selector was passed, timeout in ms for waiting for the DOM element to be selected. Defaults to 5000 (5 seconds).
+        index:
+          type: number
+          description: If a selector was passed and multiple elements match the selector, the index of the element in the list (0-based). Defaults to 0.
 
     DragDropRequestSchema:
       type: object
