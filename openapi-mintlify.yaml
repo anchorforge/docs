@@ -660,6 +660,11 @@ components:
         timeout:
           type: number
           description: If a selector was passed, timeout in ms for waiting for the DOM element to be selected. Defaults to 5000 (5 seconds).
+          x-stainless-naming:
+            python:
+              method_argument: selector_timeout_ms
+            typescript:
+              method_argument: selectorTimeoutMs
         index:
           type: number
           description: If a selector was passed and multiple elements match the selector, the index of the element in the list (0-based). Defaults to 0.
