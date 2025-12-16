@@ -18,9 +18,9 @@ Anchor Browser delivers a state-of-the-art 89% Score on the industry-standard be
 ## The agent task method
 
 Anchor Browser provides within its SDK the `agent.task` method that enables natural language control over web browsing sessions. This capability allows you to **automate complex web tasks without coding the whole flow.**
-<Info>
+<Note>
 Looking for Tasks? Visit the [Tasks Page](/advanced/tasks).
-</Info>
+</Note>
 
 ### Code Example
 
@@ -29,32 +29,30 @@ Looking for Tasks? Visit the [Tasks Page](/advanced/tasks).
 ```javascript node.js
 import Anchorbrowser from 'anchorbrowser';
 
-(async () => {
-  const anchorClient = new Anchorbrowser({
-    apiKey: process.env.ANCHORBROWSER_API_KEY
-  });
+const anchorClient = new Anchorbrowser({
+  apiKey: process.env.ANCHORBROWSER_API_KEY
+});
 
-  const response = await anchorClient.agent.task(
-    'Extract the main heading',                     // Required
-    {
-      taskOptions: {
-        url: 'https://example.com',                 // Either sessionId or url is required
-        humanIntervention: true,                    // Allow human intervention during task execution
-        detectElements: true,                       // Improves the agent's ability to identify and interact with UI elements
-        maxSteps: 40,                               // Maximum number of steps the agent can take
-        agent: 'browser-use',                       // browser-use (default), openai-cua, or gemini-computer-use
-        provider: 'groq',                           // For browser-use agent only, openai, gemini, groq, azure, xai
-        model: 'openai/gpt-oss-120b',               // For browser-use agent only, see model list below
-        extendedSystemMessage: 'Focus on extracting the main heading from the page',
-        secretValues: {                             // Secret values to pass to the agent for secure credential handling
-          API_KEY: 'your-secret-key'
-        }
+const response = await anchorClient.agent.task(
+  'Extract the main heading',                     // Required
+  {
+    taskOptions: {
+      url: 'https://example.com',                 // Either sessionId or url is required
+      humanIntervention: false,                   // Disable human intervention during task execution (disabled by default)
+      detectElements: true,                       // Improves the agent's ability to identify and interact with UI elements
+      maxSteps: 40,                               // Maximum number of steps the agent can take
+      agent: 'browser-use',                       // browser-use (default), openai-cua, or gemini-computer-use
+      provider: 'openai',                         // For browser-use agent only, openai, gemini, groq, azure, xai
+      model: 'gpt-5',                             // For browser-use agent only, see model list below
+      extendedSystemMessage: 'Focus on extracting the main heading from the page',
+      secretValues: {                             // Secret values to pass to the agent for secure credential handling
+        API_KEY: 'your-secret-key'
       }
     }
-  );
+  }
+);
 
-  console.log(response);
-})();
+console.log(response);
 ```
 
 ```python python
@@ -67,12 +65,12 @@ response = anchor_client.agent.task(
     'Extract the main heading',                    # Required
     task_options={
         url='https://example.com',                 # Either session_id or url is required
-        human_intervention=True,                   # Allow human intervention during task execution
+        human_intervention=False,                  # Disable human intervention during task execution (disabled by default)
         detect_elements=True,                      # Improves the agent's ability to identify and interact with UI elements
         max_steps=40,                              # Maximum number of steps the agent can take
         agent='browser-use',                       # browser-use (default), openai-cua, or gemini-computer-use
-        provider='groq',                           # For browser-use agent only, openai, gemini, groq, azure, xai
-        model='openai/gpt-oss-120b',               # For browser-use agent only, see model list below
+        provider='openai',                           # For browser-use agent only, openai, gemini, groq, azure, xai
+        model='gpt-5',               # For browser-use agent only, see model list below
         extended_system_message='Focus on extracting the main heading from the page',
         secret_values={                            # Secret values to pass to the agent for secure credential handling
             'API_KEY': 'your-secret-key'
@@ -175,26 +173,24 @@ Anchor Browser comes with an embedded AI component, that allows to control the b
 ```javascript node.js
 import Anchorbrowser from "anchorbrowser";
 
-(async () => {
-  const anchor_client = new Anchorbrowser({apiKey: process.env.ANCHORBROWSER_API_KEY});
-  
-  // Create a browser session
-  const browser = await anchor_client.browser.create();
-  const page = browser.contexts()[0].pages()[0];
-  
-  // Get the AI service worker
-  const ai = context.serviceWorkers().find(sw => 
-    sw.url().includes('chrome-extension://bppehibnhionalpjigdjdilknbljaeai/background.js')
-  );
+const anchor_client = new Anchorbrowser({apiKey: process.env.ANCHORBROWSER_API_KEY});
 
-  await page.goto("http://docs.anchorbrowser.io/", {waitUntil:'domcontentloaded'});
+// Create a browser session
+const browser = await anchor_client.browser.create();
+const page = browser.contexts()[0].pages()[0];
 
-  // Use the embedded 'ai' object
-  const result = await ai.evaluate('Find the last game played by Milwaukee in the NBA and return the result');
+// Get the AI service worker
+const ai = context.serviceWorkers().find(sw => 
+  sw.url().includes('chrome-extension://bppehibnhionalpjigdjdilknbljaeai/background.js')
+);
 
-  await browser.close();
-  console.log(result);
-})();
+await page.goto("http://docs.anchorbrowser.io/", {waitUntil:'domcontentloaded'});
+
+// Use the embedded 'ai' object
+const result = await ai.evaluate('Find the last game played by Milwaukee in the NBA and return the result');
+
+await browser.close();
+console.log(result);
 ```
 ```python python
 from anchorbrowser import Anchorbrowser
