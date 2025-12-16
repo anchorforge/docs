@@ -73,6 +73,7 @@
                   "advanced/dedicated-sticky-ip"
                 ]
               },
+              "essentials/stealth",
               "advanced/tasks",
               "advanced/session-timeout",
               "essentials/recording",

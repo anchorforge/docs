@@ -1,7 +1,7 @@
 ---
 title: 'Extra Stealth Mode'
 description: 'Advanced anti-detection and browser fingerprinting protection for automated browsing'
-icon: 'shield'
+icon: 'wand-magic-sparkles'
 ---
 
 Anchor Browser provides built-in stealth capabilities that help avoid detection by anti-bot systems and website fingerprinting. These features enable automated browsing that mimics human behavior and bypasses common detection mechanisms.
@@ -14,31 +14,34 @@ Read more about our [Cloudflare Web Bot Auth Integration](/advanced/cloudflare-w
 
 ## What is Extra Stealth Mode?
 
-Stealth mode in Anchor Browser includes:
+Extra Stealth Mode leverages a specialized Chrome browser environment that provides:
 
  - 🔒 **Advanced Anti-Detection** - Bypass sophisticated bot detection systems and CAPTCHAs
  - 🛡️ **Automation Consistency** - Maintain consistent access without getting blocked
  - 👤 **Human-Like Behavior** - Mimic real user patterns to avoid suspicion
 
-<Warning>
-Extra stealth mode requires proxy configuration to be active. **If proxy is disabled, extra stealth will be automatically disabled** by the system.
+<Info>
+Extra Stealth is available on our **Growth tier**.
 
-Read more about [Proxy Configuration](/advanced/proxy)
-</Warning>
+[Upgrade Now](https://app.anchorbrowser.io/billing)
+</Info>
 
 ## Quick start - Enable stealth features
 
 <Steps>
 <Step title="Create a session with extra stealth enabled">
 Create a browser session with extra stealth features enabled using the SDK:
+<Warning>
+Extra stealth mode requires proxy configuration to be active. **If proxy is disabled, extra stealth will be automatically disabled** by the system.
 
+Read more about [Proxy Configuration](/advanced/proxy)
+</Warning>
 <CodeGroup>
 ```JavaScript node.js
 import Anchorbrowser from "anchorbrowser";
 
-(async () => {
- const anchorClient = new Anchorbrowser()
- const session = await anchorClient.sessions.create({
+const anchorClient = new Anchorbrowser()
+const session = await anchorClient.sessions.create({
     browser: {
         extra_stealth: {
             active: true
@@ -46,14 +49,12 @@ import Anchorbrowser from "anchorbrowser";
     },
     session: {
         proxy: {
-            active: true,
-            type: "anchor_residential",
-            country_code: "us"
+            active: true
         }
     }
-    })
- console.log(session)
-})();
+});
+
+console.log(session);
 ```
 ```python python
 from anchorbrowser import Anchorbrowser
@@ -68,9 +69,7 @@ session = anchorClient.sessions.create(
     },
     session={
         "proxy": {
-            "active": True,
-            "type": "anchor_residential",
-            "country_code": "us"
+            "active": True
         }
     }
 )
@@ -86,11 +85,10 @@ Once your stealth session is created, you can use it for automated browsing that
 ```JavaScript node.js
 import Anchorbrowser from "anchorbrowser";
 
-(async () => {
- const anchorClient = new Anchorbrowser()
+const anchorClient = new Anchorbrowser()
  
- // Create stealth session
- const session = await anchorClient.sessions.create({
+// Create stealth session
+const session = await anchorClient.sessions.create({
     browser: {
         extra_stealth: {
             active: true
@@ -98,23 +96,20 @@ import Anchorbrowser from "anchorbrowser";
     },
     session: {
         proxy: {
-            active: true,
-            type: "anchor_residential",
-            country_code: "us"
+            active: true
         }
     }
  })
- 
- // Use the session for automated tasks
- const result = await anchorClient.agent.task(
+
+// Use the session for automated tasks
+const result = await anchorClient.agent.task(
     "Navigate to a website and check if I'm detected as a bot",
     {
         sessionId: session.data.id
     }
- )
- 
- console.log(result)
-})();
+);
+
+console.log(result);
 ```
 ```python python
 from anchorbrowser import Anchorbrowser
@@ -131,9 +126,7 @@ session = anchorClient.sessions.create(
     },
     session={
         "proxy": {
-            "active": True,
-            "type": "anchor_residential",
-            "country_code": "us"
+            "active": True
         }
     }
 )
@@ -158,9 +151,8 @@ Use stealth mode with saved browser profiles for persistent authenticated sessio
 ```JavaScript node.js
 import Anchorbrowser from "anchorbrowser";
 
-(async () => {
- const anchorClient = new Anchorbrowser()
- const session = await anchorClient.sessions.create({
+const anchorClient = new Anchorbrowser()
+const session = await anchorClient.sessions.create({
     browser: {
         extra_stealth: {
             active: true
@@ -172,14 +164,12 @@ import Anchorbrowser from "anchorbrowser";
     },
     session: {
         proxy: {
-            active: true,
-            type: "anchor_residential",
-            country_code: "us"
+            active: true
         }
     }
- })
- console.log(session)
-})();
+})
+console.log(session)
+
 ```
 ```python python
 from anchorbrowser import Anchorbrowser
@@ -198,9 +188,7 @@ session = anchorClient.sessions.create(
     },
     session={
         "proxy": {
-            "active": True,
-            "type": "anchor_residential",
-            "country_code": "us"
+            "active": True
         }
     }
 )
