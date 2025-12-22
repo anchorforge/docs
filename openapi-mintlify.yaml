@@ -306,6 +306,13 @@ components:
             active:
               type: boolean
               description: Enable or disable fullscreen mode. When enabled, the browser will start in fullscreen mode. Defaults to `false`.
+        pdf_viewer:
+          type: object
+          description: Configuration for PDF viewer mode.
+          properties:
+            active:
+              type: boolean
+              description: Enable or disable PDF viewer mode. When disabled, the browser will download PDFs instead of viewing them. Defaults to `true`.
         p2p_download:
           type: object
           description: Configuration for peer-to-peer download capture functionality.
