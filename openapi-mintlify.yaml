@@ -235,10 +235,10 @@ components:
           properties:
             max_duration:
               type: integer
-              description: Maximum amount of time (in minutes) for the browser to run before terminating. Defaults to `20`.
+              description: Maximum time (in minutes) the session can run before automatically terminating. Defaults to `20`. Set to `-1` to disable this limit.
             idle_timeout:
               type: integer
-              description: The amount of time (in minutes) the browser session waits for new connections after all others are closed before stopping. Defaults to `5`.
+              description: Time (in minutes) the session waits for new connections after all others are closed before stopping. Defaults to `5`. Set to `-1` to disable this limit.
         live_view:
           type: object
           description: Configuration for live viewing the browser session.
