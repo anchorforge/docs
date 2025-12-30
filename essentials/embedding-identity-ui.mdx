@@ -1,0 +1,362 @@
+---
+title: 'Embedding Identity UI'
+description: 'Let your users create authenticated browser identities directly from your application'
+icon: 'window'
+---
+
+Anchor Browser provides an embeddable identity creation flow that allows your users to authenticate to third-party websites directly from your application. This guide explains how to integrate the identity creation UI into your product.
+
+## Overview
+
+The embedded identity flow works as follows:
+
+1. **Create an Application** - Define the target website your users will authenticate to
+2. **Configure Authentication Flows** - Set up the authentication flows (username/password, authenticator, custom, etc.)
+3. **Generate a Token** - Create a one-time token that authorizes the identity creation flow for your application
+4. **Redirect User** - Send your user to the Anchor identity creation page with the token
+5. **Receive Callback** - Get the created identity ID via your callback URL
+6. **Use the Identity** - Create authenticated browser sessions using the identity
+
+## Step 1: Create an Application
+
+Before your users can create identities, you need to create an application that defines the target website and authentication configuration.
+
+<Note>
+  Applications are created via the Anchor Dashboard or API. Each application represents a specific website or service
+  your users will authenticate to.
+</Note>
+
+When creating an application, configure:
+
+- **Target URL** - The website your users will authenticate to
+- **Authentication Flows** - The supported login methods:
+  - **Username/Password** - Standard credential-based login
+  - **Authenticator** - Authenticator-based authentication (TOTP, WebAuthn, etc.)
+  - **Custom** - Any other authentication mechanism
+
+## Step 2: Generate an Identity Token
+
+From your backend, generate a one-time token that authorizes the identity creation flow. This token is tied to your application and includes a callback URL where you'll receive the created identity ID.
+
+<CodeGroup>
+```javascript Node.js
+import Anchorbrowser from 'anchorbrowser';
+
+const client = new Anchorbrowser();
+
+// Generate a token for identity creation
+const tokenResponse = await client.applications.identities.tokens.create('your-application-id', {
+  callbackUrl: 'https://your-app.com/identity-callback',
+});
+
+console.log(tokenResponse.token);
+// Use this token to redirect the user
+````
+
+```python Python
+from anchorbrowser import Anchorbrowser
+
+client = Anchorbrowser()
+
+# Generate a token for identity creation
+token_response = client.applications.identities.tokens.create(
+    application_id="your-application-id",
+    callback_url="https://your-app.com/identity-callback"
+)
+
+print(token_response.token)
+# Use this token to redirect the user
+````
+
+```bash cURL
+curl -X POST "https://api.anchorbrowser.io/v1/applications/{application_id}/identities/tokens" \
+  -H "anchor-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "callbackUrl": "https://your-app.com/identity-callback"
+  }'
+```
+
+</CodeGroup>
+
+### Token Response
+
+| Field       | Type   | Description                                   |
+| ----------- | ------ | --------------------------------------------- |
+| `token`     | string | The one-time token to use in the redirect URL |
+| `expiresAt` | date   | When the token expires                        |
+| `tokenHash` | string | Hash of the token for verification            |
+
+<Warning>
+  The `callbackUrl` must use HTTPS. Store the token securely and use it immediately - tokens are single-use and expire
+  after 15 minutes.
+</Warning>
+
+## Step 3: Redirect User to Identity Creation
+
+Redirect your user to the Anchor identity creation page with the generated token:
+
+```
+https://app.anchorbrowser.io/identity/create?token={token}
+```
+
+<CodeGroup>
+```javascript Frontend (React)
+function CreateIdentityButton({ token }) {
+  const handleClick = () => {
+    window.location.href = `https://app.anchorbrowser.io/identity/create?token=${token}`;
+  };
+
+  return <button onClick={handleClick}>Connect Your Account</button>;
+}
+````
+
+```javascript Frontend (Vanilla JS)
+function redirectToIdentityCreation(token) {
+  window.location.href = `https://app.anchorbrowser.io/identity/create?token=${token}`;
+}
+````
+
+</CodeGroup>
+
+The user will be guided through the authentication process for the target website configured in your application.
+
+## Step 4: Handle the Callback
+
+After the user successfully creates an identity, Anchor will redirect them to your `callbackUrl` with the identity ID:
+
+```
+https://your-app.com/identity-callback?identityId={identity_id}
+```
+
+<CodeGroup>
+```javascript Express.js
+app.get('/identity-callback', async (req, res) => {
+  const { identityId } = req.query;
+
+  if (!identityId) {
+    return res.status(400).send('Missing identity ID');
+  }
+
+  // Store the mapping between your user and the Anchor identity
+  await saveUserIdentityMapping(req.user.id, identityId);
+
+  // Optionally, update the identity with your external user ID (see Step 5)
+
+  res.redirect('/dashboard?connected=true');
+});
+````
+
+```python Flask
+@app.route('/identity-callback')
+def identity_callback():
+    identity_id = request.args.get('identityId')
+
+    if not identity_id:
+        return 'Missing identity ID', 400
+
+    # Store the mapping between your user and the Anchor identity
+    save_user_identity_mapping(current_user.id, identity_id)
+
+    # Optionally, update the identity with your external user ID (see Step 5)
+
+    return redirect('/dashboard?connected=true')
+````
+
+</CodeGroup>
+
+## Step 5: Update Identity Metadata (Optional)
+
+You can update the identity with additional metadata to maintain a mapping between your users and their Anchor identities:
+
+<CodeGroup>
+```javascript Node.js
+import Anchorbrowser from 'anchorbrowser';
+
+const client = new Anchorbrowser();
+
+// Update identity with your external user ID
+const updatedIdentity = await client.identities.update(identityId, {
+  name: 'User Display Name',
+  metadata: {
+    externalUserId: 'your-user-id-123',
+    plan: 'premium',
+    connectedAt: new Date().toISOString(),
+  },
+});
+````
+
+```python Python
+from anchorbrowser import Anchorbrowser
+
+client = Anchorbrowser()
+
+# Update identity with your external user ID
+updated_identity = client.identities.update(
+    identity_id=identity_id,
+    name="User Display Name",
+    metadata={
+        "externalUserId": "your-user-id-123",
+        "plan": "premium",
+        "connectedAt": datetime.now().isoformat()
+    }
+)
+````
+
+```bash cURL
+curl -X PUT "https://api.anchorbrowser.io/v1/identities/{identity_id}" \
+  -H "anchor-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "User Display Name",
+    "metadata": {
+      "externalUserId": "your-user-id-123",
+      "plan": "premium"
+    }
+  }'
+```
+
+</CodeGroup>
+
+### Update Request Body
+
+| Field         | Type   | Description                                                   |
+| ------------- | ------ | ------------------------------------------------------------- |
+| `name`        | string | Optional display name for the identity                        |
+| `metadata`    | object | Key-value pairs for custom data (e.g., your external user ID) |
+| `credentials` | array  | Optional credential updates                                   |
+
+## Step 6: Create Authenticated Sessions
+
+Once you have an identity ID, use it to create authenticated browser sessions:
+
+<CodeGroup>
+```javascript Node.js
+import Anchorbrowser from 'anchorbrowser';
+
+const client = new Anchorbrowser();
+
+// Create a session with the user's identity
+const session = await client.sessions.create({
+  identities: [{ id: identityId }],
+});
+
+console.log('Session created:', session.id);
+console.log('WebSocket URL:', session.ws_endpoint);
+````
+
+```python Python
+from anchorbrowser import Anchorbrowser
+
+client = Anchorbrowser()
+
+# Create a session with the user's identity
+session = client.sessions.create(
+    identities=[{ "id": identity_id }]
+)
+
+print(f"Session created: {session.id}")
+print(f"WebSocket URL: {session.ws_endpoint}")
+````
+
+```bash cURL
+curl -X POST "https://api.anchorbrowser.io/v1/sessions" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "identities": [{ "id": "identity-id-here" }]
+  }'
+```
+
+</CodeGroup>
+
+The browser session will automatically be authenticated to the target website using the stored identity.
+
+## Complete Integration Example
+
+Here's a complete example showing the full flow:
+
+<CodeGroup>
+```javascript Node.js (Express)
+import express from 'express';
+import Anchorbrowser from 'anchorbrowser';
+
+const app = express();
+const client = new Anchorbrowser();
+
+const APPLICATION_ID = 'your-application-id';
+
+// Step 1: Initiate identity creation
+app.post('/api/connect-account', async (req, res) => {
+  const userId = req.user.id;
+
+  // Generate token with callback URL
+  const tokenResponse = await client.applications.identities.tokens.create(APPLICATION_ID, {
+    callbackUrl: `https://your-app.com/api/identity-callback`,
+  });
+
+  // Store token-to-user mapping for callback verification
+  await storeTokenMapping(tokenResponse.tokenHash, userId);
+
+  // Return redirect URL to frontend
+  res.json({
+    redirectUrl: `https://app.anchorbrowser.io/identity/create?token=${tokenResponse.token}`,
+  });
+});
+
+// Step 2: Handle callback after identity creation
+app.get('/api/identity-callback', async (req, res) => {
+  const { identityId } = req.query;
+
+  // Save identity mapping
+  await saveIdentityMapping(req.user.id, identityId);
+
+  // Update identity with external reference
+  await client.identities.update(identityId, {
+    metadata: { externalUserId: req.user.id },
+  });
+
+  res.redirect('/dashboard?connected=true');
+});
+
+// Step 3: Use identity in browser sessions
+app.post('/api/run-automation', async (req, res) => {
+  const identityId = await getUserIdentity(req.user.id);
+
+  const session = await client.sessions.create({
+    browser: {
+      identities: [{ id: identityId }],
+    },
+  });
+
+  // Run your automation with the authenticated session
+  // ...
+
+  res.json({ sessionId: session.id });
+});
+```
+</CodeGroup>
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Secure Token Handling" icon="lock">
+    Generate tokens server-side and never expose your API key to the frontend. Tokens are single-use and should be used immediately.
+  </Card>
+  <Card title="Store Identity Mappings" icon="database">
+    Maintain a mapping between your users and their Anchor identity IDs in your database for future session creation.
+  </Card>
+  <Card title="Use Metadata" icon="tags">
+    Store your external user ID in the identity metadata to easily correlate identities with your users.
+  </Card>
+  <Card title="Handle Errors" icon="triangle-exclamation">
+    Implement proper error handling for cases where identity creation fails or the user cancels the flow.
+  </Card>
+</CardGroup>
+
+## Related Resources
+
+- [Browser Profiles](/essentials/authentication-and-identity) - Alternative approach using browser profiles
+- [Sessions API](/api-reference/sessions/create-session) - Full session creation documentation
+- [Identities API](/api-reference/identities/update-identity) - Identity management endpoints
+```
