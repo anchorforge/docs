@@ -1,40 +1,26 @@
 ---
-title: 'Embedding Identity UI'
-description: 'Let your users create authenticated browser identities directly from your application'
+title: 'Embedding End-User Authentication UI'
+description: 'Anchor Browser provides an embeddable identity creation flow that allows your users to authenticate to third-party websites directly from your application. This guide explains how to integrate the identity creation UI into your product.'
 icon: 'window'
 ---
 
-Anchor Browser provides an embeddable identity creation flow that allows your users to authenticate to third-party websites directly from your application. This guide explains how to integrate the identity creation UI into your product.
+## Prerequisites
+
+Before integrating the embedded identity flow, ensure the following are configured:
+
+1. **Create an Application** - Define the target website users will authenticate to via the Anchor Dashboard or API
+2. **Configure Authentication Flows** - Set up the supported login methods.
 
 ## Overview
 
 The embedded identity flow works as follows:
 
-1. **Create an Application** - Define the target website your users will authenticate to
-2. **Configure Authentication Flows** - Set up the authentication flows (username/password, authenticator, custom, etc.)
-3. **Generate a Token** - Create a one-time token that authorizes the identity creation flow for your application
-4. **Redirect User** - Send your user to the Anchor identity creation page with the token
-5. **Receive Callback** - Get the created identity ID via your callback URL
-6. **Use the Identity** - Create authenticated browser sessions using the identity
+1. **Generate a Token** - Create a one-time token that authorizes the identity creation flow
+2. **Redirect User** - Send the user to the Anchor identity creation page with the token
+3. **Receive Callback** - Get the created identity ID via the callback URL
+4. **Use the Identity** - Create authenticated browser sessions using the identity
 
-## Step 1: Create an Application
-
-Before your users can create identities, you need to create an application that defines the target website and authentication configuration.
-
-<Note>
-  Applications are created via the Anchor Dashboard or API. Each application represents a specific website or service
-  your users will authenticate to.
-</Note>
-
-When creating an application, configure:
-
-- **Target URL** - The website your users will authenticate to
-- **Authentication Flows** - The supported login methods:
-  - **Username/Password** - Standard credential-based login
-  - **Authenticator** - Authenticator-based authentication (TOTP, WebAuthn, etc.)
-  - **Custom** - Any other authentication mechanism
-
-## Step 2: Generate an Identity Token
+## Step 1: Generate an Identity Token
 
 From your backend, generate a one-time token that authorizes the identity creation flow. This token is tied to your application and includes a callback URL where you'll receive the created identity ID.
 
