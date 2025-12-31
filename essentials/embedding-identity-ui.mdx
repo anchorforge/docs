@@ -35,10 +35,10 @@ console.log(tokenResponse.token);
 ```python Python
 from anchorbrowser import Anchorbrowser
 
-anchorClient = Anchorbrowser()
+anchor_client = Anchorbrowser()
 
 # Generate a token for identity creation
-token_response = anchorClient.applications.identities.tokens.create(
+token_response = anchor_client.applications.identities.tokens.create(
     application_id="your-application-id",
     callback_url="https://your-app.com/identity-callback"
 )
@@ -165,10 +165,10 @@ const updatedIdentity = await anchorClient.identities.update(identityId, {
 ```python Python
 from anchorbrowser import Anchorbrowser
 
-anchorClient = Anchorbrowser()
+anchor_client = Anchorbrowser()
 
 # Update identity with external user ID
-updated_identity = anchorClient.identities.update(
+updated_identity = anchor_client.identities.update(
     identity_id=identity_id,
     name="User Display Name",
     metadata={
@@ -223,10 +223,10 @@ console.log('WebSocket URL:', session.ws_endpoint);
 ```python Python
 from anchorbrowser import Anchorbrowser
 
-anchorClient = Anchorbrowser()
+anchor_client = Anchorbrowser()
 
 # Create a session with the user's identity
-session = anchorClient.sessions.create(
+session = anchor_client.sessions.create(
     identities=[{ "id": identity_id }]
 )
 
