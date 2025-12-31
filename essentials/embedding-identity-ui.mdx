@@ -57,14 +57,6 @@ curl -X POST "https://api.anchorbrowser.io/v1/applications/{application_id}/iden
 ```
 </CodeGroup>
 
-### Token Response
-
-| Field       | Type   | Description                                   |
-| ----------- | ------ | --------------------------------------------- |
-| `token`     | string | The one-time token to use in the redirect URL |
-| `expiresAt` | date   | When the token expires                        |
-| `tokenHash` | string | Hash of the token for verification            |
-
 <Warning>
   The `callbackUrl` must use HTTPS. Store the token securely and use it immediately - tokens are single-use and expire
   after 15 minutes.
@@ -86,12 +78,6 @@ function CreateIdentityButton({ token }) {
   };
 
   return <button onClick={handleClick}>Connect Your Account</button>;
-}
-````
-
-```javascript Frontend (Vanilla JS)
-function redirectToIdentityCreation(token) {
-  window.location.href = `https://app.anchorbrowser.io/identity/create?token=${token}`;
 }
 ````
 </CodeGroup>
@@ -192,15 +178,6 @@ curl -X PUT "https://api.anchorbrowser.io/v1/identities/{identity_id}" \
   }'
 ```
 </CodeGroup>
-
-### Update Request Body
-
-| Field         | Type   | Description                                                   |
-| ------------- | ------ | ------------------------------------------------------------- |
-| `name`        | string | Optional display name for the identity                        |
-| `metadata`    | object | Key-value pairs for custom data (e.g., external user ID)      |
-| `credentials` | array  | Optional credential updates                                   |
-</Step>
 
 <Step title="Create Authenticated Sessions">
 Once an identity ID is available, use it to create authenticated browser sessions:
