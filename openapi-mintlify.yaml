@@ -550,6 +550,8 @@ components:
           enum:
             - browser-use
             - openai-cua
+            - gemini-computer-use
+            - anthropic-cua
         provider:
           type: string
           description: The AI provider to use for task completion.
