@@ -18,7 +18,7 @@ Before integrating the embedded identity flow, ensure the following are configur
 Create a one-time token that authorizes the identity creation flow.
 
 <CodeGroup>
-```javascript Node.js
+```javascript node.js
 import Anchorbrowser from 'anchorbrowser';
 
 const anchorClient = new Anchorbrowser();
@@ -32,7 +32,7 @@ console.log(tokenResponse.token);
 // Use this token to redirect the user
 ````
 
-```python Python
+```python python
 from anchorbrowser import Anchorbrowser
 
 anchor_client = Anchorbrowser()
@@ -146,7 +146,7 @@ def identity_callback():
 Update the identity with additional metadata to maintain a mapping between users and their Anchor identities:
 
 <CodeGroup>
-```javascript Node.js
+```javascript node.js
 import Anchorbrowser from 'anchorbrowser';
 
 const anchorClient = new Anchorbrowser();
@@ -162,7 +162,7 @@ const updatedIdentity = await anchorClient.identities.update(identityId, {
 });
 ````
 
-```python Python
+```python python
 from anchorbrowser import Anchorbrowser
 
 anchor_client = Anchorbrowser()
@@ -206,7 +206,7 @@ curl -X PUT "https://api.anchorbrowser.io/v1/identities/{identity_id}" \
 Once an identity ID is available, use it to create authenticated browser sessions:
 
 <CodeGroup>
-```javascript Node.js
+```javascript node.js
 import Anchorbrowser from 'anchorbrowser';
 
 const anchorClient = new Anchorbrowser();
@@ -220,7 +220,7 @@ console.log('Session created:', session.id);
 console.log('WebSocket URL:', session.ws_endpoint);
 ````
 
-```python Python
+```python python
 from anchorbrowser import Anchorbrowser
 
 anchor_client = Anchorbrowser()
@@ -253,7 +253,7 @@ The browser session will automatically be authenticated to the target website us
 Here's a complete example showing the full flow:
 
 <CodeGroup>
-```javascript Node.js (Express)
+```javascript node.js (Express)
 import express from 'express';
 import Anchorbrowser from 'anchorbrowser';
 
