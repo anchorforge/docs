@@ -30,7 +30,7 @@ const tokenResponse = await anchorClient.applications.identities.tokens.create('
 
 console.log(tokenResponse.token);
 // Use this token to redirect the user
-````
+```
 
 ```python python
 from anchorbrowser import Anchorbrowser
@@ -45,7 +45,7 @@ token_response = anchor_client.applications.identities.tokens.create(
 
 print(token_response.token)
 # Use this token to redirect the user
-````
+```
 
 ```bash cURL
 curl -X POST "https://api.anchorbrowser.io/v1/applications/{application_id}/identities/tokens" \
@@ -79,7 +79,7 @@ function CreateIdentityButton({ token }) {
 
   return <button onClick={handleClick}>Connect Your Account</button>;
 }
-````
+```
 </CodeGroup>
 
 The user will be guided through the authentication process for the target website configured in the application.
@@ -108,7 +108,7 @@ app.get('/identity-callback', async (req, res) => {
 
   res.redirect('/dashboard?connected=true');
 });
-````
+```
 
 ```python Flask
 @app.route('/identity-callback')
@@ -124,7 +124,7 @@ def identity_callback():
     # Optionally, update the identity with an external user ID (See next step)
 
     return redirect('/dashboard?connected=true')
-````
+```
 </CodeGroup>
 </Step>
 
@@ -146,7 +146,7 @@ const updatedIdentity = await anchorClient.identities.update(identityId, {
     connectedAt: new Date().toISOString(),
   },
 });
-````
+```
 
 ```python python
 from anchorbrowser import Anchorbrowser
@@ -163,7 +163,7 @@ updated_identity = anchor_client.identities.update(
         "connectedAt": datetime.now().isoformat()
     }
 )
-````
+```
 
 ```bash cURL
 curl -X PUT "https://api.anchorbrowser.io/v1/identities/{identity_id}" \
@@ -178,6 +178,7 @@ curl -X PUT "https://api.anchorbrowser.io/v1/identities/{identity_id}" \
   }'
 ```
 </CodeGroup>
+</Step>
 
 <Step title="Create Authenticated Sessions">
 Once an identity ID is available, use it to create authenticated browser sessions:
@@ -195,7 +196,7 @@ const session = await anchorClient.sessions.create({
 
 console.log('Session created:', session.id);
 console.log('WebSocket URL:', session.ws_endpoint);
-````
+```
 
 ```python python
 from anchorbrowser import Anchorbrowser
@@ -209,7 +210,7 @@ session = anchor_client.sessions.create(
 
 print(f"Session created: {session.id}")
 print(f"WebSocket URL: {session.ws_endpoint}")
-````
+```
 
 ```bash cURL
 curl -X POST "https://api.anchorbrowser.io/v1/sessions" \
@@ -310,4 +311,3 @@ app.post('/api/run-automation', async (req, res) => {
 ## Related Resources
 
 - [Browser Profiles](/essentials/authentication-and-identity) - Alternative approach using browser profiles
-```
