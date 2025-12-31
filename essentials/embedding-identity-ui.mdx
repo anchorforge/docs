@@ -135,7 +135,7 @@ def identity_callback():
     # Store the mapping between the user and the Anchor identity
     save_user_identity_mapping(current_user.id, identity_id)
 
-    # Optionally, update the identity with an external user ID
+    # Optionally, update the identity with an external user ID (See next step)
 
     return redirect('/dashboard?connected=true')
 ````
@@ -333,6 +333,4 @@ app.post('/api/run-automation', async (req, res) => {
 ## Related Resources
 
 - [Browser Profiles](/essentials/authentication-and-identity) - Alternative approach using browser profiles
-- [Sessions API](/api-reference/sessions/create-session) - Full session creation documentation
-- [Identities API](/api-reference/identities/update-identity) - Identity management endpoints
 ```
