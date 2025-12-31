@@ -289,6 +289,67 @@ app.post('/api/run-automation', async (req, res) => {
   res.json({ sessionId: session.id });
 });
 ```
+
+```python python (Flask)
+from flask import Flask, request, redirect, jsonify
+from anchorbrowser import Anchorbrowser
+
+app = Flask(__name__)
+anchor_client = Anchorbrowser()
+
+APPLICATION_ID = "your-application-id"
+
+# Step 1: Initiate identity creation
+@app.route("/api/connect-account", methods=["POST"])
+def connect_account():
+    user_id = request.user.id
+
+    # Generate token with callback URL
+    token_response = anchor_client.applications.identities.tokens.create(
+        application_id=APPLICATION_ID,
+        callback_url="https://your-app.com/api/identity-callback"
+    )
+
+    # Store token-to-user mapping for callback verification
+    store_token_mapping(token_response.token_hash, user_id)
+
+    # Return redirect URL to frontend
+    return jsonify({
+        "redirectUrl": f"https://app.anchorbrowser.io/identity/create?token={token_response.token}"
+    })
+
+# Step 2: Handle callback after identity creation
+@app.route("/api/identity-callback")
+def identity_callback():
+    identity_id = request.args.get("identityId")
+
+    # Save identity mapping
+    save_identity_mapping(request.user.id, identity_id)
+
+    # Update identity with external reference
+    anchor_client.identities.update(
+        identity_id=identity_id,
+        metadata={"externalUserId": request.user.id}
+    )
+
+    return redirect("/dashboard?connected=true")
+
+# Step 3: Use identity in browser sessions
+@app.route("/api/run-automation", methods=["POST"])
+def run_automation():
+    identity_id = get_user_identity(request.user.id)
+
+    session = anchor_client.sessions.create(
+        browser={
+            "identities": [{"id": identity_id}]
+        }
+    )
+
+    # Run your automation with the authenticated session
+    # ...
+
+    return jsonify({"sessionId": session.id})
+```
 </CodeGroup>
 
 ## Best Practices
