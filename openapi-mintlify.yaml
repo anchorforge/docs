@@ -361,6 +361,21 @@ components:
                 'configuration': { 'load_mode': 'all' },
               },
             ]
+        identities (Beta):
+          description: Activates an authenticated session. Currently in beta, [contact support to enable.](mailto:support@anchorbrowser.io)
+          type: array
+          items:
+            type: object
+            description: Previously configured identity to be used for the authenticated session.
+            properties:
+              id:
+                type: string
+                description: The identity ID to use for the browser session.
+          example: [
+            {
+              "id": "123e4567-e89b-12d3-a456-426614174000"
+            }
+          ]
 
     SessionCreateResponseSchema:
       type: object
