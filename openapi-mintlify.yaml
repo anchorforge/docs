@@ -2124,9 +2124,6 @@ components:
         applicationDescription:
           type: string
           description: Optional application description
-        shouldValidate:
-          type: boolean
-          description: Whether to validate the credentials. Defaults to true.
 
     CreateIdentityResponse:
       type: object
@@ -2223,18 +2220,6 @@ components:
           type: string
           description: Deletion result message
 
-    IdentityCredentialItem:
-      type: object
-      properties:
-        type:
-          type: string
-          description: Type of credential
-        metadata:
-          type: object
-          additionalProperties: true
-          description: Optional metadata for the credential
-      additionalProperties: true
-
     GetIdentityCredentialsResponse:
       type: object
       properties:
@@ -2251,7 +2236,7 @@ components:
         credentials:
           type: array
           items:
-            $ref: '#/components/schemas/IdentityCredentialItem'
+            $ref: '#/components/schemas/CredentialData'
           description: Array of credentials with sensitive data
 
 paths:
