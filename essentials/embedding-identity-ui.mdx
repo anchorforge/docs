@@ -1,15 +1,18 @@
 ---
 title: 'Embedding End-User Authentication UI'
-description: 'Anchor Browser provides an embeddable identity creation flow that allows your users to authenticate to third-party websites directly from your application. This guide explains how to integrate the identity creation UI into your product.'
+description: 'Anchor provides an embeddable identity creation flow that allows end-users to authenticate to third-party websites directly from your application, enabling [authenticated browser sessions](/essentials/authenticated-applications).'
 icon: 'window'
 ---
+<Warning>
+  This feature is currently in **Beta**. Contact [**support**](mailto:support@anchorbrowser.io) to enable this feature.
+</Warning>
 
 ## Prerequisites
 
 Before integrating the embedded identity flow, ensure the following are configured:
 
-1. **Create an Application** - Define the target website users will authenticate to via the Anchor Dashboard or API
-2. **Configure Authentication Flows** - Set up the supported login methods.
+1. **[Create an Application](/essentials/authenticated-applications)** - Define the target website users will authenticate to via the Anchor Dashboard or API
+2. **[Configure Authentication Flows](/essentials/authenticated-applications#configure-auth-flow-for-the-application)** - Set up the supported login methods.
 
 ## Overview
 
@@ -371,4 +374,5 @@ def run_automation():
 
 ## Related Resources
 
+- [Authenticated Applications](/essentials/authenticated-applications) - Define target websites, authentication flows, and create pre-authenticated browser sessions
 - [Browser Profiles](/essentials/authentication-and-identity) - Alternative approach using browser profiles
