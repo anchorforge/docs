@@ -1,0 +1,164 @@
+---
+title: 'Authenticated Applications (Beta)'
+description: 'Define target websites, configure supported login methods (auth flows), let end-users authenticate via an [Embeddable UI](/essentials/embedding-identity-ui), and create pre-authenticated browser sessions to those websites.'
+icon: 'id-card'
+---
+
+<Warning>
+  This feature is currently in **Beta**. Contact [**support**](mailto:support@anchorbrowser.io) to enable this feature.
+</Warning>
+
+<Steps>
+<Step title='Create an Application'>
+<CodeGroup>
+```javascript node.js
+import Anchorbrowser from 'anchorbrowser';
+
+const client = new Anchorbrowser();
+
+// Create an application for a target website
+const app = await client.applications.create({
+  name: 'My LinkedIn User',
+  source: 'linkedin.com'
+});
+
+console.log(app.id);
+```
+
+```python python
+from anchorbrowser import Anchorbrowser
+
+client = Anchorbrowser()
+
+# Create an application for a target website
+app = client.applications.create(
+    name="My LinkedIn User",
+    source="linkedin.com"
+)
+
+print(app.id)
+```
+
+```bash cURL
+curl -X POST "https://api.anchorbrowser.io/v1/applications" \
+  -H "anchor-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "My LinkedIn User", "source": "linkedin.com"}'
+```
+</CodeGroup>
+</Step>
+
+<Step title='Configure Auth Flow for the Application'>
+Applications support multiple authentication flows: `username_password`, `authenticator`, and `custom`.
+<CodeGroup>
+```javascript node.js
+await client.applications.authFlows.create(app.id, {
+  name: 'Email Login with authenticator',
+  methods: ['username_password', 'authenticator']
+});
+```
+
+```python python
+client.applications.auth_flows.create(
+    application_id=app.id,
+    name="Email Login with authenticator",
+    methods=["username_password", "authenticator"]
+)
+```
+
+```bash cURL
+curl -X POST "https://api.anchorbrowser.io/v1/applications/{app_id}/auth-flows" \
+  -H "anchor-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Email Login with authenticator", "methods": ["username_password", "authenticator"]}'
+```
+</CodeGroup>
+</Step>
+<Step title='Create Identity'>
+Create an identity with credentials for the application.
+<CodeGroup>
+```javascript node.js
+const identity = await client.identities.create({
+  source: 'https://linkedin.com',
+  name: 'John Doe',
+  credentials: [{
+    type: 'username_password',
+    username: 'john@example.com',
+    password: 'secret'
+  }]
+});
+
+console.log(identity.id);
+```
+
+```python python
+identity = client.identities.create(
+    source="https://linkedin.com",
+    name="John Doe",
+    credentials=[{
+        "type": "username_password",
+        "username": "john@example.com",
+        "password": "secret"
+    }]
+)
+
+print(identity.id)
+```
+
+```bash cURL
+curl -X POST "https://api.anchorbrowser.io/v1/identities" \
+  -H "anchor-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "source": "https://linkedin.com",
+    "name": "John Doe",
+    "credentials": [{
+      "type": "username_password",
+      "username": "john@example.com",
+      "password": "secret"
+    }]
+  }'
+```
+</CodeGroup>
+
+<Tip>
+  For end-user self-service authentication, use the [Embeddable Identity UI](/essentials/embedding-identity-ui).
+</Tip>
+</Step>
+<Step title='Create Authenticated Sessions'>
+Use the identity ID to create pre-authenticated browser sessions.
+
+<CodeGroup>
+```javascript node.js
+const session = await client.sessions.create({
+  identities: [{ id: identityId }]
+});
+
+console.log(session.ws_endpoint);
+```
+
+```python python
+session = client.sessions.create(
+    identities=[{"id": identity_id}]
+)
+
+print(session.ws_endpoint)
+```
+</CodeGroup>
+</Step>
+</Steps>
+
+## Related
+
+<CardGroup cols={3}>
+  <Card title="Embedding End-User Authentication UI" icon="window" href="/essentials/embedding-identity-ui">
+    Embed the authentication flow in your app
+  </Card>
+  <Card title="Browser Profiles" icon="fingerprint" href="/essentials/authentication-and-identity">
+    Alternative approach using browser profiles
+  </Card>
+  <Card title="API Reference" icon="code" href="/api-reference/applications-beta/">
+    Applications and Identities endpoints
+  </Card>
+</CardGroup>
+
