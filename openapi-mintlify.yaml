@@ -1841,7 +1841,6 @@ components:
       properties:
         name:
           type: string
-          minLength: 1
           description: Name of the custom field
 
     AuthFlowItem:
@@ -1896,7 +1895,6 @@ components:
       properties:
         name:
           type: string
-          minLength: 1
           description: Name of the auth flow
         description:
           type: string
@@ -1958,7 +1956,6 @@ components:
       properties:
         name:
           type: string
-          minLength: 1
           description: Name of the auth flow
         description:
           type: string
@@ -2025,6 +2022,7 @@ components:
     # IDENTITY SCHEMAS
     # ==============================
     UsernamePasswordCredential:
+      title: username_password
       type: object
       required:
         - type
@@ -2037,14 +2035,13 @@ components:
           description: Credential type
         username:
           type: string
-          minLength: 1
           description: Username for authentication
         password:
           type: string
-          minLength: 1
           description: Password for authentication
 
     AuthenticatorCredential:
+      title: authenticator
       type: object
       required:
         - type
@@ -2056,7 +2053,6 @@ components:
           description: Credential type
         secret:
           type: string
-          minLength: 1
           description: TOTP secret for authenticator
         otp:
           type: string
@@ -2070,14 +2066,13 @@ components:
       properties:
         name:
           type: string
-          minLength: 1
           description: Field name
         value:
           type: string
-          minLength: 1
           description: Field value
 
     CustomCredential:
+      title: custom
       type: object
       required:
         - type
@@ -2091,7 +2086,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/CustomFieldItem'
-          minItems: 1
           description: Array of custom fields
 
     CredentialData:
@@ -2192,7 +2186,6 @@ components:
       properties:
         name:
           type: string
-          minLength: 1
           description: Name of the identity
         metadata:
           type: object
