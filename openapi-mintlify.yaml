@@ -2620,7 +2620,7 @@ paths:
   
   /v1/applications:
     post:
-      summary: Create Application (Beta)
+      summary: Create Application
       description: |
         Creates a new application for identity management.
 
@@ -2662,7 +2662,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
     get:
-      summary: List Applications (Beta)
+      summary: List Applications
       description: |
         Retrieves all applications for the authenticated team.
 
@@ -2694,7 +2694,7 @@ paths:
 
   /v1/applications/{applicationId}:
     get:
-      summary: Get Application (Beta)
+      summary: Get Application
       description: |
         Retrieves details of a specific application by its ID.
 
@@ -2731,7 +2731,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
     delete:
-      summary: Delete Application (Beta)
+      summary: Delete Application
       description: |
         Deletes an existing application.
 
@@ -2770,7 +2770,7 @@ paths:
 
   /v1/applications/{applicationId}/identities:
     get:
-      summary: List Application Identities (Beta)
+      summary: List Application Identities
       description: |
         Retrieves all identities associated with a specific application.
 
@@ -2809,7 +2809,7 @@ paths:
 
   /v1/applications/{applicationId}/auth-flows:
     get:
-      summary: List Application Authentication Flows (Beta)
+      summary: List Application Authentication Flows
       description: |
         Retrieves all authentication flows for a specific application.
 
@@ -2840,7 +2840,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
     post:
-      summary: Create Authentication Flow (Beta)
+      summary: Create Authentication Flow
       description: |
         Creates a new authentication flow for an application.
 
@@ -2894,7 +2894,7 @@ paths:
 
   /v1/applications/{applicationId}/auth-flows/{authFlowId}:
     patch:
-      summary: Update Authentication Flow (Beta)
+      summary: Update Authentication Flow
       description: |
         Updates an existing authentication flow.
 
@@ -2944,7 +2944,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
     delete:
-      summary: Delete Authentication Flow (Beta)
+      summary: Delete Authentication Flow
       description: |
         Deletes an existing authentication flow.
 
@@ -2983,7 +2983,7 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
   /v1/identities:
     post:
-      summary: Create Identity (Beta)
+      summary: Create Identity
       description: |
         Creates a new identity with credentials for authentication.
 
@@ -3051,7 +3051,7 @@ paths:
 
   /v1/identities/{identityId}:
     get:
-      summary: Get Identity (Beta)
+      summary: Get Identity
       description: |
         Retrieves details of a specific identity by its ID.
 
@@ -3088,7 +3088,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
     put:
-      summary: Update Identity (Beta)
+      summary: Update Identity
       description: |
         Updates an existing identity's name, metadata, or credentials.
 
@@ -3143,7 +3143,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
     delete:
-      summary: Delete Identity (Beta)
+      summary: Delete Identity
       description: |
         Deletes an existing identity.
 
@@ -3182,7 +3182,7 @@ paths:
 
   /v1/identities/{identityId}/credentials:
     get:
-      summary: Get Identity Credentials (Beta)
+      summary: Get Identity Credentials
       description: |
         Retrieves the credentials for a specific identity. This endpoint returns sensitive credential data.
 
