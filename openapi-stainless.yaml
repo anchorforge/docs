@@ -354,6 +354,24 @@ components:
                 'configuration': { 'load_mode': 'all' },
               },
             ]
+        identities:
+          description: |
+            Activates an authenticated session.
+
+            **Beta** Capability. [Contact support](mailto:support@anchorbrowser.io) to enable.
+          type: array
+          items:
+            type: object
+            description: Previously configured identity to be used for the authenticated session.
+            properties:
+              id:
+                type: string
+                description: The identity ID to use for the browser session.
+          example: [
+            {
+              "id": "123e4567-e89b-12d3-a456-426614174000"
+            }
+          ]
 
     SessionCreateResponseSchema:
       type: object
@@ -876,6 +894,134 @@ components:
       properties:
         data:
           $ref: '#/components/schemas/ExtensionResponseSchema'
+
+    # ==============================
+    # IDENTITY SCHEMAS
+    # ==============================
+    
+    CreateIdentityRequestSchema:
+      type: object
+      required:
+        - source
+        - credentials
+      properties:
+        name:
+          type: string
+          description: Name of the identity. Defaults to "Unnamed Identity" if not provided.
+        source:
+          type: string
+          format: uri
+          description: The source URL for the identity (e.g., login page URL)
+        credentials:
+          type: array
+          items:
+            $ref: '#/components/schemas/CredentialSchema'
+          description: Array of credentials for authentication
+        metadata:
+          type: object
+          additionalProperties: true
+          description: Optional metadata for the identity
+        applicationName:
+          type: string
+          description: Optional application name to associate with the identity
+        applicationDescription:
+          type: string
+          description: Optional application description
+
+    CreateIdentityResponseSchema:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the identity
+        name:
+          type: string
+          description: Name of the identity
+        status:
+          type: string
+          enum: [pending, validated, failed]
+          description: Status of the identity
+        metadata:
+          type: object
+          additionalProperties: true
+          description: Metadata associated with the identity
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp when the identity was created
+
+    GetIdentityResponseSchema:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the identity
+        name:
+          type: string
+          description: Name of the identity
+        source:
+          type: string
+          description: Source URL for the identity
+        status:
+          type: string
+          enum: [pending, validated, failed]
+          description: Status of the identity
+        metadata:
+          type: object
+          additionalProperties: true
+          description: Metadata associated with the identity
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp when the identity was created
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp when the identity was last updated
+
+    UpdateIdentityRequestSchema:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the identity
+        metadata:
+          type: object
+          additionalProperties: true
+          description: Metadata for the identity
+        credentials:
+          type: array
+          items:
+            $ref: '#/components/schemas/CredentialSchema'
+          description: Array of credentials for authentication
+
+    UpdateIdentityResponseSchema:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the identity
+        name:
+          type: string
+          description: Name of the identity
+        metadata:
+          type: object
+          additionalProperties: true
+          description: Metadata associated with the identity
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp when the identity was last updated
+
+    DeleteIdentityResponseSchema:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Deletion result message
 
     # ==============================
     # IDENTITY CREDENTIALS SCHEMAS
@@ -3579,6 +3725,206 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  
+  /v1/identities:
+    post:
+      summary: Create Identity
+      description: |
+        Creates a new identity with credentials for authentication.
+
+        **Beta** Capability. [Contact support](mailto:support@anchorbrowser.io) to enable.
+      security:
+        - api_key_header: []
+      tags:
+        - Identities
+      parameters:
+        - name: validateAsync
+          in: query
+          required: false
+          description: Whether to validate the identity asynchronously. Defaults to true.
+          schema:
+            type: boolean
+            default: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateIdentityRequestSchema'
+            examples:
+              createIdentityWithPassword:
+                summary: Create identity with username/password
+                value:
+                  name: "My Work Account"
+                  source: "https://example.com/login"
+                  credentials:
+                    - type: "username_password"
+                      username: "user@example.com"
+                      password: "securepassword123"
+                  metadata:
+                    department: "Engineering"
+              createIdentityWithAuthenticator:
+                summary: Create identity with authenticator
+                value:
+                  name: "Two-Factor Account"
+                  source: "https://secure.example.com/login"
+                  credentials:
+                    - type: "username_password"
+                      username: "user@example.com"
+                      password: "securepassword123"
+                    - type: "authenticator"
+                      secret: "JBSWY3DPEHPK3PXP"
+      responses:
+        '201':
+          description: Identity created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateIdentityResponseSchema'
+        '400':
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Failed to create identity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/identities/{identity_id}:
+    get:
+      summary: Get Identity
+      description: |
+        Retrieves details of a specific identity by its ID.
+
+        **Beta** Capability. [Contact support](mailto:support@anchorbrowser.io) to enable.
+      security:
+        - api_key_header: []
+      tags:
+        - Identities
+      parameters:
+        - name: identity_id
+          in: path
+          required: true
+          description: The ID of the identity to retrieve
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Identity details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetIdentityResponseSchema'
+        '404':
+          description: Identity not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Failed to get identity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      summary: Update Identity
+      description: |
+        Updates an existing identity's name, metadata, or credentials.
+
+        **Beta** Capability. [Contact support](mailto:support@anchorbrowser.io) to enable.
+      security:
+        - api_key_header: []
+      tags:
+        - Identities
+      parameters:
+        - name: identity_id
+          in: path
+          required: true
+          description: The ID of the identity to update
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateIdentityRequestSchema'
+            examples:
+              updateIdentityName:
+                summary: Update identity name
+                value:
+                  name: "Updated Account Name"
+              updateIdentityCredentials:
+                summary: Update identity credentials
+                value:
+                  credentials:
+                    - type: "username_password"
+                      username: "newuser@example.com"
+                      password: "newpassword123"
+      responses:
+        '200':
+          description: Identity updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateIdentityResponseSchema'
+        '404':
+          description: Identity not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Failed to update identity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      summary: Delete Identity
+      description: |
+        Deletes an existing identity.
+
+        **Beta** Capability. [Contact support](mailto:support@anchorbrowser.io) to enable.
+      security:
+        - api_key_header: []
+      tags:
+        - Identities
+      parameters:
+        - name: identity_id
+          in: path
+          required: true
+          description: The ID of the identity to delete
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Identity deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteIdentityResponseSchema'
+        '404':
+          description: Identity not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Failed to delete identity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /v1/identities/{identity_id}/credentials:
     get:
       summary: Get Identity Credentials
