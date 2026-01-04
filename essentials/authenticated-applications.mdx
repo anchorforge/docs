@@ -14,10 +14,10 @@ icon: 'id-card'
 ```javascript node.js
 import Anchorbrowser from 'anchorbrowser';
 
-const client = new Anchorbrowser();
+const anchorClient = new Anchorbrowser();
 
 // Create an application for a target website
-const app = await client.applications.create({
+const app = await anchorClient.applications.create({
   name: 'My LinkedIn User',
   source: 'linkedin.com'
 });
@@ -28,10 +28,10 @@ console.log(app.id);
 ```python python
 from anchorbrowser import Anchorbrowser
 
-client = Anchorbrowser()
+anchor_client = Anchorbrowser()
 
 # Create an application for a target website
-app = client.applications.create(
+app = anchor_client.applications.create(
     name="My LinkedIn User",
     source="linkedin.com"
 )
@@ -52,14 +52,14 @@ curl -X POST "https://api.anchorbrowser.io/v1/applications" \
 Applications support multiple authentication flows: `username_password`, `authenticator`, and `custom`.
 <CodeGroup>
 ```javascript node.js
-await client.applications.authFlows.create(app.id, {
+await anchorClient.applications.authFlows.create(app.id, {
   name: 'Email Login with authenticator',
   methods: ['username_password', 'authenticator']
 });
 ```
 
 ```python python
-client.applications.auth_flows.create(
+anchor_client.applications.auth_flows.create(
     application_id=app.id,
     name="Email Login with authenticator",
     methods=["username_password", "authenticator"]
@@ -78,7 +78,7 @@ curl -X POST "https://api.anchorbrowser.io/v1/applications/{app_id}/auth-flows" 
 Create an identity with credentials for the application.
 <CodeGroup>
 ```javascript node.js
-const identity = await client.identities.create({
+const identity = await anchorClient.identities.create({
   source: 'https://linkedin.com',
   name: 'John Doe',
   credentials: [{
@@ -92,7 +92,7 @@ console.log(identity.id);
 ```
 
 ```python python
-identity = client.identities.create(
+identity = anchor_client.identities.create(
     source="https://linkedin.com",
     name="John Doe",
     credentials=[{
