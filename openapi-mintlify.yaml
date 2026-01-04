@@ -5790,7 +5790,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Applications
+        - Applications (Beta)
       parameters:
         - name: applicationId
           in: path
