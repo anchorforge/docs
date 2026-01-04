@@ -2659,7 +2659,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Applications (Beta)
+        - Applications (Early Availability)
       requestBody:
         required: true
         content:
@@ -2701,7 +2701,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Applications (Beta)
+        - Applications (Early Availability)
       parameters:
         - name: search
           in: query
@@ -2733,7 +2733,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Applications (Beta)
+        - Applications (Early Availability)
       parameters:
         - name: applicationId
           in: path
@@ -2770,7 +2770,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Applications (Beta)
+        - Applications (Early Availability)
       parameters:
         - name: applicationId
           in: path
@@ -2809,7 +2809,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Applications (Beta)
+        - Applications (Early Availability)
       parameters:
         - name: applicationId
           in: path
@@ -2848,7 +2848,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Applications (Beta)
+        - Applications (Early Availability)
       parameters:
         - name: applicationId
           in: path
@@ -2879,7 +2879,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Applications (Beta)
+        - Applications (Early Availability)
       parameters:
         - name: applicationId
           in: path
@@ -2933,7 +2933,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Applications (Beta)
+        - Applications (Early Availability)
       parameters:
         - name: applicationId
           in: path
@@ -2983,7 +2983,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Applications (Beta)
+        - Applications (Early Availability)
       parameters:
         - name: applicationId
           in: path
@@ -3022,7 +3022,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Identities (Beta)
+        - Identities (Early Availability)
       parameters:
         - name: validateAsync
           in: query
@@ -3090,7 +3090,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Identities (Beta)
+        - Identities (Early Availability)
       parameters:
         - name: identityId
           in: path
@@ -3127,7 +3127,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Identities (Beta)
+        - Identities (Early Availability)
       parameters:
         - name: identityId
           in: path
@@ -3182,7 +3182,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Identities (Beta)
+        - Identities (Early Availability)
       parameters:
         - name: identityId
           in: path
@@ -3221,7 +3221,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Identities (Beta)
+        - Identities (Early Availability)
       parameters:
         - name: identityId
           in: path
@@ -5790,7 +5790,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Applications (Beta)
+        - Applications (Early Availability)
       parameters:
         - name: applicationId
           in: path
