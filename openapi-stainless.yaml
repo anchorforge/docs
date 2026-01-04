@@ -1099,6 +1099,417 @@ components:
                 description: The value of the field
 
     # ==============================
+    # APPLICATION SCHEMAS
+    # ==============================
+    
+    ApplicationItemSchema:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the application
+        name:
+          type: string
+          description: Name of the application
+        url:
+          type: string
+          nullable: true
+          description: URL of the application
+        description:
+          type: string
+          nullable: true
+          description: Description of the application
+        identity_count:
+          type: integer
+          description: Number of identities associated with this application
+        auth_methods:
+          type: array
+          items:
+            type: string
+          description: Authentication methods available for this application
+        allowed_domains:
+          type: array
+          items:
+            type: string
+          description: List of allowed domains for this application
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp when the application was created
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp when the application was last updated
+
+    CreateApplicationRequestSchema:
+      type: object
+      required:
+        - source
+      properties:
+        source:
+          type: string
+          format: uri
+          description: The source URL of the application
+        name:
+          type: string
+          description: Name of the application
+        description:
+          type: string
+          description: Description of the application
+
+    CreateApplicationResponseSchema:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the application
+        name:
+          type: string
+          description: Name of the application
+        url:
+          type: string
+          nullable: true
+          description: URL of the application
+        description:
+          type: string
+          nullable: true
+          description: Description of the application
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp when the application was created
+
+    ListApplicationsResponseSchema:
+      type: object
+      properties:
+        applications:
+          type: array
+          items:
+            $ref: '#/components/schemas/ApplicationItemSchema'
+
+    GetApplicationResponseSchema:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the application
+        name:
+          type: string
+          description: Name of the application
+        url:
+          type: string
+          nullable: true
+          description: URL of the application
+        description:
+          type: string
+          nullable: true
+          description: Description of the application
+        identity_count:
+          type: integer
+          description: Number of identities associated with this application
+        auth_methods:
+          type: array
+          items:
+            type: string
+          description: Authentication methods available for this application
+        allowed_domains:
+          type: array
+          items:
+            type: string
+          description: List of allowed domains for this application
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp when the application was created
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp when the application was last updated
+
+    UpdateApplicationRequestSchema:
+      type: object
+      properties:
+        allowed_domains:
+          type: array
+          items:
+            type: string
+          description: List of allowed domains for this application
+
+    UpdateApplicationResponseSchema:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the application
+        url:
+          type: string
+          nullable: true
+          description: URL of the application
+        allowed_domains:
+          type: array
+          items:
+            type: string
+          description: List of allowed domains for this application
+
+    DeleteApplicationResponseSchema:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Whether the deletion was successful
+
+    ApplicationIdentityItemSchema:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the identity
+        name:
+          type: string
+          description: Name of the identity
+        auth_flow:
+          type: string
+          nullable: true
+          description: Authentication flow associated with this identity
+        status:
+          type: string
+          enum: [pending, validated, failed]
+          description: Status of the identity
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp when the identity was created
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp when the identity was last updated
+
+    ListApplicationIdentitiesResponseSchema:
+      type: object
+      properties:
+        identities:
+          type: array
+          items:
+            $ref: '#/components/schemas/ApplicationIdentityItemSchema'
+
+    CustomFieldDefinitionSchema:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: Name of the custom field
+
+    AuthFlowItemSchema:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the authentication flow
+        name:
+          type: string
+          description: Name of the authentication flow
+        description:
+          type: string
+          nullable: true
+          description: Description of the authentication flow
+        is_recommended:
+          type: boolean
+          description: Whether this is the recommended authentication flow
+        methods:
+          type: array
+          items:
+            type: string
+          description: Authentication methods in this flow
+        custom_fields:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomFieldDefinitionSchema'
+          description: Custom fields for this authentication flow
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp when the authentication flow was created
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp when the authentication flow was last updated
+
+    ListApplicationAuthFlowsResponseSchema:
+      type: object
+      properties:
+        auth_flows:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuthFlowItemSchema'
+
+    CreateAuthFlowRequestSchema:
+      type: object
+      required:
+        - name
+        - methods
+      properties:
+        name:
+          type: string
+          description: Name of the authentication flow
+        description:
+          type: string
+          description: Description of the authentication flow
+        is_recommended:
+          type: boolean
+          description: Whether this is the recommended authentication flow
+        methods:
+          type: array
+          items:
+            type: string
+            enum: [username_password, authenticator, custom]
+          minItems: 1
+          description: Authentication methods in this flow
+        custom_fields:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomFieldDefinitionSchema'
+          description: Custom fields for this authentication flow
+
+    CreateAuthFlowResponseSchema:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the authentication flow
+        name:
+          type: string
+          description: Name of the authentication flow
+        description:
+          type: string
+          nullable: true
+          description: Description of the authentication flow
+        is_recommended:
+          type: boolean
+          description: Whether this is the recommended authentication flow
+        methods:
+          type: array
+          items:
+            type: string
+          description: Authentication methods in this flow
+        custom_fields:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomFieldDefinitionSchema'
+          description: Custom fields for this authentication flow
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp when the authentication flow was created
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp when the authentication flow was last updated
+
+    UpdateAuthFlowRequestSchema:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the authentication flow
+        description:
+          type: string
+          description: Description of the authentication flow
+        is_recommended:
+          type: boolean
+          description: Whether this is the recommended authentication flow
+        methods:
+          type: array
+          items:
+            type: string
+            enum: [username_password, authenticator, custom]
+          description: Authentication methods in this flow
+        custom_fields:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomFieldDefinitionSchema'
+          description: Custom fields for this authentication flow
+
+    UpdateAuthFlowResponseSchema:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the authentication flow
+        name:
+          type: string
+          description: Name of the authentication flow
+        description:
+          type: string
+          nullable: true
+          description: Description of the authentication flow
+        is_recommended:
+          type: boolean
+          description: Whether this is the recommended authentication flow
+        methods:
+          type: array
+          items:
+            type: string
+          description: Authentication methods in this flow
+        custom_fields:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomFieldDefinitionSchema'
+          description: Custom fields for this authentication flow
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp when the authentication flow was created
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp when the authentication flow was last updated
+
+    DeleteAuthFlowResponseSchema:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Whether the deletion was successful
+
+    CreateIdentityTokenRequestSchema:
+      type: object
+      required:
+        - callbackUrl
+      properties:
+        callbackUrl:
+          type: string
+          format: uri
+          description: The HTTPS URL where the user will be redirected after authentication. Must use HTTPS protocol.
+          example: 'https://example.com/callback'
+
+    IdentityTokenResponseSchema:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            token:
+              type: string
+              description: The generated identity token for authentication
+            expires_at:
+              type: string
+              format: date-time
+              description: The timestamp when the token expires
+            token_hash:
+              type: string
+              description: A hash of the token for verification purposes
+
+    # ==============================
     # BATCH SESSION SCHEMAS
     # ==============================
     # Schemas related to batch browser session management
@@ -3721,6 +4132,427 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
           description: Failed to signal event
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  
+  /v1/applications:
+    post:
+      summary: Create Application
+      description: |
+        Creates a new application for identity management.
+
+        **Beta** Capability. [Contact support](mailto:support@anchorbrowser.io) to enable.
+      security:
+        - api_key_header: []
+      tags:
+        - Applications
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateApplicationRequestSchema'
+            examples:
+              createApplication:
+                summary: Create a new application
+                value:
+                  source: "https://example.com"
+                  name: "Example App"
+                  description: "An example application"
+      responses:
+        '201':
+          description: Application created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateApplicationResponseSchema'
+        '400':
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Failed to create application
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    get:
+      summary: List Applications
+      description: |
+        Retrieves all applications for the authenticated team.
+
+        **Beta** Capability. [Contact support](mailto:support@anchorbrowser.io) to enable.
+      security:
+        - api_key_header: []
+      tags:
+        - Applications
+      parameters:
+        - name: search
+          in: query
+          required: false
+          description: Search query to filter applications by name
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of applications retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListApplicationsResponseSchema'
+        '500':
+          description: Failed to list applications
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/applications/{application_id}:
+    get:
+      summary: Get Application
+      description: |
+        Retrieves details of a specific application by its ID.
+
+        **Beta** Capability. [Contact support](mailto:support@anchorbrowser.io) to enable.
+      security:
+        - api_key_header: []
+      tags:
+        - Applications
+      parameters:
+        - name: application_id
+          in: path
+          required: true
+          description: The ID of the application to retrieve
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Application details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetApplicationResponseSchema'
+        '404':
+          description: Application not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Failed to get application
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      summary: Delete Application
+      description: |
+        Deletes an existing application.
+
+        **Beta** Capability. [Contact support](mailto:support@anchorbrowser.io) to enable.
+      security:
+        - api_key_header: []
+      tags:
+        - Applications
+      parameters:
+        - name: application_id
+          in: path
+          required: true
+          description: The ID of the application to delete
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Application deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteApplicationResponseSchema'
+        '404':
+          description: Application not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Failed to delete application
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/applications/{application_id}/identities:
+    get:
+      summary: List Application Identities
+      description: |
+        Retrieves all identities associated with a specific application.
+
+        **Beta** Capability. [Contact support](mailto:support@anchorbrowser.io) to enable.
+      security:
+        - api_key_header: []
+      tags:
+        - Applications
+      parameters:
+        - name: application_id
+          in: path
+          required: true
+          description: The ID of the application
+          schema:
+            type: string
+            format: uuid
+        - name: search
+          in: query
+          required: false
+          description: Search query to filter identities by name
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of identities retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListApplicationIdentitiesResponseSchema'
+        '500':
+          description: Failed to list application identities
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/applications/{application_id}/auth-flows:
+    get:
+      summary: List Application Authentication Flows
+      description: |
+        Retrieves all authentication flows for a specific application.
+
+        **Beta** Capability. [Contact support](mailto:support@anchorbrowser.io) to enable.
+      security:
+        - api_key_header: []
+      tags:
+        - Applications
+      parameters:
+        - name: application_id
+          in: path
+          required: true
+          description: The ID of the application
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: List of authentication flows retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListApplicationAuthFlowsResponseSchema'
+        '500':
+          description: Failed to list application authentication flows
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      summary: Create Authentication Flow
+      description: |
+        Creates a new authentication flow for an application.
+
+        **Beta** Capability. [Contact support](mailto:support@anchorbrowser.io) to enable.
+      security:
+        - api_key_header: []
+      tags:
+        - Applications
+      parameters:
+        - name: application_id
+          in: path
+          required: true
+          description: The ID of the application
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAuthFlowRequestSchema'
+            examples:
+              createAuthFlow:
+                summary: Create an authentication flow with username/password
+                value:
+                  name: "Standard Login"
+                  description: "Username and password authentication"
+                  is_recommended: true
+                  methods: ["username_password"]
+                  custom_fields: []
+      responses:
+        '201':
+          description: Authentication flow created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateAuthFlowResponseSchema'
+        '400':
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Failed to create authentication flow
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/applications/{application_id}/auth-flows/{auth_flow_id}:
+    patch:
+      summary: Update Authentication Flow
+      description: |
+        Updates an existing authentication flow.
+
+        **Beta** Capability. [Contact support](mailto:support@anchorbrowser.io) to enable.
+      security:
+        - api_key_header: []
+      tags:
+        - Applications
+      parameters:
+        - name: application_id
+          in: path
+          required: true
+          description: The ID of the application
+          schema:
+            type: string
+            format: uuid
+        - name: auth_flow_id
+          in: path
+          required: true
+          description: The ID of the authentication flow to update
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAuthFlowRequestSchema'
+            examples:
+              updateAuthFlow:
+                summary: Update authentication flow name and methods
+                value:
+                  name: "Updated Login Flow"
+                  methods: ["username_password", "authenticator"]
+      responses:
+        '200':
+          description: Authentication flow updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateAuthFlowResponseSchema'
+        '500':
+          description: Failed to update authentication flow
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      summary: Delete Authentication Flow
+      description: |
+        Deletes an existing authentication flow.
+
+        **Beta** Capability. [Contact support](mailto:support@anchorbrowser.io) to enable.
+      security:
+        - api_key_header: []
+      tags:
+        - Applications
+      parameters:
+        - name: application_id
+          in: path
+          required: true
+          description: The ID of the application
+          schema:
+            type: string
+            format: uuid
+        - name: auth_flow_id
+          in: path
+          required: true
+          description: The ID of the authentication flow to delete
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Authentication flow deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteAuthFlowResponseSchema'
+        '500':
+          description: Failed to delete authentication flow
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/applications/{application_id}/tokens:
+    post:
+      summary: Create Identity Token
+      description: |
+        Creates an identity token for a specific application. This token is used to initiate
+        an authentication flow for linking user identities to the application.
+
+        The callback URL must use HTTPS and is where the user will be redirected after authentication.
+      security:
+        - api_key_header: []
+      tags:
+        - Applications
+      parameters:
+        - name: application_id
+          in: path
+          required: true
+          description: The unique identifier of the application
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateIdentityTokenRequestSchema'
+            examples:
+              createToken:
+                summary: Create an identity token
+                value:
+                  callbackUrl: 'https://example.com/auth/callback'
+      responses:
+        '201':
+          description: Identity token created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdentityTokenResponseSchema'
+        '400':
+          description: Invalid request - callbackUrl must be a valid HTTPS URL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Application not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Failed to create identity token
           content:
             application/json:
               schema:
