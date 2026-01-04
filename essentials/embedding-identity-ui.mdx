@@ -27,9 +27,10 @@ import Anchorbrowser from 'anchorbrowser';
 const anchorClient = new Anchorbrowser();
 
 // Generate a token for identity creation
-const tokenResponse = await anchorClient.applications.identities.tokens.create('your-application-id', {
-  callbackUrl: 'https://your-app.com/identity-callback',
-});
+const tokenResponse = await anchorClient.applications.createIdentityToken(
+    'your-application-id',
+    { callbackUrl: 'https://your-app.com/identity-callback' }
+);
 
 console.log(tokenResponse.token);
 // Use this token to redirect the user
@@ -41,7 +42,7 @@ from anchorbrowser import Anchorbrowser
 anchor_client = Anchorbrowser()
 
 # Generate a token for identity creation
-token_response = anchor_client.applications.identities.tokens.create(
+token_response = anchor_client.applications.createIdentityToken(
     application_id="your-application-id",
     callback_url="https://your-app.com/identity-callback"
 )
@@ -141,7 +142,7 @@ import Anchorbrowser from 'anchorbrowser';
 const anchorClient = new Anchorbrowser();
 
 // Update identity with external user ID
-const updatedIdentity = await anchorClient.identities.update(identityId, {
+const updatedIdentity = await anchorClient.identities.update('your-identity-id', {
   name: 'User Display Name',
   metadata: {
     externalUserId: 'your-user-id-123',
@@ -158,7 +159,7 @@ anchor_client = Anchorbrowser()
 
 # Update identity with external user ID
 updated_identity = anchor_client.identities.update(
-    identity_id=identity_id,
+    identity_id='your-identity-id',
     name="User Display Name",
     metadata={
         "externalUserId": "your-user-id-123",
@@ -194,11 +195,10 @@ const anchorClient = new Anchorbrowser();
 
 // Create a session with the user's identity
 const session = await anchorClient.sessions.create({
-  identities: [{ id: identityId }],
+  identities: [{ id: 'your-identity-id' }],
 });
 
-console.log('Session created:', session.id);
-console.log('WebSocket URL:', session.ws_endpoint);
+console.log('Session created:', session.data.id);
 ```
 
 ```python python
@@ -208,11 +208,10 @@ anchor_client = Anchorbrowser()
 
 # Create a session with the user's identity
 session = anchor_client.sessions.create(
-    identities=[{ "id": identity_id }]
+    identities=[{ "id": 'your-identity-id' }]
 )
 
-print(f"Session created: {session.id}")
-print(f"WebSocket URL: {session.ws_endpoint}")
+print(f"Session: {session.data.id}")
 ```
 
 ```bash cURL
@@ -220,7 +219,7 @@ curl -X POST "https://api.anchorbrowser.io/v1/sessions" \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "identities": [{ "id": "identity-id-here" }]
+    "identities": [{ "id": "your-identity-id" }]
   }'
 ```
 </CodeGroup>
@@ -248,7 +247,7 @@ app.post('/api/connect-account', async (req, res) => {
   const userId = req.user.id;
 
   // Generate token with callback URL
-  const tokenResponse = await anchorClient.applications.identities.tokens.create(APPLICATION_ID, {
+  const tokenResponse = await anchorClient.applications.createIdentityToken(APPLICATION_ID, {
     callbackUrl: `https://your-app.com/api/identity-callback`,
   });
 
