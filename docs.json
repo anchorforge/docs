@@ -60,6 +60,8 @@
                 "group": "Authentication and Identity",
                 "icon": "fingerprint",
                 "pages": [
+                  "essentials/authenticated-applications",
+                  "essentials/embedding-identity-ui",
                   "essentials/authentication-and-identity",
                   "advanced/mfa",
                   "integrations/1password"
