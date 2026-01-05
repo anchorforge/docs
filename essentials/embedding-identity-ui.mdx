@@ -42,7 +42,7 @@ from anchorbrowser import Anchorbrowser
 anchor_client = Anchorbrowser()
 
 # Generate a token for identity creation
-token_response = anchor_client.applications.createIdentityToken(
+token_response = anchor_client.applications.create_identity_token(
     application_id="your-application-id",
     callback_url="https://your-app.com/identity-callback"
 )
