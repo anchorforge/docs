@@ -158,7 +158,27 @@ console.log(session.data.id);
 ```
 
 ```python python
-session = client.sessions.create(
+from anchorbrowser import Anchorbrowser
+
+anchor_client = Anchorbrowser()
+identity_id = "your-identity-id"
+session = anchor_client.sessions.create(
+    # Recommended settings for authenticated sessions.
+    session={
+        "proxy": {
+            "active": True,
+        }
+    },
+    browser={
+        "captcha_solver": {
+            "active": True,
+        },
+        "extra_stealth": {
+            "active": True,
+        }
+    },
+
+    # Identity to authenticate with.
     identities=[{"id": identity_id}]
 )
 
