@@ -220,13 +220,28 @@ console.log(session.data.id);
 from anchorbrowser import Anchorbrowser
 
 anchor_client = Anchorbrowser()
-
-# Create a session with the user's identity
+identity_id = "your-identity-id"
 session = anchor_client.sessions.create(
-    identities=[{ "id": 'your-identity-id' }]
+    # Recommended settings for authenticated sessions.
+    session={
+        "proxy": {
+            "active": True,
+        }
+    },
+    browser={
+        "captcha_solver": {
+            "active": True,
+        },
+        "extra_stealth": {
+            "active": True,
+        }
+    },
+
+    # Identity to authenticate with.
+    identities=[{"id": identity_id}]
 )
 
-print(f"Session: {session.data.id}")
+print(session.data.id)
 ```
 
 ```bash cURL
@@ -374,9 +389,23 @@ def run_automation():
     identity_id = get_user_identity(request.user.id)
 
     session = anchor_client.sessions.create(
+        # Recommended settings for authenticated sessions.
+        session={
+            "proxy": {
+                "active": True,
+            }
+        },
         browser={
-            "identities": [{"id": identity_id}]
-        }
+            "captcha_solver": {
+                "active": True,
+            },
+            "extra_stealth": {
+                "active": True,
+            }
+        },
+
+        # Identity to authenticate with.
+        identities=[{"id": identity_id}]
     )
 
     # Run your automation with the authenticated session
