@@ -192,13 +192,28 @@ Once an identity ID is available, use it to create authenticated browser session
 import Anchorbrowser from 'anchorbrowser';
 
 const anchorClient = new Anchorbrowser();
-
-// Create a session with the user's identity
+const identityId = "your-identity-id";
 const session = await anchorClient.sessions.create({
-  identities: [{ id: 'your-identity-id' }],
+    // Recommended settings for authenticated sessions.
+    session: {
+        proxy: {
+            active: true,
+        }
+    },
+    browser: {
+        captcha_solver: {
+            active: true,
+        },
+        extra_stealth: {
+            active: true,
+        }
+    },
+
+    // Identity to authenticate with.
+    identities: [{ id: identityId }]
 });
 
-console.log('Session created:', session.data.id);
+console.log(session.data.id);
 ```
 
 ```python python
@@ -216,11 +231,28 @@ print(f"Session: {session.data.id}")
 
 ```bash cURL
 curl -X POST "https://api.anchorbrowser.io/v1/sessions" \
-  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "anchor-api-key: YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "identities": [{ "id": "your-identity-id" }]
-  }'
+  "browser": {
+    "captcha_solver": {
+      "active": true
+    },
+    "extra_stealth": {
+      "active": true
+    }
+  },
+  "session": {
+    "proxy": {
+      "active": true
+    }
+  },
+  "identities": [
+    {
+      "id": "your-identity-id"
+    }
+  ]
+}'
 ```
 </CodeGroup>
 

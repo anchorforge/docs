@@ -126,15 +126,35 @@ curl -X POST "https://api.anchorbrowser.io/v1/identities" \
 </Tip>
 </Step>
 <Step title='Create Authenticated Sessions'>
-Use the identity ID to create pre-authenticated browser sessions.
+Use the identity ID to create an authenticated browser session.
 
 <CodeGroup>
 ```javascript node.js
-const session = await client.sessions.create({
-  identities: [{ id: identityId }]
+import Anchorbrowser from 'anchorbrowser';
+
+const anchorClient = new Anchorbrowser();
+const identityId = "your-identity-id";
+const session = await anchorClient.sessions.create({
+    // Recommended settings for authenticated sessions.
+    session: {
+        proxy: {
+            active: true,
+        }
+    },
+    browser: {
+        captcha_solver: {
+            active: true,
+        },
+        extra_stealth: {
+            active: true,
+        }
+    },
+
+    // Identity to authenticate with.
+    identities: [{ id: identityId }]
 });
 
-console.log(session.ws_endpoint);
+console.log(session.data.id);
 ```
 
 ```python python
@@ -142,7 +162,7 @@ session = client.sessions.create(
     identities=[{"id": identity_id}]
 )
 
-print(session.ws_endpoint)
+print(session.data.id)
 ```
 </CodeGroup>
 </Step>
