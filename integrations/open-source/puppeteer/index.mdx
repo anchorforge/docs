@@ -1,0 +1,80 @@
+---
+title: 'Integrate Puppeteer with Anchor Browser'
+description: 'Integrate Puppeteer and Anchor Browser'
+icon: 'stars'
+sidebarTitle: 'Puppeteer'
+---
+
+# What is Puppeteer?
+
+[Puppeteer](https://pptr.dev/) is Google's Node.js library for controlling headless Chrome or Chromium browsers via the DevTools Protocol. It provides a high-level API for browser automation, making it one of the most widely adopted tools for web scraping, testing, and automated interactions.
+
+## Why Puppeteer + Anchor Browser?
+
+Anchor Browser leverages Puppeteer's mature CDP (Chrome DevTools Protocol) integration to provide seamless cloud browser automation. While Puppeteer handles the low-level browser control, Anchor Browser adds:
+
+- Cloud-hosted browser instances - No local browser management required
+- AI-powered interactions - Natural language task execution beyond traditional scripting
+- Enterprise security - Isolated environments with authentication and proxy support
+- Self-healing automations - Built-in error recovery and adaptation to website changes
+
+### Key Puppeteer Capabilities
+
+- CDP Native - Direct Chrome DevTools Protocol integration for precise browser control
+- Lightweight & Fast - Minimal overhead with direct browser communication
+- Extensive Ecosystem - Rich plugin ecosystem and community support
+- Network Interception - Capture and modify network requests and responses
+- PDF Generation - Convert web pages to PDFs with full rendering support
+
+### How It Works with Anchor Browser
+
+When you connect to Anchor Browser, you're using Puppeteer's familiar API but with cloud-hosted browsers:
+
+```javascript node.js
+import AnchorClient from 'anchorbrowser';
+import puppeteer from 'puppeteer-core';
+
+const anchorClient = new AnchorClient({
+  apiKey: process.env.ANCHOR_API_KEY,
+});
+
+// First create a session
+const session = await anchorClient.sessions.create();
+const cdpUrl = session.data.cdp_url;
+const sessionId = session.data.id;
+
+// Connect Puppeteer to the Anchor CDP session
+const browser = await puppeteer.connect({
+  browserWSEndpoint: cdpUrl,
+  defaultViewport: null,
+});
+
+// Open a page and navigate
+const page = await browser.newPage();
+await page.goto('https://example.com');
+console.log('Page title:', await page.title());
+
+// Disconnect Puppeteer (doesn't close the Anchor session)
+await browser.disconnect();
+
+// Close the session via SDK
+await anchorClient.sessions.delete(sessionId);
+```
+
+This gives you all of Puppeteer's power while eliminating infrastructure complexity and adding enterprise features.
+
+### Use Cases
+
+- Web Scraping - Extract data from dynamic JavaScript-heavy websites
+- PDF Generation - Generate PDFs from web pages with precise rendering
+- Screenshot Capture - Automated screenshot generation for monitoring and testing
+- Form Automation - Automate form submissions and multi-step workflows
+- Network Analysis - Intercept and analyze network traffic for debugging
+- Performance Profiling - Measure page load times and runtime performance
+
+## Next Steps
+
+- [Quick Start with Puppeteer](/quickstart/use-via-code) - Get started in 5 minutes
+- [Examples](/examples/form-filling) - Real-world Puppeteer automation scripts
+- [Browser Configuration](/api-reference/browser-sessions/start-browser-session#body-browser) - Advanced browser settings and options
+

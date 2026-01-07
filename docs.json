@@ -123,6 +123,7 @@
                 "group": "Open Source",
                 "icon": "stars",
                 "pages": [
+                  "integrations/open-source/puppeteer/index",
                   {
                     "group": "Playwright",
                     "icon": "stars",
