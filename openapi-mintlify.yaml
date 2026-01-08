@@ -602,16 +602,103 @@ components:
         output_schema:
           type: object
           description: JSON Schema defining the expected structure of the output data.
+        async:
+          type: boolean
+          description: Whether to run the task asynchronously. If true, the task will be run asynchronously and the response will include a workflow ID.
+          default: false
+
+    PerformWebTaskSyncResponseData:
+      type: object
+      title: sync
+      properties:
+        result:
+          type: object
+          description: The outcome or answer produced by the autonomous task.
+      required:
+        - result
+
+    PerformWebTaskAsyncResponseData:
+      type: object
+      title: async
+      properties:
+        status:
+          type: string
+          enum:
+            - running
+          description: The status of the asynchronous task execution.
+        workflowId:
+          type: string
+          description: The workflow ID for tracking the asynchronous task execution.
+      required:
+        - status
+        - workflowId
 
     PerformWebTaskResponseSchema:
       type: object
       properties:
         data:
+          oneOf:
+            - $ref: '#/components/schemas/PerformWebTaskSyncResponseData'
+            - $ref: '#/components/schemas/PerformWebTaskAsyncResponseData'
+          x-oneOf-labels:
+            - sync
+            - async
+
+    PerformWebTaskStatusSuccessResponseData:
+      type: object
+      title: success
+      properties:
+        status:
+          type: string
+          enum:
+            - COMPLETED
+          description: The workflow has completed successfully.
+        result:
           type: object
-          properties:
-            result:
-              type: string
-              description: The outcome or answer produced by the autonomous task.
+          description: The outcome or answer produced by the autonomous task.
+      required:
+        - status
+        - result
+
+    PerformWebTaskStatusRunningResponseData:
+      type: object
+      title: running
+      properties:
+        status:
+          type: string
+          enum:
+            - RUNNING
+          description: The workflow is currently running.
+      required:
+        - status
+
+    PerformWebTaskStatusFailedResponseData:
+      type: object
+      title: failed
+      properties:
+        status:
+          type: string
+          enum:
+            - FAILED
+          description: The workflow has failed.
+        error:
+          type: string
+          description: Error message describing why the workflow failed.
+      required:
+        - status
+        - error
+
+    PerformWebTaskStatusResponseSchema:
+      type: object
+      properties:
+        data:
+          type: object
+          oneOf:
+            - $ref: '#/components/schemas/PerformWebTaskStatusSuccessResponseData'
+            - $ref: '#/components/schemas/PerformWebTaskStatusRunningResponseData'
+            - $ref: '#/components/schemas/PerformWebTaskStatusFailedResponseData'
+      required:
+        - data
 
     ScreenshotRequestSchema:
       type: object
@@ -2302,6 +2389,86 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PerformWebTaskResponseSchema'
+              examples:
+                sync:
+                  summary: Synchronous response
+                  value:
+                    data:
+                      result:
+                        result:
+                          nodes_cpu_usage:
+                            - node: "pool-e1ro5g0nq-559g5"
+                              cluster: "do-nyc1-demo-infra"
+                              cpu_avg_percentage: 8.29
+                            - node: "pool-e1ro5g0nq-559gk"
+                              cluster: "do-nyc1-demo-infra"
+                              cpu_avg_percentage: 24.8
+                async:
+                  summary: Asynchronous response
+                  value:
+                    data:
+                      status: "running"
+                      workflowId: "perform-web-task-execution-123e4567-e89b-12d3-a456-426614174000-550e8400-e29b-41d4-a716-446655440000"
+        '400':
+          description: Invalid request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v1/tools/perform-web-task/{workflowId}/status:
+    get:
+      summary: Get Perform Web Task Status
+      description: Get the status of an asynchronous perform-web-task execution by workflow ID.
+      tags:
+        - AI Tools
+      security:
+        - api_key_header: []
+      parameters:
+        - in: path
+          name: workflowId
+          required: true
+          schema:
+            type: string
+          description: The workflow ID returned when starting an asynchronous perform-web-task execution.
+      responses:
+        '200':
+          description: The current status of the task execution.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PerformWebTaskStatusResponseSchema'
+              examples:
+                completed:
+                  summary: Completed workflow
+                  value:
+                    data:
+                      status: "COMPLETED"
+                      result:
+                        result:
+                          nodes_cpu_usage:
+                            - node: "pool-e1ro5g0nq-559g5"
+                              cluster: "do-nyc1-demo-infra"
+                              cpu_avg_percentage: 8.29
+                            - node: "pool-e1ro5g0nq-559gk"
+                              cluster: "do-nyc1-demo-infra"
+                              cpu_avg_percentage: 24.8
+                running:
+                  summary: Running workflow
+                  value:
+                    data:
+                      status: "RUNNING"
+                failed:
+                  summary: Failed workflow
+                  value:
+                    data:
+                      status: "FAILED"
+                      error: "Maximum number of steps exceeded"
         '400':
           description: Invalid request.
           content:
