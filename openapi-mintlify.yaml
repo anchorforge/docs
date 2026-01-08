@@ -340,6 +340,33 @@ components:
             active:
               type: boolean
               description: Enable or disable extra stealth mode.
+        force_popups_as_tabs:
+          type: object
+          description: Configuration for forcing popups to open as tabs instead of popup windows.
+          properties:
+            active:
+              type: boolean
+              description: Enable or disable forcing popups as tabs. Defaults to `false`.
+        web_bot_auth:
+          type: object
+          description: Configuration for Cloudflare Web Bot Auth HTTP message signing. Enables authentication with websites that require Cloudflare's web bot authentication.
+          properties:
+            active:
+              type: boolean
+              description: Enable or disable web bot auth. Defaults to `false`.
+        tracing:
+          type: object
+          description: Configuration for browser tracing and debugging capabilities.
+          properties:
+            active:
+              type: boolean
+              description: Enable or disable tracing. Defaults to `true`.
+            snapshots:
+              type: boolean
+              description: Enable or disable snapshot capture in traces. Defaults to `false`.
+            sources:
+              type: boolean
+              description: Enable or disable source code capture in traces. Defaults to `true`.
 
     SessionCreateRequestSchema:
       type: object
