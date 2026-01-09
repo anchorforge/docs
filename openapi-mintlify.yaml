@@ -653,12 +653,12 @@ components:
           enum:
             - running
           description: The status of the asynchronous task execution.
-        workflowId:
+        workflow_id:
           type: string
           description: The workflow ID for tracking the asynchronous task execution.
       required:
         - status
-        - workflowId
+        - workflow_id
 
     PerformWebTaskResponseSchema:
       type: object
@@ -2435,7 +2435,7 @@ paths:
                   value:
                     data:
                       status: "running"
-                      workflowId: "perform-web-task-execution-123e4567-e89b-12d3-a456-426614174000-550e8400-e29b-41d4-a716-446655440000"
+                      workflow_id: "perform-web-task-execution-123e4567-e89b-12d3-a456-426614174000-550e8400-e29b-41d4-a716-446655440000"
         '400':
           description: Invalid request.
           content:
