@@ -1470,6 +1470,10 @@ components:
           type: string
           pattern: '^(draft|latest|\d+)$'
           description: Version to run (draft, latest, or version number)
+        sessionId:
+          type: string
+          format: uuid
+          description: Optional existing browser session ID to use for task execution
         async:
           type: boolean
           description: Whether to run the task asynchronously.
@@ -1484,11 +1488,19 @@ components:
             '^ANCHOR_.*$':
               type: string
           description: Environment variables for task execution (keys must start with ANCHOR_)
+        cleanupSessions:
+          type: boolean
+          description: Whether to cleanup browser sessions after task execution. Defaults to true.
+          default: true
       required: [taskId]
 
     RunTaskByNameRequest:
       type: object
       properties:
+        sessionId:
+          type: string
+          format: uuid
+          description: Optional existing browser session ID to use for task execution
         async:
           type: boolean
           description: Whether to run the task asynchronously
@@ -1503,6 +1515,10 @@ components:
             '^ANCHOR_.*$':
               type: string
           description: Environment variables for task execution (keys must start with ANCHOR_)
+        cleanupSessions:
+          type: boolean
+          description: Whether to cleanup browser sessions after task execution. Defaults to true.
+          default: true
 
 
     TaskListResponse:
