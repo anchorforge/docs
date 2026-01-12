@@ -2493,14 +2493,13 @@ paths:
                     data:
                       status: "COMPLETED"
                       result:
-                        result:
-                          nodes_cpu_usage:
-                            - node: "pool-e1ro5g0nq-559g5"
-                              cluster: "do-nyc1-demo-infra"
-                              cpu_avg_percentage: 8.29
-                            - node: "pool-e1ro5g0nq-559gk"
-                              cluster: "do-nyc1-demo-infra"
-                              cpu_avg_percentage: 24.8
+                        nodes_cpu_usage:
+                          - node: "pool-e1ro5g0nq-559g5"
+                            cluster: "do-nyc1-demo-infra"
+                            cpu_avg_percentage: 8.29
+                          - node: "pool-e1ro5g0nq-559gk"
+                            cluster: "do-nyc1-demo-infra"
+                            cpu_avg_percentage: 24.8
                 running:
                   summary: Running workflow
                   value:
