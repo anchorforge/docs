@@ -1,0 +1,266 @@
+---
+title: 'Magic Link Authentication'
+description: 'Automate magic link login flows using event coordination to pass links from external systems to browser sessions'
+icon: 'wand-magic-sparkles'
+---
+
+<Steps>
+<Step title='Browser Session - Request Magic Link and Wait'>
+Use the AI agent to navigate to the login page and enter the email, then wait for the magic link event.
+<CodeGroup>
+```javascript node.js
+import Anchorbrowser from "anchorbrowser";
+import {
+    chromium
+} from "playwright-core";
+
+(async () => {
+    const anchorClient = new Anchorbrowser();
+
+    // Create a browser session
+    const session = await anchorClient.sessions.create();
+    const sessionId = session.data.id;
+    const browser = await chromium.connectOverCDP(session.cdp_url);
+    const page = browser.contexts()[0].pages()[0];
+
+    // Use unique event name for this session to support concurrent logins
+    const eventName = `magic_link_${sessionId}`;
+
+    // Use AI agent to request the magic link
+    await anchorClient.agent.task(
+        'Go to https://app.example.com/login, enter user@example.com in the email field, and click the submit button to request a magic link', {
+            taskOptions: {
+                sessionId,
+                maxSteps: 10
+            }
+        }
+    );
+
+    console.log('Magic link requested, waiting for email...');
+    console.log(`Event name: ${eventName}`);
+
+    // Wait for the magic link from external system (2 minute timeout)
+    const event = await anchorClient.events.waitFor(eventName, {
+        timeoutMs: 120000,
+    });
+
+    if (event?.data?.url) {
+        console.log('Magic link received, navigating...');
+
+        // Navigate to the magic link URL (deterministic)
+        await page.goto(event.data.url);
+
+        console.log('Successfully logged in!');
+
+        // Use AI agent to perform actions on the dashboard
+        const result = await anchorClient.agent.task(
+            'Extract the user profile information from the dashboard', {
+                taskOptions: {
+                    sessionId,
+                    maxSteps: 10
+                }
+            }
+        );
+
+        console.log('Dashboard data:', result);
+
+    } else {
+        throw new Error('Magic link not received within timeout');
+    }
+})();
+````
+
+```python python
+from anchorbrowser import Anchorbrowser
+from playwright.sync_api import sync_playwright
+
+anchor_client = Anchorbrowser()
+
+# Create a browser session
+session = anchor_client.sessions.create()
+session_id = session.data.id
+
+with sync_playwright() as p:
+    browser = p.chromium.connect_over_cdp(session.cdp_url)
+    page = browser.contexts[0].pages[0]
+
+    # Use unique event name for this session to support concurrent logins
+    event_name = f"magic_link_{session_id}"
+
+    # Use AI agent to request the magic link
+    anchor_client.agent.task(
+        "Go to https://app.example.com/login, enter user@example.com in the email field, and click the submit button to request a magic link",
+        task_options={"session_id": session_id, "max_steps": 10},
+    )
+
+    print("Magic link requested, waiting for email...")
+    print(f"Event name: {event_name}")
+
+    # Wait for the magic link from external system (2 minute timeout)
+    event = anchor_client.events.wait_for(event_name, timeout_ms=120000)
+
+    if event and event.data and event.data.get("url"):
+        print("Magic link received, navigating...")
+
+        # Navigate to the magic link URL (deterministic)
+        page.goto(event.data["url"])
+
+        print("Successfully logged in!")
+
+        # Use AI agent to perform actions on the dashboard
+        result = anchor_client.agent.task(
+            "Extract the user profile information from the dashboard",
+            task_options={"session_id": session_id, "max_steps": 10},
+        )
+
+        print("Dashboard data:", result)
+    else:
+        raise Exception("Magic link not received within timeout")
+````
+
+</CodeGroup>
+</Step>
+
+<Step title='External System - Signal the Magic Link'>
+When your email processing system receives the magic link email, extract the URL and signal it to the waiting browser session using the session-specific event name.
+<CodeGroup>
+```javascript node.js
+import Anchorbrowser from "anchorbrowser";
+
+const anchorClient = new Anchorbrowser();
+
+// Example: Called from your email webhook handler
+// The sessionId should be tracked when the magic link is requested
+const sessionId = 'session_abc123';
+const magicLinkUrl = 'https://app.example.com/auth/verify?token=abc123';
+
+// Use the same event name pattern as the browser session
+const eventName = `magic_link_${sessionId}`;
+
+await anchorClient.events.signal(eventName, {
+    data: {
+        url: magicLinkUrl,
+        receivedAt: new Date().toISOString(),
+    },
+});
+
+console.log(`Magic link sent to session ${sessionId}`);
+````
+
+```python python
+from anchorbrowser import Anchorbrowser
+from datetime import datetime
+
+anchor_client = Anchorbrowser()
+
+# Example: Called from your email webhook handler
+# The session_id should be tracked when the magic link is requested
+session_id = "session_abc123"
+magic_link_url = "https://app.example.com/auth/verify?token=abc123"
+
+# Use the same event name pattern as the browser session
+event_name = f"magic_link_{session_id}"
+
+anchor_client.events.signal(
+    event_name, data={"url": magic_link_url, "received_at": datetime.now().isoformat()}
+)
+
+print(f"Magic link sent to session {session_id}")
+````
+
+</CodeGroup>
+</Step>
+</Steps>
+
+## Email Processing Options
+
+### Option 1: Email Webhook Service
+
+Use a service like SendGrid Inbound Parse, Mailgun Routes, or Postmark Inbound to receive emails via webhook:
+
+```javascript node.js
+// Express webhook handler for incoming emails
+app.post('/webhook/inbound-email', async (req, res) => {
+    const {
+        from,
+        subject,
+        html
+    } = req.body;
+
+    // Extract magic link from email HTML
+    const magicLinkMatch = html.match(/href="(https:\/\/app\.example\.com\/auth\/verify\?token=[^"]+)"/);
+
+    if (magicLinkMatch) {
+        const magicLinkUrl = magicLinkMatch[1];
+        await client.events.signal('magic_link', {
+            data: {
+                url: magicLinkUrl
+            },
+        });
+    }
+
+    res.status(200).send('OK');
+});
+```
+
+### Option 2: IMAP Polling
+
+Poll an email inbox for new magic link emails:
+
+```javascript node.js
+import Imap from 'imap';
+import {
+    simpleParser
+} from 'mailparser';
+
+async function pollForMagicLink(imapConfig, timeout = 120000) {
+    const startTime = Date.now();
+
+    while (Date.now() - startTime < timeout) {
+        const emails = await fetchUnreadEmails(imapConfig);
+
+        for (const email of emails) {
+            const magicLink = extractMagicLink(email.html);
+            if (magicLink) {
+                await client.events.signal('magic_link', {
+                    data: {
+                        url: magicLink
+                    },
+                });
+                return;
+            }
+        }
+
+        await new Promise((resolve) => setTimeout(resolve, 5000)); // Poll every 5 seconds
+    }
+}
+```
+
+### Option 3: Manual Input
+
+For testing or semi-automated flows, you can manually signal the magic link:
+
+```bash curl
+curl -X POST "https://api.anchorbrowser.io/api/v1/events/magic_link" \
+  -H "anchor-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"data": {"url": "https://app.example.com/auth/verify?token=abc123"}}'
+```
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title='MFA / Event Coordination' icon='comments' href='/advanced/mfa'>
+    Learn more about event coordination for MFA and other real-time flows
+  </Card>
+  <Card title='Browser Profiles' icon='fingerprint' href='/essentials/authentication-and-identity'>
+    Save authenticated sessions for reuse without re-authentication
+  </Card>
+  <Card title='Wait For Event API' icon='clock' href='/api-reference/event-coordination/wait-for-event'>
+    API reference for waiting for events
+  </Card>
+  <Card title='Signal Event API' icon='signal' href='/api-reference/event-coordination/signal-event'>
+    API reference for signaling events
+  </Card>
+</CardGroup>
+````
