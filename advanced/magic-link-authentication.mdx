@@ -73,11 +73,10 @@ import {
 ````
 
 ```python python
-import os
 from anchorbrowser import Anchorbrowser
 from playwright.sync_api import sync_playwright
 
-anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
+anchor_client = Anchorbrowser()
 
 # Create a browser session
 session = anchor_client.sessions.create()
@@ -93,7 +92,7 @@ with sync_playwright() as p:
     # Use AI agent to request the magic link
     anchor_client.agent.task(
         "Go to https://app.example.com/login, enter user@example.com in the email field, and click the submit button to request a magic link",
-        task_options={"session_id": session_id, "max_steps": 10}
+        task_options={"session_id": session_id, "max_steps": 10},
     )
 
     print("Magic link requested, waiting for email...")
@@ -113,7 +112,7 @@ with sync_playwright() as p:
         # Use AI agent to perform actions on the dashboard
         result = anchor_client.agent.task(
             "Extract the user profile information from the dashboard",
-            task_options={"session_id": session_id, "max_steps": 10}
+            task_options={"session_id": session_id, "max_steps": 10},
         )
 
         print("Dashboard data:", result)
@@ -151,11 +150,10 @@ console.log(`Magic link sent to session ${sessionId}`);
 ````
 
 ```python python
-import os
 from anchorbrowser import Anchorbrowser
 from datetime import datetime
 
-anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
+anchor_client = Anchorbrowser()
 
 # Example: Called from your email webhook handler
 # The session_id should be tracked when the magic link is requested
@@ -165,10 +163,9 @@ magic_link_url = "https://app.example.com/auth/verify?token=abc123"
 # Use the same event name pattern as the browser session
 event_name = f"magic_link_{session_id}"
 
-anchor_client.events.signal(event_name, data={
-    "url": magic_link_url,
-    "received_at": datetime.now().isoformat()
-})
+anchor_client.events.signal(
+    event_name, data={"url": magic_link_url, "received_at": datetime.now().isoformat()}
+)
 
 print(f"Magic link sent to session {session_id}")
 ````
