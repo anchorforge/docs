@@ -180,7 +180,7 @@ print(f"Magic link sent to session {session_id}")
 
 Use a service like SendGrid Inbound Parse, Mailgun Routes, or Postmark Inbound to receive emails via webhook:
 
-```javascript
+```javascript node.js
 // Express webhook handler for incoming emails
 app.post('/webhook/inbound-email', async (req, res) => {
     const {
@@ -209,7 +209,7 @@ app.post('/webhook/inbound-email', async (req, res) => {
 
 Poll an email inbox for new magic link emails:
 
-```javascript
+```javascript node.js
 import Imap from 'imap';
 import {
     simpleParser
@@ -242,7 +242,7 @@ async function pollForMagicLink(imapConfig, timeout = 120000) {
 
 For testing or semi-automated flows, you can manually signal the magic link:
 
-```bash
+```bash curl
 curl -X POST "https://api.anchorbrowser.io/api/v1/events/magic_link" \
   -H "anchor-api-key: YOUR_API_KEY" \
   -H "Content-Type: application/json" \
