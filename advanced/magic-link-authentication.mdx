@@ -4,8 +4,6 @@ description: 'Automate magic link login flows using event coordination to pass l
 icon: 'wand-magic-sparkles'
 ---
 
-Magic links arrive in an external system (email) while the browser waits. Event coordination enables real-time communication between your email processor and the browser session.
-
 <Steps>
 <Step title='Browser Session - Request Magic Link and Wait'>
 Use the AI agent to navigate to the login page and enter the email, then wait for the magic link event.
@@ -17,7 +15,7 @@ import {
 } from "playwright-core";
 
 (async () => {
-    const anchorClient = new Anchorbrowser();
+const anchorClient = new Anchorbrowser();
 
     // Create a browser session
     const session = await anchorClient.sessions.create();
@@ -69,7 +67,9 @@ import {
     } else {
         throw new Error('Magic link not received within timeout');
     }
+
 })();
+
 ````
 
 ```python python
@@ -140,13 +140,14 @@ const magicLinkUrl = 'https://app.example.com/auth/verify?token=abc123';
 const eventName = `magic_link_${sessionId}`;
 
 await anchorClient.events.signal(eventName, {
-    data: {
-        url: magicLinkUrl,
-        receivedAt: new Date().toISOString(),
-    },
+data: {
+url: magicLinkUrl,
+receivedAt: new Date().toISOString(),
+},
 });
 
 console.log(`Magic link sent to session ${sessionId}`);
+
 ````
 
 ```python python
@@ -183,25 +184,21 @@ Use a service like SendGrid Inbound Parse, Mailgun Routes, or Postmark Inbound t
 ```javascript node.js
 // Express webhook handler for incoming emails
 app.post('/webhook/inbound-email', async (req, res) => {
-    const {
-        from,
-        subject,
-        html
-    } = req.body;
+  const { from, subject, html } = req.body;
 
-    // Extract magic link from email HTML
-    const magicLinkMatch = html.match(/href="(https:\/\/app\.example\.com\/auth\/verify\?token=[^"]+)"/);
+  // Extract magic link from email HTML
+  const magicLinkMatch = html.match(/href="(https:\/\/app\.example\.com\/auth\/verify\?token=[^"]+)"/);
 
-    if (magicLinkMatch) {
-        const magicLinkUrl = magicLinkMatch[1];
-        await client.events.signal('magic_link', {
-            data: {
-                url: magicLinkUrl
-            },
-        });
-    }
+  if (magicLinkMatch) {
+    const magicLinkUrl = magicLinkMatch[1];
+    await client.events.signal('magic_link', {
+      data: {
+        url: magicLinkUrl,
+      },
+    });
+  }
 
-    res.status(200).send('OK');
+  res.status(200).send('OK');
 });
 ```
 
@@ -211,30 +208,28 @@ Poll an email inbox for new magic link emails:
 
 ```javascript node.js
 import Imap from 'imap';
-import {
-    simpleParser
-} from 'mailparser';
+import { simpleParser } from 'mailparser';
 
 async function pollForMagicLink(imapConfig, timeout = 120000) {
-    const startTime = Date.now();
+  const startTime = Date.now();
 
-    while (Date.now() - startTime < timeout) {
-        const emails = await fetchUnreadEmails(imapConfig);
+  while (Date.now() - startTime < timeout) {
+    const emails = await fetchUnreadEmails(imapConfig);
 
-        for (const email of emails) {
-            const magicLink = extractMagicLink(email.html);
-            if (magicLink) {
-                await client.events.signal('magic_link', {
-                    data: {
-                        url: magicLink
-                    },
-                });
-                return;
-            }
-        }
-
-        await new Promise((resolve) => setTimeout(resolve, 5000)); // Poll every 5 seconds
+    for (const email of emails) {
+      const magicLink = extractMagicLink(email.html);
+      if (magicLink) {
+        await client.events.signal('magic_link', {
+          data: {
+            url: magicLink,
+          },
+        });
+        return;
+      }
     }
+
+    await new Promise((resolve) => setTimeout(resolve, 5000)); // Poll every 5 seconds
+  }
 }
 ```
 
