@@ -77,42 +77,28 @@ After starting an async task, you'll receive a `workflow_id` in the response. Us
 <CodeGroup>
 
 ```javascript node.js
-const statusResponse = await fetch(
-  `https://api.anchorbrowser.io/v1/tools/perform-web-task/${workflowId}/status`,
-  {
-    headers: {
-      'anchor-api-key': process.env.ANCHORBROWSER_API_KEY
-    }
-  }
-);
-
-const statusData = await statusResponse.json();
+const statusResponse = await anchorClient.tools.getPerformWebTaskStatus(workflowId);
 
 // Status can be: 'RUNNING', 'COMPLETED', or 'FAILED'
-if (statusData.data.status === 'COMPLETED') {
-  console.log('Result:', statusData.data.result);
-} else if (statusData.data.status === 'FAILED') {
-  console.error('Error:', statusData.data.error);
+if (statusResponse.data.status === 'RUNNING') {
+    console.log('Still running...');
+} else if (statusResponse.data.status === 'COMPLETED') {
+    console.log('Result:', statusResponse.data.result);
+} else if (statusResponse.data.status === 'FAILED') {
+    console.error('Error:', statusResponse.data.error);
 }
 ```
 
 ```python python
-import requests
-
-status_response = requests.get(
-    f'https://api.anchorbrowser.io/v1/tools/perform-web-task/{workflow_id}/status',
-    headers={
-        'anchor-api-key': os.environ.get('ANCHORBROWSER_API_KEY')
-    }
-)
-
-status_data = status_response.json()
+status_response = anchor_client.tools.get_perform_web_task_status(workflow_id)
 
 # Status can be: 'RUNNING', 'COMPLETED', or 'FAILED'
-if status_data['data']['status'] == 'COMPLETED':
-    print('Result:', status_data['data']['result'])
-elif status_data['data']['status'] == 'FAILED':
-    print('Error:', status_data['data']['error'])
+if status_response['data']['status'] == 'RUNNING':
+    print('Still running...')
+elif status_response['data']['status'] == 'COMPLETED':
+    print('Result:', status_response['data']['result'])
+elif status_response['data']['status'] == 'FAILED':
+    print('Error:', status_response['data']['error'])
 ```
 
 </CodeGroup>
