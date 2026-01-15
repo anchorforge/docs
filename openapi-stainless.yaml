@@ -2836,6 +2836,65 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /v1/tools/perform-web-task/{workflowId}/status:
+    get:
+      summary: Get Perform Web Task Status
+      description: Get the status of an asynchronous perform-web-task execution by workflow ID.
+      tags:
+        - AI Tools
+      security:
+        - api_key_header: []
+      parameters:
+        - in: path
+          name: workflowId
+          required: true
+          schema:
+            type: string
+          description: The workflow ID returned when starting an asynchronous perform-web-task execution.
+      responses:
+        '200':
+          description: The current status of the task execution.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PerformWebTaskStatusResponseSchema'
+              examples:
+                completed:
+                  summary: Completed workflow
+                  value:
+                    data:
+                      status: "COMPLETED"
+                      result:
+                        nodes_cpu_usage:
+                          - node: "pool-e1ro5g0nq-559g5"
+                            cluster: "do-nyc1-demo-infra"
+                            cpu_avg_percentage: 8.29
+                          - node: "pool-e1ro5g0nq-559gk"
+                            cluster: "do-nyc1-demo-infra"
+                            cpu_avg_percentage: 24.8
+                running:
+                  summary: Running workflow
+                  value:
+                    data:
+                      status: "RUNNING"
+                failed:
+                  summary: Failed workflow
+                  value:
+                    data:
+                      status: "FAILED"
+                      error: "Maximum number of steps exceeded"
+        '400':
+          description: Invalid request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /v1/tools/screenshot:
     post:
       summary: Screenshot Webpage
@@ -5612,6 +5671,51 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
           description: Failed to retrieve task executions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/task/{taskId}/executions/{executionId}:
+    get:
+      summary: Get Task Execution Result
+      description: |
+        Retrieves a single execution result by its ID. This endpoint is useful for polling
+        execution status in async mode or retrieving detailed execution information.
+      security:
+        - api_key_header: []
+      tags:
+        - Tasks
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          description: The ID of the task
+          schema:
+            type: string
+            format: uuid
+        - name: executionId
+          in: path
+          required: true
+          description: The ID of the execution result
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Execution result retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskExecutionResultResponse'
+        '404':
+          description: Task or execution result not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Failed to retrieve execution result
           content:
             application/json:
               schema:
