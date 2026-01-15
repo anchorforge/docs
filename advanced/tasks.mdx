@@ -15,9 +15,9 @@ The Tasks API enables you to **create, version, and execute reusable browser aut
   
 />
 
-<Info>
+<Note>
 Tasks are executed in a secure sandbox environment and can access the full Anchor Browser API for automation capabilities.
-</Info>
+</Note>
 
 ## Creating Your First Task
 
@@ -28,9 +28,9 @@ For reliable execution, **follow these guidelines:**
  - **Export** a single **default async function.**
  - In that function, **return** whatever your workflow requires as **output** (e.g., status, messages, domain data).
 
-<Info>
+<Note>
 Tasks can receive values as inputs. **All input names must be prefixed with `ANCHOR_`**
-</Info>
+</Note>
 
 ### Basic Task Example
 
@@ -231,7 +231,7 @@ console.log('Task execution started:', execution.data);
 execution = client.task.run(
     task_id=task_id,
     version="1",
-    async=True,  # Enable async execution
+    async_=True,  # Enable async execution
     inputs={
         "ANCHOR_TARGET_URL": "https://example.com",
         "ANCHOR_MAX_PAGES": "10"
@@ -390,7 +390,7 @@ def wait_for_task_completion(task_id: str, max_attempts: int = 60):
 execution = client.task.run(
     task_id=task_id,
     version="1",
-    async=True,
+    async_=True,
     inputs={"ANCHOR_TARGET_URL": "https://example.com"}
 )
 
