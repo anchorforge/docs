@@ -604,6 +604,62 @@ components:
               type: string
               description: The outcome or answer produced by the autonomous task.
 
+    PerformWebTaskStatusSuccessResponseData:
+      type: object
+      title: success
+      properties:
+        status:
+          type: string
+          enum:
+            - COMPLETED
+          description: The workflow has completed successfully.
+        result:
+          type: object
+          description: The outcome or answer produced by the autonomous task.
+      required:
+        - status
+        - result
+
+    PerformWebTaskStatusRunningResponseData:
+      type: object
+      title: running
+      properties:
+        status:
+          type: string
+          enum:
+            - RUNNING
+          description: The workflow is currently running.
+      required:
+        - status
+
+    PerformWebTaskStatusFailedResponseData:
+      type: object
+      title: failed
+      properties:
+        status:
+          type: string
+          enum:
+            - FAILED
+          description: The workflow has failed.
+        error:
+          type: string
+          description: Error message describing why the workflow failed.
+      required:
+        - status
+        - error
+
+    PerformWebTaskStatusResponseSchema:
+      type: object
+      properties:
+        data:
+          type: object
+          oneOf:
+            - $ref: '#/components/schemas/PerformWebTaskStatusSuccessResponseData'
+            - $ref: '#/components/schemas/PerformWebTaskStatusRunningResponseData'
+            - $ref: '#/components/schemas/PerformWebTaskStatusFailedResponseData'
+      required:
+        - data
+
     ScreenshotRequestSchema:
       type: object
       properties:
@@ -1955,6 +2011,12 @@ components:
           nullable: true
           description: Execution duration in milliseconds
       required: [id, taskVersionId, version, status, startTime]
+
+    TaskExecutionResultResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/TaskExecutionResult'
 
     CreateTaskRequest:
       type: object
