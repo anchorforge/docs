@@ -1,11 +1,245 @@
 ---
 title: "Async Perform Web Task"
-description: "Run perform-web-task asynchronously by wrapping it in a Task"
+description: "Run perform-web-task asynchronously and poll for results"
 icon: 'clock'
 ---
 
 ## Overview
+For long `perform-web-task` flows, or parallel execution, async execution is available. This allows you to run the agent prompt asynchronously and poll for results later.
 
+## Basic Usage
+
+To run `perform-web-task` asynchronously, set the `async` parameter to `true` in your request. The API will return immediately with a `workflow_id` that you can use to poll for results.
+
+<CodeGroup>
+
+```javascript node.js
+import Anchorbrowser from 'anchorbrowser';
+
+const anchorClient = new Anchorbrowser({
+apiKey: process.env.ANCHORBROWSER_API_KEY
+});
+
+// Start async task
+const response = await anchorClient.tools.performWebTask({
+prompt: 'Extract the main heading and first paragraph from the page',
+url: 'https://docs.anchorbrowser.io',
+async: true
+});
+
+console.log('Workflow ID:', response.data.workflow_id);
+console.log('Status:', response.data.status);
+```
+
+```python python
+from anchorbrowser import Anchorbrowser
+import os
+
+anchor_client = Anchorbrowser(api_key=os.environ.get("ANCHORBROWSER_API_KEY"))
+
+# Start async task
+response = anchor_client.tools.perform_web_task(
+    prompt='Extract the main heading and first paragraph from the page',
+    url='https://docs.anchorbrowser.io',
+    async_=True
+)
+
+print('Workflow ID:', response.data.workflow_id)
+print('Status:', response.data.status)
+```
+
+</CodeGroup>
+
+## Parameters
+
+The async `perform-web-task` accepts the following parameters:
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `prompt` | string | Yes | The task to be autonomously completed |
+| `url` | string | No | The URL of the webpage. If not provided, the tool will use the current page in the session |
+| `sessionId` | string | No | An optional browser session identifier to reference an existing running browser session. When passed, the tool will be executed on the provided browser session |
+| `async` | boolean | No | Whether to run the task asynchronously. If `true`, the task will be run asynchronously and the response will include a workflow ID. Defaults to `false` |
+| `agent` | string | No | The AI agent to use for task completion. Options: `browser-use` (default), `openai-cua`, `gemini-computer-use`, `anthropic-cua` |
+| `provider` | string | No | The AI provider to use for task completion. Options: `openai`, `gemini`, `groq`, `azure`, `xai` |
+| `model` | string | No | The specific model to use for task completion. See [Available Models](/agentic-browser-control/ai-task-completion#available-models) for more information |
+| `detect_elements` | boolean | No | Enable element detection for better interaction accuracy. Improves the agent's ability to identify and interact with UI elements |
+| `human_intervention` | boolean | No | Allow human intervention during task execution. When enabled, the agent can request human input for ambiguous situations |
+| `max_steps` | integer | No | Maximum number of steps the agent can take to complete the task. Defaults to `200` |
+| `secret_values` | object | No | Secret values to pass to the agent for secure credential handling. Keys and values are passed as environment variables to the agent |
+| `highlight_elements` | boolean | No | Whether to highlight elements during task execution for better visibility |
+| `output_schema` | object | No | JSON Schema defining the expected structure of the output data |
+
+## Polling for Results
+
+After starting an async task, you'll receive a `workflow_id` in the response. Use this ID to poll the status endpoint until the task completes.
+
+### Status Endpoint
+
+<CodeGroup>
+
+```javascript node.js
+const statusResponse = await fetch(
+  `https://api.anchorbrowser.io/v1/tools/perform-web-task/${workflowId}/status`,
+  {
+    headers: {
+      'anchor-api-key': process.env.ANCHORBROWSER_API_KEY
+    }
+  }
+);
+
+const statusData = await statusResponse.json();
+
+// Status can be: 'RUNNING', 'COMPLETED', or 'FAILED'
+if (statusData.data.status === 'COMPLETED') {
+  console.log('Result:', statusData.data.result);
+} else if (statusData.data.status === 'FAILED') {
+  console.error('Error:', statusData.data.error);
+}
+```
+
+```python python
+import requests
+
+status_response = requests.get(
+    f'https://api.anchorbrowser.io/v1/tools/perform-web-task/{workflow_id}/status',
+    headers={
+        'anchor-api-key': os.environ.get('ANCHORBROWSER_API_KEY')
+    }
+)
+
+status_data = status_response.json()
+
+# Status can be: 'RUNNING', 'COMPLETED', or 'FAILED'
+if status_data['data']['status'] == 'COMPLETED':
+    print('Result:', status_data['data']['result'])
+elif status_data['data']['status'] == 'FAILED':
+    print('Error:', status_data['data']['error'])
+```
+
+</CodeGroup>
+
+### Response Statuses
+
+- **`RUNNING`**: The workflow is currently executing
+- **`COMPLETED`**: The workflow has completed. The `result` field contains the task output as a string. For successful executions, this will be a plain string with the task result. For errors, this will be a JSON string like `"{\"error\": \"Agent execution failed\", \"result\": null}"`
+- **`FAILED`**: The workflow has failed. The `error` field contains the error message
+
+## Complete Example
+
+<CodeGroup>
+
+```javascript node.js
+import Anchorbrowser from 'anchorbrowser';
+
+(async () => {
+  const anchorClient = new Anchorbrowser({
+    apiKey: process.env.ANCHORBROWSER_API_KEY
+  });
+
+  // Start multiple async tasks in parallel
+  const responses = await Promise.all([
+    anchorClient.tools.performWebTask({
+      prompt: 'Extract the main heading',
+      url: 'https://docs.anchorbrowser.io',
+      async: true
+    }),
+    anchorClient.tools.performWebTask({
+      prompt: 'Get the first paragraph',
+      url: 'https://example.com',
+      async: true
+    })
+  ]);
+
+  const workflowIds = responses.map(response => response.data.workflow_id);
+  console.log('Started', workflowIds.length, 'tasks');
+
+  // Poll all tasks
+  const results = await Promise.all(
+    workflowIds.map(async (workflowId) => {
+      let status = 'RUNNING';
+      while (status === 'RUNNING') {
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        const statusResponse = await fetch(
+          `https://api.anchorbrowser.io/v1/tools/perform-web-task/${workflowId}/status`,
+          {
+            headers: {
+              'anchor-api-key': process.env.ANCHORBROWSER_API_KEY
+            }
+          }
+        );
+
+        const statusData = await statusResponse.json();
+        status = statusData.data.status;
+
+        if (status === 'COMPLETED') {
+          return statusData.data.result;
+        } else if (status === 'FAILED') {
+          throw new Error(statusData.data.error);
+        }
+      }
+    })
+  );
+
+  console.log('All tasks completed:', results);
+})();
+```
+
+```python python
+from anchorbrowser import Anchorbrowser
+import os
+import time
+import requests
+
+anchor_client = Anchorbrowser(api_key=os.environ.get("ANCHORBROWSER_API_KEY"))
+
+# Start multiple async tasks in parallel
+responses = [
+    anchor_client.tools.perform_web_task(
+        prompt='Extract the main heading',
+        url='https://docs.anchorbrowser.io',
+        async_=True
+    ),
+    anchor_client.tools.perform_web_task(
+        prompt='Get the first paragraph',
+        url='https://example.com',
+        async_=True
+    )
+]
+
+workflow_ids = [response.data.workflow_id for response in responses]
+print('Started', len(workflow_ids), 'tasks')
+
+# Poll all tasks
+results = []
+for workflow_id in workflow_ids:
+    status = 'RUNNING'
+    while status == 'RUNNING':
+        time.sleep(2)
+
+        status_response = requests.get(
+            f'https://api.anchorbrowser.io/v1/tools/perform-web-task/{workflow_id}/status',
+            headers={
+                'anchor-api-key': os.environ.get('ANCHORBROWSER_API_KEY')
+            }
+        )
+
+        status_data = status_response.json()
+        status = status_data['data']['status']
+
+        if status == 'COMPLETED':
+            results.append(status_data['data']['result'])
+            break
+        elif status == 'FAILED':
+            raise Exception(status_data['data']['error'])
+
+print('All tasks completed:', results)
+```
+
+</CodeGroup>
+
+<Expandable title='Encapsulate perform-web-task in a Task'>
 A common pattern is to wrap the `perform-web-task` endpoint inside a [Task](/advanced/tasks) for async execution. This allows you to run AI-powered web tasks asynchronously and poll for results later.
 
 <Note>
@@ -20,70 +254,68 @@ The following example creates a task that calls `perform-web-task`, deploys it, 
 ```javascript node.js
 import axios from 'axios';
 
-(async () => {
-  const asyncPerformWebTask = async ({ name, prompt, url, sessionId }) => {
-    const apiKey = process.env.ANCHOR_API_KEY;
+const asyncPerformWebTask = async ({ name, prompt, url, sessionId }) => {
+  const apiKey = process.env.ANCHOR_API_KEY;
 
-    const taskCode = `export default async function run() {
-      const res = await fetch('https://api.anchorbrowser.io/v1/tools/perform-web-task' + (process.env.ANCHOR_SESSION_ID ? '?sessionId=' + process.env.ANCHOR_SESSION_ID : ''), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'anchor-api-key': process.env.ANCHOR_API_KEY },
-        body: JSON.stringify({ prompt: process.env.ANCHOR_PROMPT, url: process.env.ANCHOR_URL }),
-      });
-      const data = await res.json();
-      return { success: true, result: data.data?.result || data.data || data };
-    }`;
-
-    // Create the task
-    const createRes = await axios.post('https://api.anchorbrowser.io/v1/task', 
-      { name, language: 'typescript' }, 
-      { headers: { 'anchor-api-key': apiKey } }
-    );
-    const taskId = createRes.data.data.id;
-
-    // Deploy the task with the code
-    const deployRes = await axios.post(`https://api.anchorbrowser.io/v1/task/${taskId}/deploy`, {
-      code: Buffer.from(taskCode).toString('base64'),
-    }, { headers: { 'anchor-api-key': apiKey } });
-
-    // Run the task asynchronously
-    const runRes = await axios.post('https://api.anchorbrowser.io/v1/task/run', {
-      taskId,
-      version: deployRes.data.data.version,
-      async: true,
-      inputs: { 
-        ANCHOR_API_KEY: apiKey, 
-        ANCHOR_PROMPT: prompt, 
-        ...(sessionId && { ANCHOR_SESSION_ID: sessionId }), 
-        ...(url && { ANCHOR_URL: url }) 
-      },
-    }, { headers: { 'anchor-api-key': apiKey } });
-
-    return runRes.data.data;
-  };
-
-  const getTaskResult = async (taskId, executionResultId) => {
-    const res = await axios.get(`https://api.anchorbrowser.io/v1/task/${taskId}/executions/${executionResultId}`, {
-      headers: { 'anchor-api-key': process.env.ANCHOR_API_KEY },
+  const taskCode = `export default async function run() {
+    const res = await fetch('https://api.anchorbrowser.io/v1/tools/perform-web-task' + (process.env.ANCHOR_SESSION_ID ? '?sessionId=' + process.env.ANCHOR_SESSION_ID : ''), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'anchor-api-key': process.env.ANCHOR_API_KEY },
+      body: JSON.stringify({ prompt: process.env.ANCHOR_PROMPT, url: process.env.ANCHOR_URL }),
     });
-    return res.data;
-  };
+    const data = await res.json();
+    return { success: true, result: data.data?.result || data.data || data };
+  }`;
 
-  // Start the async task
-  const taskData = await asyncPerformWebTask({
-    name: "get-first-paragraph",
-    prompt: "Get the first paragraph of the page",
-    url: "https://docs.anchorbrowser.io",
+  // Create the task
+  const createRes = await axios.post('https://api.anchorbrowser.io/v1/task', 
+    { name, language: 'typescript' }, 
+    { headers: { 'anchor-api-key': apiKey } }
+  );
+  const taskId = createRes.data.data.id;
+
+  // Deploy the task with the code
+  const deployRes = await axios.post(`https://api.anchorbrowser.io/v1/task/${taskId}/deploy`, {
+    code: Buffer.from(taskCode).toString('base64'),
+  }, { headers: { 'anchor-api-key': apiKey } });
+
+  // Run the task asynchronously
+  const runRes = await axios.post('https://api.anchorbrowser.io/v1/task/run', {
+    taskId,
+    version: deployRes.data.data.version,
+    async: true,
+    inputs: { 
+      ANCHOR_API_KEY: apiKey, 
+      ANCHOR_PROMPT: prompt, 
+      ...(sessionId && { ANCHOR_SESSION_ID: sessionId }), 
+      ...(url && { ANCHOR_URL: url }) 
+    },
+  }, { headers: { 'anchor-api-key': apiKey } });
+
+  return runRes.data.data;
+};
+
+const getTaskResult = async (taskId, executionResultId) => {
+  const res = await axios.get(`https://api.anchorbrowser.io/v1/task/${taskId}/executions/${executionResultId}`, {
+    headers: { 'anchor-api-key': process.env.ANCHOR_API_KEY },
   });
+  return res.data;
+};
 
-  console.log("Task started:", taskData);
+// Start the async task
+const taskData = await asyncPerformWebTask({
+  name: "get-first-paragraph",
+  prompt: "Get the first paragraph of the page",
+  url: "https://docs.anchorbrowser.io",
+});
 
-  // Wait for the task to complete (adjust timeout as needed)
-  setTimeout(async () => {
-    const taskResult = await getTaskResult(taskData.taskId, taskData.executionResultId);
-    console.log("Task Result:\n", taskResult);
-  }, 90000);
-})();
+console.log("Task started:", taskData);
+
+// Wait for the task to complete (adjust timeout as needed)
+setTimeout(async () => {
+  const taskResult = await getTaskResult(taskData.taskId, taskData.executionResultId);
+  console.log("Task Result:\n", taskResult);
+}, 90000);
 ```
 </CodeGroup>
 
@@ -111,4 +343,4 @@ The `asyncPerformWebTask` function accepts the following parameters:
 | `sessionId` | string | No | Existing session ID to use instead of creating a new one |
 
 </Expandable>
-
+</Expandable>
