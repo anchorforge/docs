@@ -157,27 +157,17 @@ import Anchorbrowser from 'anchorbrowser';
 
   // Poll all tasks
   const results = await Promise.all(
-    workflowIds.map(async (workflowId) => {
+    workflowIds.map(async (wokflowId) => {
       let status = 'RUNNING';
       while (status === 'RUNNING') {
         await new Promise(resolve => setTimeout(resolve, 2000));
-
-        const statusResponse = await fetch(
-          `https://api.anchorbrowser.io/v1/tools/perform-web-task/${workflowId}/status`,
-          {
-            headers: {
-              'anchor-api-key': process.env.ANCHORBROWSER_API_KEY
-            }
-          }
-        );
-
-        const statusData = await statusResponse.json();
-        status = statusData.data.status;
+        const statusResponse = await anchorClient.tools.getPerformWebTaskStatus(wokflowId);
+        status = statusResponse.data.status;
 
         if (status === 'COMPLETED') {
-          return statusData.data.result;
+          return statusResponse.data.result;
         } else if (status === 'FAILED') {
-          throw new Error(statusData.data.error);
+          throw new Error(statusResponse.data.error);
         }
       }
     })
@@ -219,21 +209,14 @@ for workflow_id in workflow_ids:
     while status == 'RUNNING':
         time.sleep(2)
 
-        status_response = requests.get(
-            f'https://api.anchorbrowser.io/v1/tools/perform-web-task/{workflow_id}/status',
-            headers={
-                'anchor-api-key': os.environ.get('ANCHORBROWSER_API_KEY')
-            }
-        )
-
-        status_data = status_response.json()
-        status = status_data['data']['status']
+        status_response = anchor_client.tools.get_perform_web_task_status(workflow_id)
+        status = status_response['data']['status']
 
         if status == 'COMPLETED':
-            results.append(status_data['data']['result'])
+            results.append(status_response['data']['result'])
             break
         elif status == 'FAILED':
-            raise Exception(status_data['data']['error'])
+            raise Exception(status_response['data']['error'])
 
 print('All tasks completed:', results)
 ```
