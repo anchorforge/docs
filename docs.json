@@ -116,6 +116,7 @@
               "advanced/cloudflare-web-bot-auth",
               "integrations/n8n",
               "integrations/make",
+              "integrations/zapier",
               "agent-frameworks/crewai",
               "agent-frameworks/langchain",
               "agent-frameworks/custom-agent-framework",
