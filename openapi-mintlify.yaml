@@ -220,6 +220,12 @@ components:
           type: string
           format: uri
           description: The URL to navigate to when the browser session starts. If not provided, the browser will load an empty page.
+        tags:
+          type: array
+          items:
+            type: string
+          description: Custom labels to categorize and identify browser sessions. Useful for filtering, organizing, and tracking sessions across your workflows.
+          example: ["production", "scraping", "customer-123"]
         recording:
           type: object
           description: Configuration for session recording.
@@ -432,6 +438,11 @@ components:
         status:
           type: string
           description: Current status of the browser session
+        tags:
+          type: array
+          items:
+            type: string
+          description: Custom labels assigned to this browser session
         created_at:
           type: string
           format: date-time
