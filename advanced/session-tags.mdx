@@ -1,0 +1,169 @@
+---
+title: 'Session Tags'
+description: 'Organize and track browser sessions with custom labels'
+icon: 'tags'
+---
+
+### Categorizing Browser Sessions
+
+Session tags allow you to add custom labels to your browser sessions, making it easier to organize, filter, and track sessions across your workflows. Tags are simple strings that you can use to categorize sessions by project, environment, customer, or any other criteria relevant to your use case.
+
+For the full list of available options, view the [interactive API documentation](/api-reference/browser-sessions).
+
+### Common Use Cases
+
+Tags are particularly useful for:
+
+- **Environment tracking**: Label sessions as `production`, `staging`, or `development`
+- **Customer attribution**: Tag sessions with customer IDs like `customer-12345`
+- **Project organization**: Group sessions by project name or feature
+- **Workflow identification**: Mark sessions for specific automation tasks like `scraping`, `testing`, or `data-extraction`
+- **Cost allocation**: Track resource usage across teams or departments
+
+### Adding Tags to Sessions
+
+You can add tags when creating a new browser session by including the `tags` array in your session configuration. Each tag is a simple string value.
+
+<CodeGroup>
+
+```javascript node.js
+import AnchorBrowser from 'anchorbrowser';
+
+(async () => {
+  const anchor_client = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
+  
+  const session = await anchor_client.sessions.create({
+    session: {
+      tags: ["production", "scraping", "customer-12345"]
+    }
+  });
+  
+  console.log("Session created with tags:", session.data.id);
+})().catch(console.error);
+```
+
+```python python
+import os
+from anchorbrowser import Anchorbrowser
+
+anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
+
+session = anchor_client.sessions.create(
+    session={
+        "tags": ["production", "scraping", "customer-12345"]
+    }
+)
+
+print("Session created with tags:", session.data.id)
+```
+
+```bash cURL
+curl -X POST https://api.anchorbrowser.io/v1/sessions \
+  -H "anchor-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "session": {
+      "tags": ["production", "scraping", "customer-12345"]
+    }
+  }'
+```
+
+</CodeGroup>
+
+### Combining with Other Configuration
+
+Tags can be combined with any other session configuration options:
+
+<CodeGroup>
+
+```javascript node.js
+import AnchorBrowser from 'anchorbrowser';
+
+(async () => {
+  const anchor_client = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
+  
+  const session = await anchor_client.sessions.create({
+    session: {
+      tags: ["production", "web-scraping"],
+      initial_url: "https://example.com",
+      proxy: {
+        active: true,
+        type: "anchor_residential",
+        country_code: "us"
+      },
+      timeout: {
+        max_duration: 30,
+        idle_timeout: 5
+      }
+    }
+  });
+  
+  console.log("Session created:", session.data.id);
+})().catch(console.error);
+```
+
+```python python
+import os
+from anchorbrowser import Anchorbrowser
+
+anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
+
+session = anchor_client.sessions.create(
+    session={
+        "tags": ["production", "web-scraping"],
+        "initial_url": "https://example.com",
+        "proxy": {
+            "active": True,
+            "type": "anchor_residential",
+            "country_code": "us"
+        },
+        "timeout": {
+            "max_duration": 30,
+            "idle_timeout": 5
+        }
+    }
+)
+
+print("Session created:", session.data.id)
+```
+
+</CodeGroup>
+
+### Viewing Tags
+
+When you retrieve session information, the tags will be included in the response:
+
+<CodeGroup>
+
+```javascript node.js
+import AnchorBrowser from 'anchorbrowser';
+
+(async () => {
+  const anchor_client = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
+  
+  const session = await anchor_client.sessions.retrieve("SESSION_ID");
+  
+  console.log("Session tags:", session.data.tags);
+})().catch(console.error);
+```
+
+```python python
+import os
+from anchorbrowser import Anchorbrowser
+
+anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
+
+session = anchor_client.sessions.retrieve("SESSION_ID")
+
+print("Session tags:", session.data.tags)
+```
+
+</CodeGroup>
+
+### Best Practices
+
+- **Keep tags concise**: Use short, descriptive labels that are easy to read and filter
+- **Use consistent naming**: Establish a tagging convention across your team (e.g., kebab-case like `project-name`)
+- **Avoid sensitive data**: Don't include passwords, API keys, or other sensitive information in tags
+- **Limit tag count**: While there's no hard limit, keeping the number of tags reasonable improves organization
+
