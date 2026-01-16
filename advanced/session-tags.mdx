@@ -17,7 +17,7 @@ Tags are particularly useful for:
 - **Environment tracking**: Label sessions as `production`, `staging`, or `development`
 - **Customer attribution**: Tag sessions with customer IDs like `customer-12345`
 - **Project organization**: Group sessions by project name or feature
-- **Workflow identification**: Mark sessions for specific automation tasks like `scraping`, `testing`, or `data-extraction`
+- **Workflow identification**: Mark sessions for specific automation tasks like `form-fill`, `testing`, or `data-extraction`
 - **Cost allocation**: Track resource usage across teams or departments
 
 ### Adding Tags to Sessions
@@ -34,7 +34,7 @@ import AnchorBrowser from 'anchorbrowser';
   
   const session = await anchor_client.sessions.create({
     session: {
-      tags: ["production", "scraping", "customer-12345"]
+      tags: ["production", "form-fill", "customer-12345"]
     }
   });
   
@@ -50,7 +50,7 @@ anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
 
 session = anchor_client.sessions.create(
     session={
-        "tags": ["production", "scraping", "customer-12345"]
+        "tags": ["production", "form-fill", "customer-12345"]
     }
 )
 
@@ -84,11 +84,10 @@ import AnchorBrowser from 'anchorbrowser';
   
   const session = await anchor_client.sessions.create({
     session: {
-      tags: ["production", "web-scraping"],
+      tags: ["production", "checkout-flow"],
       initial_url: "https://example.com",
       proxy: {
         active: true,
-        type: "anchor_residential",
         country_code: "us"
       },
       timeout: {
@@ -110,11 +109,10 @@ anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
 
 session = anchor_client.sessions.create(
     session={
-        "tags": ["production", "web-scraping"],
+        "tags": ["production", "checkout-flow"],
         "initial_url": "https://example.com",
         "proxy": {
             "active": True,
-            "type": "anchor_residential",
             "country_code": "us"
         },
         "timeout": {
