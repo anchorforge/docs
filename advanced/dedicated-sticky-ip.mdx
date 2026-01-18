@@ -6,6 +6,10 @@ icon: 'globe'
 
 A **Dedicated Sticky IP** ensures that a specific profile uses by default the same IP address, reserved exclusively for that profile. This is helpful when IP consistency is required across sessions.
 
+<Note>
+When using a Dedicated Sticky IP, [Extra Stealth](/essentials/stealth) mode is automatically enabled for all sessions using that profile, regardless of your configuration. This ensures optimal stealth capabilities with your dedicated IP.
+</Note>
+
 <Steps>
 <Step title="Enable sticky IP in profile creation">
 Use the [Create Profile API](https://docs.anchorbrowser.io/api-reference/profiles/create-profile?playground=open) to create a profile with a dedicated sticky IP by setting:
@@ -20,7 +24,7 @@ This allocates a dedicated IP that is not shared with other profiles.
 </Step>
 
 <Step title="Start sessions with the reserved IP">
-Any browser session started using this profile will automatically use the reserved sticky IP.
+Any browser session started using this profile will automatically use the reserved sticky IP and Extra Stealth mode.
 </Step>
 
 <Step title="Override the IP with a custom proxy (optional)">
