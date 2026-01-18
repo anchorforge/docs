@@ -2879,6 +2879,14 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/PerformWebTaskRequestSchema'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PerformWebTaskRequestSchema'
+            encoding:
+              output_schema:
+                contentType: application/json
+              secret_values:
+                contentType: application/json
       responses:
         '200':
           description: The result of the autonomous task.
