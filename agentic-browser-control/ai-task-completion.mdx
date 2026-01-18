@@ -42,7 +42,7 @@ const response = await anchorClient.agent.task(
       detectElements: true,                       // Improves the agent's ability to identify and interact with UI elements
       maxSteps: 40,                               // Maximum number of steps the agent can take
       agent: 'browser-use',                       // browser-use (default), openai-cua, or gemini-computer-use
-      provider: 'openai',                         // For browser-use agent only, openai, gemini, groq, azure, xai, anthropic
+      provider: 'openai',                         // For browser-use agent only, openai, gemini, groq, azure, xai
       model: 'gpt-5',                             // For browser-use agent only, see model list below
       extendedSystemMessage: 'Focus on extracting the main heading from the page',
       secretValues: {                             // Secret values to pass to the agent for secure credential handling
@@ -69,7 +69,7 @@ response = anchor_client.agent.task(
         detect_elements=True,                      # Improves the agent's ability to identify and interact with UI elements
         max_steps=40,                              # Maximum number of steps the agent can take
         agent='browser-use',                       # browser-use (default), openai-cua, or gemini-computer-use
-        provider='openai',                           # For browser-use agent only, openai, gemini, groq, azure, xai, anthropic
+        provider='openai',                           # For browser-use agent only, openai, gemini, groq, azure, xai
         model='gpt-5',               # For browser-use agent only, see model list below
         extended_system_message='Focus on extracting the main heading from the page',
         secret_values={                            # Secret values to pass to the agent for secure credential handling
@@ -224,7 +224,7 @@ The AI agent can be configured with the following parameters:
 - **agent** (string): AI agent to use (`browser-use`, `openai-cua`, `gemini-computer-use`). Defaults to `browser-use`.
 - **secret_values** (object): Secret values to pass to the agent for secure credential handling.
 - **human_intervention** (boolean): Allow human intervention during task execution.
-- **provider** (string): AI provider to use (`openai`, `gemini`, `groq`, `azure`, `xai`, `anthropic`).
+- **provider** (string): AI provider to use (`openai`, `gemini`, `groq`, `azure`, `xai`).
 - **model** (string): Specific model to use (see [Available Models](#available-models) below).
 - **url** (string): Target URL to navigate to before executing the task.
 - **output_schema** (object): JSON Schema defining the expected structure of the output data.
@@ -283,15 +283,6 @@ The AI agent can be configured with the following parameters:
         <div>o3</div>
         <div>o3-mini</div>
         <div>o1</div>
-      </div>
-    </Tab>
-
-    <Tab title="Anthropic">
-      <div className="grid grid-cols-3 gap-2">
-        <div>claude-opus-4-5</div>
-        <div>claude-sonnet-4-5</div>
-        <div>claude-opus-4</div>
-        <div>claude-sonnet-4</div>
       </div>
     </Tab>
   </Tabs>

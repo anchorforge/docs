@@ -570,7 +570,6 @@ components:
             - groq
             - azure
             - xai
-            - anthropic
         model:
           type: string
           description: The specific model to use for task completion. see our [models](/agentic-browser-control/ai-task-completion#available-models) page for more information.

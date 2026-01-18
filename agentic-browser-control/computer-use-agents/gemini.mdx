@@ -1,0 +1,123 @@
+---
+title: 'Gemini Computer Use'
+description: 'Use Google Gemini models for screenshot-based browser automation'
+icon: 'sparkles'
+---
+
+Google's Gemini Computer Use agent (`gemini-computer-use`) enables AI-powered browser automation through visual understanding and multi-turn interactions.
+
+## Overview
+
+Gemini Computer Use leverages Google's multimodal AI capabilities to:
+- Process and understand web page screenshots
+- Plan and execute multi-step browser interactions
+- Handle complex visual layouts and dynamic content
+- Integrate with Google's AI ecosystem
+
+## Supported Models
+
+| Model | Model ID | Context Window | Best For |
+|-------|----------|----------------|----------|
+| Gemini 3 Pro Preview | `gemini-3-pro-preview` | 1M tokens | Most capable, complex reasoning |
+| Gemini 3 Flash Preview | `gemini-3-flash-preview` | 1M tokens | Fast responses, general tasks |
+| Gemini 2.5 Pro | `gemini-2.5-pro` | 1M tokens | Advanced multimodal understanding |
+| Gemini 2.5 Flash | `gemini-2.5-flash` | 1M tokens | Quick automation tasks |
+| Gemini 2.0 Flash | `gemini-2.0-flash` | 1M tokens | Balanced speed and capability |
+
+## Code Example
+
+<CodeGroup>
+
+```javascript node.js
+import Anchorbrowser from 'anchorbrowser';
+
+const anchorClient = new Anchorbrowser({
+  apiKey: process.env.ANCHORBROWSER_API_KEY
+});
+
+const response = await anchorClient.agent.task(
+  'Search for the latest AI news and summarize the top 3 articles',
+  {
+    taskOptions: {
+      url: 'https://news.google.com',
+      agent: 'gemini-computer-use',
+      model: 'gemini-2.5-flash',
+      maxSteps: 25,
+      outputSchema: {
+        type: 'object',
+        properties: {
+          articles: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                title: { type: 'string' },
+                summary: { type: 'string' },
+                source: { type: 'string' }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+);
+
+console.log(response);
+```
+
+```python python
+from anchorbrowser import Anchorbrowser
+import os
+
+anchor_client = Anchorbrowser(api_key=os.environ.get("ANCHORBROWSER_API_KEY"))
+
+response = anchor_client.agent.task(
+    'Search for the latest AI news and summarize the top 3 articles',
+    task_options={
+        'url': 'https://news.google.com',
+        'agent': 'gemini-computer-use',
+        'model': 'gemini-2.5-flash',
+        'max_steps': 25,
+        'output_schema': {
+            'type': 'object',
+            'properties': {
+                'articles': {
+                    'type': 'array',
+                    'items': {
+                        'type': 'object',
+                        'properties': {
+                            'title': {'type': 'string'},
+                            'summary': {'type': 'string'},
+                            'source': {'type': 'string'}
+                        }
+                    }
+                }
+            }
+        }
+    }
+)
+
+print(response)
+```
+
+</CodeGroup>
+
+## Configuration Options
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `agent` | string | Must be `gemini-computer-use` |
+| `model` | string | Gemini model to use (see supported models above) |
+| `url` | string | Starting URL for the task |
+| `max_steps` | integer | Maximum actions the agent can take (default: 40) |
+| `secret_values` | object | Secure credentials passed to the agent |
+| `output_schema` | object | JSON Schema for structured output |
+
+## Best Practices
+
+- **Use Gemini 2.5 Flash** for most tasks - excellent speed with strong capabilities
+- **Use Gemini 3 Pro** for complex workflows requiring deep reasoning
+- **Leverage structured output** with `output_schema` for reliable data extraction
+- **Take advantage of the 1M token context** for long-running sessions
+
