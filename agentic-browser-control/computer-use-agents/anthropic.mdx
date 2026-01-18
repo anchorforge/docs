@@ -16,12 +16,12 @@ Anthropic Computer Use (`anthropic-cua`) leverages Claude's vision and reasoning
 
 ## Supported Models
 
-| Model | Model ID | Context Window | Best For |
-|-------|----------|----------------|----------|
-| Claude Opus 4.5 | `claude-opus-4-5` | 200K tokens | Most advanced reasoning, complex workflows |
-| Claude Sonnet 4.5 | `claude-sonnet-4-5` | 200K tokens | Balanced performance, general automation |
-| Claude Opus 4 | `claude-opus-4` | 200K tokens | Advanced coding and agentic tasks |
-| Claude Sonnet 4 | `claude-sonnet-4` | 200K tokens | Fast, reliable automation |
+| Model | Model ID | Best For |
+|-------|----------|----------|
+| Claude Opus 4.5 | `claude-opus-4-5` | Most advanced reasoning, complex workflows **(default)** |
+| Claude Sonnet 4.5 | `claude-sonnet-4-5` | Balanced performance, general automation |
+| Claude Opus 4 | `claude-opus-4` | Advanced coding and agentic tasks |
+| Claude Sonnet 4 | `claude-sonnet-4` | Fast, reliable automation |
 
 ## Code Example
 
@@ -35,17 +35,13 @@ const anchorClient = new Anchorbrowser({
 });
 
 const response = await anchorClient.agent.task(
-  'Navigate to GitHub and star the anchorbrowser repository',
+  'Navigate to GitHub and find the anchorbrowser repository',
   {
     taskOptions: {
       url: 'https://github.com',
       agent: 'anthropic-cua',
-      model: 'claude-sonnet-4-5',
-      maxSteps: 30,
-      secretValues: {
-        GITHUB_USERNAME: process.env.GITHUB_USERNAME,
-        GITHUB_PASSWORD: process.env.GITHUB_PASSWORD
-      }
+      // model: 'claude-opus-4-5',      // Default model
+      maxSteps: 30
     }
   }
 );
@@ -60,16 +56,12 @@ import os
 anchor_client = Anchorbrowser(api_key=os.environ.get("ANCHORBROWSER_API_KEY"))
 
 response = anchor_client.agent.task(
-    'Navigate to GitHub and star the anchorbrowser repository',
+    'Navigate to GitHub and find the anchorbrowser repository',
     task_options={
         'url': 'https://github.com',
         'agent': 'anthropic-cua',
-        'model': 'claude-sonnet-4-5',
-        'max_steps': 30,
-        'secret_values': {
-            'GITHUB_USERNAME': os.environ.get('GITHUB_USERNAME'),
-            'GITHUB_PASSWORD': os.environ.get('GITHUB_PASSWORD')
-        }
+        # 'model': 'claude-opus-4-5',      # Default model
+        'max_steps': 30
     }
 )
 
@@ -83,16 +75,14 @@ print(response)
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `agent` | string | Must be `anthropic-cua` |
-| `model` | string | Claude model to use (see supported models above) |
+| `model` | string | Claude model to use (default: `claude-opus-4-5`) |
 | `url` | string | Starting URL for the task |
 | `max_steps` | integer | Maximum actions the agent can take (default: 40) |
-| `secret_values` | object | Secure credentials passed to the agent |
 | `output_schema` | object | JSON Schema for structured output |
 
 ## Best Practices
 
-- **Use Sonnet 4.5** for most automation tasks - it offers the best balance of speed and accuracy
-- **Use Opus 4.5** for complex multi-step workflows requiring advanced reasoning
+- **Opus 4.5 is the default** - most capable model for complex workflows
+- **Use Sonnet 4.5** for faster automation when speed is important
 - **Provide clear, specific prompts** describing the exact task to complete
-- **Use secret_values** for any credentials - never include them in the prompt
 
