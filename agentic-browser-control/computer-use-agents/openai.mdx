@@ -1,0 +1,110 @@
+---
+title: 'OpenAI Computer Use'
+description: 'Use OpenAI models with computer use capabilities for browser automation'
+icon: 'brain'
+---
+
+OpenAI's Computer Use Agent (`openai-cua`) leverages GPT models with vision and reasoning capabilities for screenshot-based browser automation.
+
+## Overview
+
+OpenAI Computer Use provides:
+- **Screenshot-based interactions** for visual understanding of web pages
+- **Advanced reasoning** powered by GPT models
+- **High accuracy** for complex web interactions
+- **Structured outputs** for reliable data extraction
+
+## Supported Models
+
+| Model | Model ID | Best For |
+|-------|----------|----------|
+| Computer Use Preview | `computer-use-preview` | Screenshot-based automation **(default)** |
+
+## Code Example
+
+<CodeGroup>
+
+```javascript node.js
+import Anchorbrowser from 'anchorbrowser';
+
+const anchorClient = new Anchorbrowser({
+  apiKey: process.env.ANCHORBROWSER_API_KEY
+});
+
+const response = await anchorClient.agent.task(
+  'Find the pricing information and extract the plan details',
+  {
+    taskOptions: {
+      url: 'https://example.com/pricing',
+      agent: 'openai-cua',
+      // model: 'computer-use-preview',  // Default model
+      maxSteps: 25,
+      outputSchema: {
+        type: 'object',
+        properties: {
+          plans: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                name: { type: 'string' },
+                price: { type: 'string' },
+                features: { type: 'array', items: { type: 'string' } }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+);
+
+console.log(response);
+```
+
+```python python
+from anchorbrowser import Anchorbrowser
+import os
+
+anchor_client = Anchorbrowser(api_key=os.environ.get("ANCHORBROWSER_API_KEY"))
+
+response = anchor_client.agent.task(
+    'Find the pricing information and extract the plan details',
+    task_options={
+        'url': 'https://example.com/pricing',
+        'agent': 'openai-cua',
+        # 'model': 'computer-use-preview',  # Default model
+        'max_steps': 25,
+        'output_schema': {
+            'type': 'object',
+            'properties': {
+                'plans': {
+                    'type': 'array',
+                    'items': {
+                        'type': 'object',
+                        'properties': {
+                            'name': {'type': 'string'},
+                            'price': {'type': 'string'},
+                            'features': {'type': 'array', 'items': {'type': 'string'}}
+                        }
+                    }
+                }
+            }
+        }
+    }
+)
+
+print(response)
+```
+
+</CodeGroup>
+
+## Configuration Options
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `agent` | string | Must be `openai-cua` |
+| `model` | string | OpenAI model to use (default: `computer-use-preview`) |
+| `url` | string | Starting URL for the task |
+| `max_steps` | integer | Maximum actions the agent can take |
+| `output_schema` | object | JSON Schema for structured output |

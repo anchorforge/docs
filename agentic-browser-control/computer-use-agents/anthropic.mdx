@@ -18,10 +18,10 @@ Anthropic Computer Use (`anthropic-cua`) leverages Claude's vision and reasoning
 
 | Model | Model ID | Best For |
 |-------|----------|----------|
-| Claude Opus 4.5 | `claude-opus-4-5` | Most advanced reasoning, complex workflows **(default)** |
-| Claude Sonnet 4.5 | `claude-sonnet-4-5` | Balanced performance, general automation |
-| Claude Opus 4 | `claude-opus-4` | Advanced coding and agentic tasks |
-| Claude Sonnet 4 | `claude-sonnet-4` | Fast, reliable automation |
+| Claude Opus 4.5 | `claude-opus-4-5-20251101` | Most advanced reasoning, complex workflows **(default)** |
+| Claude Sonnet 4.5 | `claude-sonnet-4-5-20250929` | Balanced performance, general automation |
+| Claude Opus 4 | `claude-opus-4-20250514` | Advanced coding and agentic tasks |
+| Claude Sonnet 4 | `claude-sonnet-4-20250514` | Fast, reliable automation |
 
 ## Code Example
 
@@ -40,7 +40,7 @@ const response = await anchorClient.agent.task(
     taskOptions: {
       url: 'https://github.com',
       agent: 'anthropic-cua',
-      // model: 'claude-opus-4-5',      // Default model
+      // model: 'claude-opus-4-5-20251101',  // Default model
       maxSteps: 30
     }
   }
@@ -60,7 +60,7 @@ response = anchor_client.agent.task(
     task_options={
         'url': 'https://github.com',
         'agent': 'anthropic-cua',
-        # 'model': 'claude-opus-4-5',      # Default model
+        # 'model': 'claude-opus-4-5-20251101',  # Default model
         'max_steps': 30
     }
 )
@@ -75,7 +75,7 @@ print(response)
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `agent` | string | Must be `anthropic-cua` |
-| `model` | string | Claude model to use (default: `claude-opus-4-5`) |
+| `model` | string | Claude model to use (default: `claude-opus-4-5-20251101`) |
 | `url` | string | Starting URL for the task |
 | `max_steps` | integer | Maximum actions the agent can take |
 | `output_schema` | object | JSON Schema for structured output |

@@ -61,7 +61,7 @@
                     "pages": [
                       "agentic-browser-control/computer-use-agents/anthropic",
                       "agentic-browser-control/computer-use-agents/gemini",
-                      "agentic-browser-control/computer-use-agents/anchor-agent"
+                      "agentic-browser-control/computer-use-agents/openai"
                     ]
                   }
                 ]

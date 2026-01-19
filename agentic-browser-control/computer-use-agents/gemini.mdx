@@ -18,11 +18,7 @@ Gemini Computer Use leverages Google's multimodal AI capabilities to:
 
 | Model | Model ID | Best For |
 |-------|----------|----------|
-| Gemini 2.5 Flash | `gemini-2.5-flash` | Quick automation tasks **(default)** |
-| Gemini 3 Pro Preview | `gemini-3-pro-preview` | Most capable, complex reasoning |
-| Gemini 3 Flash Preview | `gemini-3-flash-preview` | Fast responses, general tasks |
-| Gemini 2.5 Pro | `gemini-2.5-pro` | Advanced multimodal understanding |
-| Gemini 2.0 Flash | `gemini-2.0-flash` | Balanced speed and capability |
+| Gemini 2.5 Computer Use | `gemini-2.5-computer-use-preview-10-2025` | Screenshot-based automation **(default)** |
 
 ## Code Example
 
@@ -41,7 +37,7 @@ const response = await anchorClient.agent.task(
     taskOptions: {
       url: 'https://news.google.com',
       agent: 'gemini-computer-use',
-      model: 'gemini-2.5-flash',
+      // model: 'gemini-2.5-computer-use-preview-10-2025',  // Default model
       maxSteps: 25,
       outputSchema: {
         type: 'object',
@@ -77,7 +73,7 @@ response = anchor_client.agent.task(
     task_options={
         'url': 'https://news.google.com',
         'agent': 'gemini-computer-use',
-        'model': 'gemini-2.5-flash',
+        # 'model': 'gemini-2.5-computer-use-preview-10-2025',  # Default model
         'max_steps': 25,
         'output_schema': {
             'type': 'object',
@@ -108,14 +104,14 @@ print(response)
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `agent` | string | Must be `gemini-computer-use` |
-| `model` | string | Gemini model to use (default: `gemini-2.5-flash`) |
+| `model` | string | Gemini model to use (default: `gemini-2.5-computer-use-preview-10-2025`) |
 | `url` | string | Starting URL for the task |
 | `max_steps` | integer | Maximum actions the agent can take |
 | `output_schema` | object | JSON Schema for structured output |
 
 ## Best Practices
 
-- **Gemini 2.5 Flash is the default** - excellent speed with strong capabilities
-- **Use Gemini 3 Pro** for complex workflows requiring deep reasoning
+- **gemini-2.5-computer-use-preview is the default** - optimized for screenshot-based automation
 - **Leverage structured output** with `output_schema` for reliable data extraction
+- **Provide clear, specific prompts** describing the exact task to complete
 
