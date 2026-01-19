@@ -1,0 +1,88 @@
+---
+title: 'Anthropic Computer Use'
+description: 'Use Claude models with native computer use capabilities for browser automation'
+icon: 'message-bot'
+---
+
+Anthropic's Claude models with Computer Use capabilities enable AI agents to interact with web browsers through screenshots and native computer control actions.
+
+## Overview
+
+Anthropic Computer Use (`anthropic-cua`) leverages Claude's vision and reasoning capabilities to:
+- Analyze screenshots of web pages
+- Identify interactive elements
+- Execute precise mouse and keyboard actions
+- Complete complex multi-step workflows
+
+## Supported Models
+
+| Model | Model ID | Best For |
+|-------|----------|----------|
+| Claude Opus 4.5 | `claude-opus-4-5-20251101` | Most advanced reasoning, complex workflows **(default)** |
+| Claude Sonnet 4.5 | `claude-sonnet-4-5-20250929` | Balanced performance, general automation |
+| Claude Opus 4 | `claude-opus-4-20250514` | Advanced coding and agentic tasks |
+| Claude Sonnet 4 | `claude-sonnet-4-20250514` | Fast, reliable automation |
+
+## Code Example
+
+<CodeGroup>
+
+```javascript node.js
+import Anchorbrowser from 'anchorbrowser';
+
+const anchorClient = new Anchorbrowser({
+  apiKey: process.env.ANCHORBROWSER_API_KEY
+});
+
+const response = await anchorClient.agent.task(
+  'Navigate to GitHub and find the anchorbrowser repository',
+  {
+    taskOptions: {
+      url: 'https://github.com',
+      agent: 'anthropic-cua',
+      // model: 'claude-opus-4-5-20251101',  // Default model
+      maxSteps: 30
+    }
+  }
+);
+
+console.log(response);
+```
+
+```python python
+from anchorbrowser import Anchorbrowser
+import os
+
+anchor_client = Anchorbrowser(api_key=os.environ.get("ANCHORBROWSER_API_KEY"))
+
+response = anchor_client.agent.task(
+    'Navigate to GitHub and find the anchorbrowser repository',
+    task_options={
+        'url': 'https://github.com',
+        'agent': 'anthropic-cua',
+        # 'model': 'claude-opus-4-5-20251101',  # Default model
+        'max_steps': 30
+    }
+)
+
+print(response)
+```
+
+</CodeGroup>
+
+## Configuration Options
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `agent` | string | Must be `anthropic-cua` |
+| `model` | string | Claude model to use (default: `claude-opus-4-5-20251101`) |
+| `url` | string | Starting URL for the task |
+| `max_steps` | integer | Maximum actions the agent can take |
+| `output_schema` | object | JSON Schema for structured output |
+
+## Best Practices
+
+- **Opus 4.5 is the default** - most capable model for complex workflows
+- **Use Sonnet 4.5** for faster automation when speed is important
+- **Provide clear, specific prompts** describing the exact task to complete
+
