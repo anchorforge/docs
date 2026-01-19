@@ -54,7 +54,16 @@
                   "agentic-browser-control/async-perform-web-task",
                   "agentic-browser-control/secret-values",
                   "agentic-browser-control/human-in-the-loop",
-                  "agentic-browser-control/agentic-file-usage"
+                  "agentic-browser-control/agentic-file-usage",
+                  {
+                    "group": "Computer Use Agents",
+                    "icon": "microchip",
+                    "pages": [
+                      "agentic-browser-control/computer-use-agents/anthropic",
+                      "agentic-browser-control/computer-use-agents/gemini",
+                      "agentic-browser-control/computer-use-agents/openai"
+                    ]
+                  }
                 ]
               },
               {
