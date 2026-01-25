@@ -200,6 +200,26 @@ When using stealth mode with captcha solving enabled, you can listen to captcha 
 
 <CodeGroup>
 ```javascript node.js
+import Anchorbrowser from "anchorbrowser";
+
+const anchorClient = new Anchorbrowser();
+
+// Create a session with captcha solving enabled
+const session = await anchorClient.sessions.create({
+  browser: {
+    captcha_solver: { active: true }
+  },
+  session: {
+    proxy: { active: true }
+  }
+});
+
+// Connect to the browser
+const browser = await anchorClient.browser.connect(session.data.id);
+const context = browser.contexts()[0];
+const page = context.pages()[0];
+
+// Create CDP session and listen to captcha events
 const client = await context.newCDPSession(page);
 
 client.on('Captcha.lifecycle', (event) => {
@@ -215,21 +235,48 @@ client.on('Captcha.lifecycle', (event) => {
     console.log(`Captcha failed: ${event.error}`);
   }
 });
+
+// Navigate to a page with captcha
+await page.goto("https://example.com");
 ```
 ```python python
-client = await context.new_cdp_session(page)
+from anchorbrowser import Anchorbrowser
+import os
 
-def handle_captcha_event(event):
-    if event["name"] == "detected":
-        print(f"{event['captchaType']} captcha detected on {event['url']}")
-    
-    if event["name"] == "solved":
-        print(f"Captcha solved in {event['timeToSolve']}ms")
-    
-    if event["name"] == "failed":
-        print(f"Captcha failed: {event['error']}")
+anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
 
-client.on("Captcha.lifecycle", handle_captcha_event)
+# Create a session with captcha solving enabled
+session = anchor_client.sessions.create(
+    browser={
+        "captcha_solver": {"active": True}
+    },
+    session={
+        "proxy": {"active": True}
+    }
+)
+
+# Connect to the browser
+with anchor_client.browser.connect(session.data.id) as browser:
+    context = browser.contexts[0]
+    page = context.pages[0]
+
+    # Create CDP session and listen to captcha events
+    client = context.new_cdp_session(page)
+
+    def handle_captcha_event(event):
+        if event["name"] == "detected":
+            print(f"{event['captchaType']} captcha detected on {event['url']}")
+        
+        if event["name"] == "solved":
+            print(f"Captcha solved in {event['timeToSolve']}ms")
+        
+        if event["name"] == "failed":
+            print(f"Captcha failed: {event['error']}")
+
+    client.on("Captcha.lifecycle", handle_captcha_event)
+
+    # Navigate to a page with captcha
+    page.goto("https://example.com")
 ```
 </CodeGroup>
 
