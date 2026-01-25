@@ -193,3 +193,33 @@ session = anchorClient.sessions.create(
 print(session)
 ```
 </CodeGroup>
+
+## Catching Captcha Events
+
+When using stealth mode with captcha solving enabled, you can listen to captcha lifecycle events via CDP (Chrome DevTools Protocol). This allows you to track when captchas are detected, solved, or failed.
+
+```javascript
+const client = await context.newCDPSession(page);
+
+client.on('Captcha.lifecycle', (event) => {
+  if (event.name === 'detected') {
+    console.log(`${event.captchaType} captcha detected on ${event.url}`);
+  }
+  
+  if (event.name === 'solved') {
+    console.log(`Captcha solved in ${event.timeToSolve}ms`);
+  }
+
+  if (event.name === 'failed') {
+    console.log(`Captcha failed: ${event.error}`);
+  }
+});
+```
+
+### Event Types
+
+| Event Name | Description | Properties |
+|------------|-------------|------------|
+| `detected` | Fired when a captcha is detected on the page | `captchaType`, `url` |
+| `solved` | Fired when the captcha is successfully solved | `timeToSolve` (in milliseconds) |
+| `failed` | Fired when captcha solving fails | `error` |
