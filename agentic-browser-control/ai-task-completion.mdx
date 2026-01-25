@@ -91,38 +91,30 @@ The following demonstrates using **Zod** and **Pydantic** to utilize the structu
 <CodeGroup>
 
 ```javascript node.js
-// Create a browser session and get references
-const browser = await anchorClient.browser.create();
-const context = browser.contexts()[0];
-const page = context.pages()[0];
-const ai = context.serviceWorkers()[0]; // Get the AI service worker
+import { z } from 'zod';
+import { zodToJsonSchema } from 'zod-to-json-schema';
+
+const anchorClient = new Anchorbrowser()
 
 // Define the expected output structure using Zod schema
 const outputSchema = z.object({
   nodes_cpu_usage: z.array(
     z.object({
-      node: z.string(),           // Node name
-      cluster: z.string(),        // Cluster identifier
-      cpu_avg_percentage: z.number(), // CPU usage percentage
+      node: z.string(),                 // Node name
+      cluster: z.string(),              // Cluster identifier
+      cpu_avg_percentage: z.number(),   // CPU usage percentage
     })
   )
 });
 
-// Create task payload with structured output schema
-const taskPayload = {
-  output_schema: z.toJSONSchema(outputSchema);,      // Define expected output structure
-  prompt: 'Collect the node names and their CPU average %',
-};
-
-// Navigate to the target page
-await page.goto("https://play.grafana.org/a/grafana-k8s-app/navigation/nodes?from=now-1h&to=now&refresh=1m");
-
 // Execute the AI task with structured output
-const result = await ai.evaluate(JSON.stringify(taskPayload));
+const result = await anchorClient.agent.task('Collect the node names and their CPU average %', {
+  taskOptions: {
+    outputSchema: zodToJsonSchema(outputSchema), // Convert to JSON Schema
+    url: 'https://play.grafana.org/a/grafana-k8s-app/navigation/nodes?from=now-1h&to=now&refresh=1m',
+  }
+});
 console.info(result);
-
-// Clean up browser resources
-await browser.close();
 ```
 ```python python
 # Define data models using Pydantic for structured output
@@ -134,104 +126,42 @@ class NodeCpuUsage(BaseModel):
 class OutputSchema(BaseModel):
     nodes_cpu_usage: List[NodeCpuUsage]  # List of node CPU usage data
 
-with sync_playwright() as p:
-    # Connect to the browser session
-    browser = p.chromium.connect_over_cdp(cdp_url)
-    context = browser.contexts[0]
-    
-    # Find the AI service worker
-    ai = next((sw for sw in context.service_workers if sw.url.startswith("chrome-extension://bppehibnhionalpjigdjdilknbljaeai")), None)
-    page = context.pages[0]
+# Create task payload with structured output schema
+task_payload = {
+    'prompt': 'Collect the node names and their CPU average %',
+    'output_schema': OutputSchema.model_json_schema()  # Convert to JSON Schema
+}
 
-    # Create task payload with structured output schema
-    task_payload = {
-        'prompt': 'Collect the node names and their CPU average %',
-        'output_schema': OutputSchema.model_json_schema()  # Convert Pydantic model to JSON Schema
+result = anchor_client.agent.task('Collect the node names and their CPU average %',
+    task_options={
+        'output_schema': OutputSchema.model_json_schema(),
+        'url': 'https://play.grafana.org/a/grafana-k8s-app/navigation/nodes?from=now-1h&to=now&refresh=1m',
     }
-
-    # Navigate to the target page
-    page.goto("https://play.grafana.org/a/grafana-k8s-app/navigation/nodes?from=now-1h&to=now&refresh=1m")
-    
-    # Execute the AI task with structured output
-    result = ai.evaluate(json.dumps(task_payload))
-    print(result)
-    
-    # Clean up browser resources
-    browser.close()
-```
-</CodeGroup>
-
-<Expandable title="The Browser AI Object">
-## The Browser AI Object
-
-Anchor Browser comes with an embedded AI component, that allows to control the browser or extract data using natural language. This capability allows to **use the browser without any coding.**
-
-
-### Code Example
-
-<CodeGroup>
-```javascript node.js
-import Anchorbrowser from "anchorbrowser";
-
-const anchor_client = new Anchorbrowser({apiKey: process.env.ANCHORBROWSER_API_KEY});
-
-// Create a browser session
-const browser = await anchor_client.browser.create();
-const page = browser.contexts()[0].pages()[0];
-
-// Get the AI service worker
-const ai = context.serviceWorkers().find(sw => 
-  sw.url().includes('chrome-extension://bppehibnhionalpjigdjdilknbljaeai/background.js')
-);
-
-await page.goto("http://docs.anchorbrowser.io/", {waitUntil:'domcontentloaded'});
-
-// Use the embedded 'ai' object
-const result = await ai.evaluate('Find the last game played by Milwaukee in the NBA and return the result');
-
-await browser.close();
-console.log(result);
-```
-```python python
-from anchorbrowser import Anchorbrowser
-
-anchor_client = Anchorbrowser(api_key='your-api-key')
-
-# Create a browser session
-browser = await anchor_client.browser.create()
-page = browser.contexts()[0].pages()[0]
-
-# Get the AI service worker
-context = browser.contexts()[0]
-ai = next((sw for sw in context.service_workers if sw.url.startswith("chrome-extension://bppehibnhionalpjigdjdilknbljaeai")), None)
-
-await page.goto("http://docs.anchorbrowser.io/", wait_until='domcontentloaded')
-
-# Use the embedded 'ai' object
-result = await ai.evaluate('Find the last game played by Milwaukee in the NBA and return the result')
-
-await browser.close()
+)
 print(result)
-
 ```
 </CodeGroup>
-</Expandable>
+
 <Expandable title="Configuration Options">
 
 ## Configuration Options
 The AI agent can be configured with the following parameters:
 
+<Note>
+Parameter names use `snake_case` in Python and `camelCase` in JavaScript/TypeScript (e.g., `max_steps` vs `maxSteps`).
+</Note>
+
 - **agent** (string): AI agent to use (`browser-use`, `openai-cua`, `gemini-computer-use`). Defaults to `browser-use`.
-- **secret_values** (object): Secret values to pass to the agent for secure credential handling.
-- **human_intervention** (boolean): Allow human intervention during task execution.
+- **secret_values** | **secretValues** (object): Secret values to pass to the agent for secure credential handling.
+- **human_intervention** | **humanIntervention** (boolean): Allow human intervention during task execution.
 - **provider** (string): AI provider to use (`openai`, `gemini`, `groq`, `azure`, `xai`).
 - **model** (string): Specific model to use (see [Available Models](#available-models) below).
 - **url** (string): Target URL to navigate to before executing the task.
-- **output_schema** (object): JSON Schema defining the expected structure of the output data.
-- **max_steps** (integer): Maximum number of steps the agent can take (default: 40).
-- **detect_elements** (boolean): Enable element detection for better interaction accuracy.
-- **extended_system_message** (string): Custom system message to provide additional context or instructions to the agent.
-- **use_vision** (boolean): Enable vision capabilities for enhanced visual understanding.
+- **output_schema** | **outputSchema** (object): JSON Schema defining the expected structure of the output data.
+- **max_steps** | **maxSteps** (integer): Maximum number of steps the agent can take (default: 40).
+- **detect_elements** | **detectElements** (boolean): Enable element detection for better interaction accuracy.
+- **extended_system_message** | **extendedSystemMessage** (string): Custom system message to provide additional context or instructions to the agent.
+- **use_vision** | **useVision** (boolean): Enable vision capabilities for enhanced visual understanding.
 
 
 </Expandable>
