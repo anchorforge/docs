@@ -204,9 +204,10 @@ import Anchorbrowser from "anchorbrowser";
 
 const anchorClient = new Anchorbrowser();
 
-// Create a session with captcha solving enabled
+// Create a session with extra stealth and captcha solving enabled
 const session = await anchorClient.sessions.create({
   browser: {
+    extra_stealth: { active: true },
     captcha_solver: { active: true }
   },
   session: {
@@ -245,9 +246,10 @@ import os
 
 anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
 
-# Create a session with captcha solving enabled
+# Create a session with extra stealth and captcha solving enabled
 session = anchor_client.sessions.create(
     browser={
+        "extra_stealth": {"active": True},
         "captcha_solver": {"active": True}
     },
     session={
