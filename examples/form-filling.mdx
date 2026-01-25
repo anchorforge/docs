@@ -4,16 +4,23 @@ title: 'Form Filling Automation'
 
 The following example shows form filling, including the ability to self-complete missing data in the form filling process.
 
+<CodeGroup>
 ```tsx node.js
-import { chromium } from 'playwright';
-
-const browser = await chromium.connectOverCDP(connectionString);
-const context = browser.contexts()[0];
-const ai = context.serviceWorkers()[0];
-const page = context.pages()[0];
-
-page.goto('https://www.wix.com/demone2/nicol-rider');
-
-const result = await ai.evaluate('Read the resume, understand the details, and complete the form at https://formspree.io/library/donation/charity-donation-form/preview.html as if you were her. Limit the donation to $10.');
-console.info(result);
+const result = await anchorClient.agent.task(
+  `Go to https://www.wix.com/demone2/nicol-rider, read the resume,
+  understand the details, and complete the form at
+  https://formspree.io/library/donation/charity-donation-form/preview.html
+  as if you were her. Limit the donation to $10.`
+)
+console.log(result);
 ```
+```python python
+result = anchor_client.agent.task(
+  '''Go to https://www.wix.com/demone2/nicol-rider, read the resume,
+  understand the details, and complete the form at
+  https://formspree.io/library/donation/charity-donation-form/preview.html
+  as if you were her. Limit the donation to $10.'''
+)
+print(result)
+```
+</CodeGroup>
