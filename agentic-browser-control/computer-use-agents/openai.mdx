@@ -108,3 +108,44 @@ print(response)
 | `url` | string | Starting URL for the task |
 | `max_steps` | integer | Maximum actions the agent can take |
 | `output_schema` | object | JSON Schema for structured output |
+| `secret_values` | object | Secure credentials (see [Secret Values](/agentic-browser-control/secret-values)) |
+
+## Secure Credentials with Secret Values
+
+OpenAI CUA fully supports secret values for secure credential handling. Secrets are never exposed to the AI model.
+
+<CodeGroup>
+
+```javascript node.js
+const response = await anchorClient.agent.task(
+  'Login to the dashboard and download my latest report',
+  {
+    taskOptions: {
+      url: 'https://app.example.com/login',
+      agent: 'openai-cua',
+      secretValues: {
+        EMAIL: process.env.APP_EMAIL,
+        PASSWORD: process.env.APP_PASSWORD
+      }
+    }
+  }
+);
+```
+
+```python python
+response = anchor_client.agent.task(
+    'Login to the dashboard and download my latest report',
+    task_options={
+        'url': 'https://app.example.com/login',
+        'agent': 'openai-cua',
+        'secret_values': {
+            'EMAIL': os.environ.get('APP_EMAIL'),
+            'PASSWORD': os.environ.get('APP_PASSWORD')
+        }
+    }
+)
+```
+
+</CodeGroup>
+
+Learn more about [domain-scoped secrets and TOTP support](/agentic-browser-control/secret-values).

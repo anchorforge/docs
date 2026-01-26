@@ -1,0 +1,149 @@
+---
+title: 'Anchor Agent (Browser-Use)'
+description: 'DOM-based browser automation with multi-provider support'
+icon: 'anchor'
+---
+
+Anchor Agent, powered by browser-use, is a fast DOM-based autonomous browser agent that supports multiple AI providers. It's the default agent for Anchor Browser automation.
+
+## Overview
+
+Anchor Agent (`browser-use`) provides:
+- **DOM-based interactions** for precise element targeting
+- **Multi-provider support** - use OpenAI, Gemini, Groq, Azure, or xAI
+- **Human-in-the-loop controls** with pause/resume capabilities
+- **Structured outputs** for reliable data extraction
+- **Element detection** for improved accuracy
+
+## Supported Providers & Models
+
+<Tabs>
+  <Tab title="OpenAI">
+    | Model | Best For |
+    |-------|----------|
+    | `gpt-5.2` | Latest capabilities |
+    | `gpt-5` | Advanced reasoning |
+    | `gpt-5-mini` | Fast, cost-effective |
+    | `gpt-5-nano` | Ultra-fast responses |
+    | `gpt-4o` | Strong vision capabilities |
+    | `gpt-4o-mini` | Balanced performance |
+    | `gpt-4.1` | Reliable automation |
+    | `gpt-4.1-mini` | Quick tasks |
+  </Tab>
+
+  <Tab title="Gemini">
+    | Model | Best For |
+    |-------|----------|
+    | `gemini-3-flash-preview` | Fast, latest features |
+    | `gemini-3-pro-preview` | Complex reasoning |
+    | `gemini-2.5-flash` | Quick automation |
+    | `gemini-2.5-pro` | Advanced tasks |
+    | `gemini-2.0-flash` | General purpose |
+  </Tab>
+
+  <Tab title="Groq">
+    | Model | Best For |
+    |-------|----------|
+    | `openai/gpt-oss-120b` | High capability |
+    | `meta-llama/llama-4-maverick-17b-128e-instruct` | Fast inference |
+    | `meta-llama/llama-4-scout-17b-16e-instruct` | Efficient tasks |
+    | `moonshotai/kimi-k2-instruct` | Multilingual |
+  </Tab>
+
+  <Tab title="Azure">
+    | Model | Best For |
+    |-------|----------|
+    | `o4-mini` | Quick reasoning |
+    | `o3` | Advanced reasoning |
+    | `o3-mini` | Fast reasoning |
+    | `o1` | Complex problems |
+  </Tab>
+</Tabs>
+
+## Code Example
+
+<CodeGroup>
+
+```javascript node.js
+import Anchorbrowser from 'anchorbrowser';
+
+const anchorClient = new Anchorbrowser({
+  apiKey: process.env.ANCHORBROWSER_API_KEY
+});
+
+const response = await anchorClient.agent.task(
+  'Fill out the contact form with my information',
+  {
+    taskOptions: {
+      url: 'https://example.com/contact',
+      agent: 'browser-use',           // Default agent
+      provider: 'openai',             // Choose your provider
+      model: 'gpt-4o',                // Select model
+      detectElements: true,           // Enable element detection
+      maxSteps: 40,
+      humanIntervention: false,
+      secretValues: {
+        NAME: 'John Doe',
+        EMAIL: 'john@example.com',
+        MESSAGE: 'Hello from Anchor Browser!'
+      }
+    }
+  }
+);
+
+console.log(response);
+```
+
+```python python
+from anchorbrowser import Anchorbrowser
+import os
+
+anchor_client = Anchorbrowser(api_key=os.environ.get("ANCHORBROWSER_API_KEY"))
+
+response = anchor_client.agent.task(
+    'Fill out the contact form with my information',
+    task_options={
+        'url': 'https://example.com/contact',
+        'agent': 'browser-use',           # Default agent
+        'provider': 'openai',             # Choose your provider
+        'model': 'gpt-4o',                # Select model
+        'detect_elements': True,          # Enable element detection
+        'max_steps': 40,
+        'human_intervention': False,
+        'secret_values': {
+            'NAME': 'John Doe',
+            'EMAIL': 'john@example.com',
+            'MESSAGE': 'Hello from Anchor Browser!'
+        }
+    }
+)
+
+print(response)
+```
+
+</CodeGroup>
+
+## Configuration Options
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `agent` | string | `browser-use` (default) |
+| `provider` | string | `openai`, `gemini`, `groq`, `azure`, or `xai` |
+| `model` | string | Model from the selected provider |
+| `url` | string | Starting URL for the task |
+| `detect_elements` | boolean | Enable element detection for accuracy |
+| `max_steps` | integer | Maximum actions the agent can take |
+| `human_intervention` | boolean | Allow pause for human input |
+| `secret_values` | object | Secure credentials |
+| `output_schema` | object | JSON Schema for structured output |
+| `extended_system_message` | string | Custom instructions for the agent |
+| `use_vision` | boolean | Enable vision capabilities |
+
+## Why Choose Anchor Agent?
+
+- **Fastest execution** - DOM-based approach is faster than screenshot-based
+- **Provider flexibility** - Switch providers without changing code
+- **Human-in-the-loop** - Pause and resume for complex workflows
+- **Element detection** - Improved accuracy for form filling and clicks
+- **Open source foundation** - Built on the proven browser-use library
+
