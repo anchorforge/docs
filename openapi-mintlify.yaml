@@ -353,6 +353,13 @@ components:
             active:
               type: boolean
               description: Enable or disable forcing popups as tabs. Defaults to `false`.
+        native_popup_blocking:
+          type: object
+          description: Configuration for Chrome's native popup blocker. By default, Chrome's popup blocker is DISABLED to allow automation scenarios like OAuth flows and payment windows. Enable this to block popups. Note that this is different from the `popup_blocker` option which controls additional popup/cookie banner blocking via uBlock Origin Lite.
+          properties:
+            active:
+              type: boolean
+              description: Enable Chrome's native popup blocking. Defaults to `false` (popups allowed).
         web_bot_auth:
           type: object
           description: Configuration for Cloudflare Web Bot Auth HTTP message signing. Enables authentication with websites that require Cloudflare's web bot authentication.
