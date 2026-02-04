@@ -1,0 +1,59 @@
+---
+title: 'Session Tags'
+description: 'Categorize and organize browser sessions with custom labels'
+icon: 'tags'
+---
+
+### Tagging browser sessions
+
+Session tags allow you to add custom labels to your browser sessions for categorization, filtering, and tracking. Tags are useful for organizing sessions across different workflows, environments, or use cases.
+
+### Adding tags to sessions
+
+You can add tags when creating a browser session by including them in the `session.tags` array:
+
+<CodeGroup>
+
+```javascript node.js
+import AnchorBrowser from 'anchorbrowser';
+
+(async () => {
+  const anchorClient = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
+  
+  const session = await anchorClient.sessions.create({
+    session: {
+      tags: ["production", "scraping", "customer-123"]
+    }
+  });
+  
+  console.log("Session created with tags:", session.data.id);
+})().catch(console.error);
+```
+
+```python python
+import os
+from anchorbrowser import Anchorbrowser
+
+anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
+
+session = anchor_client.sessions.create(
+    session={
+        "tags": ["production", "scraping", "customer-123"]
+    }
+)
+
+print("Session created with tags:", session.data.id)
+```
+
+</CodeGroup>
+
+### Use cases for session tags
+
+- **Environment tracking**: Tag sessions with `production`, `staging`, or `development` to identify which environment they belong to
+- **Customer identification**: Use customer IDs or names as tags to track sessions per customer
+- **Workflow categorization**: Label sessions by workflow type like `scraping`, `testing`, or `automation`
+- **Project organization**: Group sessions by project name for easier management
+
+### Retrieving session tags
+
+Tags are returned when you retrieve session information using the [Get Browser Session](/api-reference/browser-sessions/get-browser-session) or [List All Sessions Status](/api-reference/browser-sessions/list-all-sessions-status) endpoints.
