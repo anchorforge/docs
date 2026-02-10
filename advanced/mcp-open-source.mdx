@@ -28,7 +28,7 @@ Choose the open source version when you need:
 ## Key Features
 
 - **Remote Browser Execution**: Uses Anchor Browser's cloud infrastructure instead of local browsers
-- **Built-in Proxies**: Automatic residential proxy rotation and geo-targeting  
+- **Built-in Proxies**: Automatic proxy rotation and geo-targeting
 - **Stealth & Anti-Detection**: Advanced browser fingerprinting and anti-bot detection
 - **Fast and lightweight**: Uses Playwright's accessibility tree, not pixel-based input
 - **LLM-friendly**: No vision models needed, operates purely on structured data
@@ -166,7 +166,7 @@ node cli.js --help
 1. **Browser Session Creation**: When you use browser tools, the MCP server calls Anchor's API to create a remote browser session
 2. **Remote Connection**: Connects to the remote browser via WebSocket using Chrome DevTools Protocol (CDP)
 3. **Tool Execution**: All browser automation happens in Anchor's cloud infrastructure
-4. **Proxy & Stealth**: Automatic residential proxy rotation and advanced anti-detection features
+4. **Proxy & Stealth**: Automatic proxy rotation and advanced anti-detection features
 5. **Session Management**: Each session is isolated and can be viewed live via Anchor's dashboard
 
 ## Production & CI/CD Usage
@@ -207,7 +207,7 @@ jobs:
 ## Benefits Over Local Browsers
 
 ### 🌐 **Global Proxy Network**
-- Automatic residential proxy rotation
+- Automatic proxy rotation
 - Geo-targeting for different regions
 - No proxy configuration needed
 
