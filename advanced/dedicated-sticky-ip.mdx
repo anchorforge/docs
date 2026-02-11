@@ -16,22 +16,12 @@ Use the [Create Profile API](https://docs.anchorbrowser.io/api-reference/profile
 
 <CodeGroup>
 
-```bash cURL
-curl -X POST https://api.anchorbrowser.io/v1/profiles \
-  -H "anchor-api-key: YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "my-sticky-profile",
-    "dedicated_sticky_ip": true
-  }'
-```
-
 ```javascript node.js
 import AnchorBrowser from 'anchorbrowser';
 
-const client = new AnchorBrowser({ apiKey: process.env.ANCHOR_API_KEY });
+const anchorClient = new AnchorBrowser({ apiKey: process.env.ANCHOR_API_KEY });
 
-const profile = await client.profiles.create({
+const profile = await anchorClient.profiles.create({
   name: 'my-sticky-profile',
   dedicated_sticky_ip: true,
 });
@@ -43,14 +33,24 @@ console.log('Profile created:', profile.data);
 from anchorbrowser import Anchorbrowser
 import os
 
-client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
+anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
 
-profile = client.profiles.create(
+profile = anchor_client.profiles.create(
     name="my-sticky-profile",
     dedicated_sticky_ip=True,
 )
 
 print("Profile created:", profile.data)
+```
+
+```bash cURL
+curl -X POST https://api.anchorbrowser.io/v1/profiles \
+  -H "anchor-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "my-sticky-profile",
+    "dedicated_sticky_ip": true
+  }'
 ```
 
 </CodeGroup>
@@ -63,26 +63,12 @@ Start a browser session with the profile. Set `persist` to `true` so the browser
 
 <CodeGroup>
 
-```bash cURL
-curl -X POST https://api.anchorbrowser.io/v1/sessions \
-  -H "anchor-api-key: YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "browser": {
-      "profile": {
-        "name": "my-sticky-profile",
-        "persist": true
-      }
-    }
-  }'
-```
-
 ```javascript node.js
 import AnchorBrowser from 'anchorbrowser';
 
-const client = new AnchorBrowser({ apiKey: process.env.ANCHOR_API_KEY });
+const anchorClient = new AnchorBrowser({ apiKey: process.env.ANCHOR_API_KEY });
 
-const session = await client.sessions.create({
+const session = await anchorClient.sessions.create({
   browser: {
     profile: {
       name: 'my-sticky-profile',
@@ -98,9 +84,9 @@ console.log('Session created:', session.data);
 from anchorbrowser import Anchorbrowser
 import os
 
-client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
+anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
 
-session = client.sessions.create(
+session = anchor_client.sessions.create(
     browser={
         "profile": {
             "name": "my-sticky-profile",
@@ -110,6 +96,20 @@ session = client.sessions.create(
 )
 
 print("Session created:", session.data)
+```
+
+```bash cURL
+curl -X POST https://api.anchorbrowser.io/v1/sessions \
+  -H "anchor-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "browser": {
+      "profile": {
+        "name": "my-sticky-profile",
+        "persist": true
+      }
+    }
+  }'
 ```
 
 </CodeGroup>
