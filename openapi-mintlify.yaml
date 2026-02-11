@@ -338,6 +338,13 @@ components:
             sources:
               type: boolean
               description: Enable or disable source code capture in traces. Defaults to `true`.
+        network_cache:
+          type: object
+          description: Configuration for network request caching using S3. When enabled, JS and CSS files are cached to S3 and served from cache on subsequent requests, reducing bandwidth and improving load times.
+          properties:
+            active:
+              type: boolean
+              description: Enable or disable network cache. Defaults to `false`.
 
     SessionCreateRequestSchema:
       type: object
