@@ -7,24 +7,124 @@ icon: 'globe'
 A **Dedicated Sticky IP** ensures that a specific profile uses by default the same IP address, reserved exclusively for that profile. This is helpful when IP consistency is required across sessions.
 
 <Note>
-When using a Dedicated Sticky IP, [Extra Stealth](/essentials/stealth) mode is automatically enabled for all sessions using that profile, regardless of your configuration. This ensures optimal stealth capabilities with your dedicated IP.
+[Extra Stealth](/essentials/stealth) mode is automatically enabled for all sessions using a Dedicated Sticky IP profile.
 </Note>
 
 <Steps>
-<Step title="Enable sticky IP in profile creation">
-Use the [Create Profile API](https://docs.anchorbrowser.io/api-reference/profiles/create-profile?playground=open) to create a profile with a dedicated sticky IP by setting:
+<Step title="Create a profile with a dedicated sticky IP">
+Use the [Create Profile API](https://docs.anchorbrowser.io/api-reference/profiles/create-profile?playground=open) to create a profile with a dedicated sticky IP by setting `dedicated_sticky_ip` to `true`:
 
-```json
-{
-  "dedicated_sticky_ip": true
-}
+<CodeGroup>
+
+```javascript node.js
+import AnchorBrowser from 'anchorbrowser';
+
+const anchorClient = new AnchorBrowser({ apiKey: process.env.ANCHOR_API_KEY });
+
+const profile = await anchorClient.profiles.create({
+  name: 'my-sticky-profile',
+  dedicated_sticky_ip: true,
+});
+
+console.log('Profile created:', profile.data);
 ```
 
-This allocates a dedicated IP that is not shared with other profiles. 
+```python python
+from anchorbrowser import Anchorbrowser
+import os
+
+anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
+
+profile = anchor_client.profiles.create(
+    name="my-sticky-profile",
+    dedicated_sticky_ip=True,
+)
+
+print("Profile created:", profile.data)
+```
+
+```bash cURL
+curl -X POST https://api.anchorbrowser.io/v1/profiles \
+  -H "anchor-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "my-sticky-profile",
+    "dedicated_sticky_ip": true
+  }'
+```
+
+</CodeGroup>
+
+This allocates a dedicated IP that is not shared with other profiles.
 </Step>
 
-<Step title="Start sessions with the reserved IP">
-Any browser session started using this profile will automatically use the reserved sticky IP and Extra Stealth mode.
+<Step title="Start a session using the profile">
+Start a browser session with the profile. Set `persist` to `true` so the browser state (cookies, localStorage, etc.) is saved when the session ends.
+
+<CodeGroup>
+
+```javascript node.js
+import AnchorBrowser from 'anchorbrowser';
+
+const anchorClient = new AnchorBrowser({ apiKey: process.env.ANCHOR_API_KEY });
+
+const session = await anchorClient.sessions.create({
+  browser: {
+    profile: {
+      name: 'my-sticky-profile',
+      persist: true,
+    },
+  },
+});
+
+console.log('Session created:', session.data);
+```
+
+```python python
+from anchorbrowser import Anchorbrowser
+import os
+
+anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
+
+session = anchor_client.sessions.create(
+    browser={
+        "profile": {
+            "name": "my-sticky-profile",
+            "persist": True,
+        }
+    }
+)
+
+print("Session created:", session.data)
+```
+
+```bash cURL
+curl -X POST https://api.anchorbrowser.io/v1/sessions \
+  -H "anchor-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "browser": {
+      "profile": {
+        "name": "my-sticky-profile",
+        "persist": true
+      }
+    }
+  }'
+```
+
+</CodeGroup>
+
+The session will automatically use the reserved sticky IP and Extra Stealth mode.
+</Step>
+
+<Step title="Do your work in the session">
+Connect to the session via live view, CDP, or the session view in the dashboard. Log in to accounts, configure settings, or perform any actions you need.
+
+When you're done, close the session. The profile state (cookies, localStorage, etc.) will be persisted automatically because `persist` was set to `true`.
+</Step>
+
+<Step title="Start future sessions with the same profile">
+Any new session started with this profile will use the same dedicated sticky IP and have all the saved browser state from previous sessions.
 </Step>
 
 <Step title="Override the IP with a custom proxy (optional)">
