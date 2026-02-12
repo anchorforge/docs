@@ -391,8 +391,6 @@ components:
         identities:
           description: |
             Activates an authenticated session.
-
-            **Beta** Capability. [Contact support](mailto:support@anchorbrowser.io) to enable.
           type: array
           items:
             type: object
@@ -2903,12 +2901,10 @@ paths:
       summary: Create Application
       description: |
         Creates a new application for identity management.
-
-        **Beta** Capability. [Contact support](mailto:support@anchorbrowser.io) to enable.
       security:
         - api_key_header: []
       tags:
-        - Applications (Early Availability)
+        - Applications
       requestBody:
         required: true
         content:
@@ -2945,12 +2941,10 @@ paths:
       summary: List Applications
       description: |
         Retrieves all applications for the authenticated team.
-
-        **Beta** Capability. [Contact support](mailto:support@anchorbrowser.io) to enable.
       security:
         - api_key_header: []
       tags:
-        - Applications (Early Availability)
+        - Applications
       parameters:
         - name: search
           in: query
@@ -2977,12 +2971,10 @@ paths:
       summary: Get Application
       description: |
         Retrieves details of a specific application by its ID.
-
-        **Beta** Capability. [Contact support](mailto:support@anchorbrowser.io) to enable.
       security:
         - api_key_header: []
       tags:
-        - Applications (Early Availability)
+        - Applications
       parameters:
         - name: applicationId
           in: path
@@ -3014,12 +3006,10 @@ paths:
       summary: Delete Application
       description: |
         Deletes an existing application.
-
-        **Beta** Capability. [Contact support](mailto:support@anchorbrowser.io) to enable.
       security:
         - api_key_header: []
       tags:
-        - Applications (Early Availability)
+        - Applications
       parameters:
         - name: applicationId
           in: path
@@ -3053,12 +3043,10 @@ paths:
       summary: List Application Identities
       description: |
         Retrieves all identities associated with a specific application.
-
-        **Beta** Capability. [Contact support](mailto:support@anchorbrowser.io) to enable.
       security:
         - api_key_header: []
       tags:
-        - Applications (Early Availability)
+        - Applications
       parameters:
         - name: applicationId
           in: path
@@ -3092,12 +3080,10 @@ paths:
       summary: List Application Authentication Flows
       description: |
         Retrieves all authentication flows for a specific application.
-
-        **Beta** Capability. [Contact support](mailto:support@anchorbrowser.io) to enable.
       security:
         - api_key_header: []
       tags:
-        - Applications (Early Availability)
+        - Applications
       parameters:
         - name: applicationId
           in: path
@@ -3123,12 +3109,10 @@ paths:
       summary: Create Authentication Flow
       description: |
         Creates a new authentication flow for an application.
-
-        **Beta** Capability. [Contact support](mailto:support@anchorbrowser.io) to enable.
       security:
         - api_key_header: []
       tags:
-        - Applications (Early Availability)
+        - Applications
       parameters:
         - name: applicationId
           in: path
@@ -3177,12 +3161,10 @@ paths:
       summary: Update Authentication Flow
       description: |
         Updates an existing authentication flow.
-
-        **Beta** Capability. [Contact support](mailto:support@anchorbrowser.io) to enable.
       security:
         - api_key_header: []
       tags:
-        - Applications (Early Availability)
+        - Applications
       parameters:
         - name: applicationId
           in: path
@@ -3227,12 +3209,10 @@ paths:
       summary: Delete Authentication Flow
       description: |
         Deletes an existing authentication flow.
-
-        **Beta** Capability. [Contact support](mailto:support@anchorbrowser.io) to enable.
       security:
         - api_key_header: []
       tags:
-        - Applications (Early Availability)
+        - Applications
       parameters:
         - name: applicationId
           in: path
@@ -3266,12 +3246,10 @@ paths:
       summary: Create Identity
       description: |
         Creates a new identity with credentials for authentication.
-
-        **Beta** Capability. [Contact support](mailto:support@anchorbrowser.io) to enable.
       security:
         - api_key_header: []
       tags:
-        - Identities (Early Availability)
+        - Identities
       parameters:
         - name: validateAsync
           in: query
@@ -3334,12 +3312,10 @@ paths:
       summary: Get Identity
       description: |
         Retrieves details of a specific identity by its ID.
-
-        **Beta** Capability. [Contact support](mailto:support@anchorbrowser.io) to enable.
       security:
         - api_key_header: []
       tags:
-        - Identities (Early Availability)
+        - Identities
       parameters:
         - name: identityId
           in: path
@@ -3371,12 +3347,10 @@ paths:
       summary: Update Identity
       description: |
         Updates an existing identity's name, metadata, or credentials.
-
-        **Beta** Capability. [Contact support](mailto:support@anchorbrowser.io) to enable.
       security:
         - api_key_header: []
       tags:
-        - Identities (Early Availability)
+        - Identities
       parameters:
         - name: identityId
           in: path
@@ -3426,12 +3400,10 @@ paths:
       summary: Delete Identity
       description: |
         Deletes an existing identity.
-
-        **Beta** Capability. [Contact support](mailto:support@anchorbrowser.io) to enable.
       security:
         - api_key_header: []
       tags:
-        - Identities (Early Availability)
+        - Identities
       parameters:
         - name: identityId
           in: path
@@ -3465,12 +3437,10 @@ paths:
       summary: Get Identity Credentials
       description: |
         Retrieves the credentials for a specific identity. This endpoint returns sensitive credential data.
-
-        **Beta** Capability. [Contact support](mailto:support@anchorbrowser.io) to enable.
       security:
         - api_key_header: []
       tags:
-        - Identities (Early Availability)
+        - Identities
       parameters:
         - name: identityId
           in: path
@@ -5999,7 +5969,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Applications (Early Availability)
+        - Applications
       parameters:
         - name: applicationId
           in: path
