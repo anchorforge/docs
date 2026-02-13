@@ -65,16 +65,16 @@ To use a custom proxy, you need to provide the following information:
 
 - **`active`**: Set to `true` to enable the proxy
 - **`type`**: Set to `"custom"` to indicate you're using your own proxy
-- **`server`**: The hostname or IP address of your proxy server, appended by the port (SERVER:PORT)
+- **`server`**: The full proxy URL in the format `protocol://hostname:port`
 - **`username`**: Your proxy authentication username (if required)
 - **`password`**: Your proxy authentication password (if required)
 
 ### Supported Proxy Protocols
 
 Anchor Browser supports the following proxy protocols:
-- **HTTP Proxy**: Standard HTTP proxy with optional authentication
-- **HTTPS Proxy**: Secure HTTPS proxy connections
-- **SOCKS5 Proxy**: SOCKS5 proxy for enhanced privacy and flexibility
+- **HTTP Proxy**: Standard HTTP proxy with optional authentication (e.g., `http://proxy.example.com:8080`)
+- **HTTPS Proxy**: Secure HTTPS proxy connections (e.g., `https://proxy.example.com:443`)
+- **SOCKS5 Proxy**: SOCKS5 proxy for enhanced privacy and flexibility (e.g., `socks5://proxy.example.com:1080`)
 
 ### Example Configurations
 
@@ -88,9 +88,9 @@ const anchorClient = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
 const response = await anchorClient.sessions.create({
   session: {
     proxy: {
-      active: true
+      active: true,
       type: 'custom',
-      server: 'proxy.example.com:port',
+      server: 'https://proxy.example.com:443',  // Supported protocols: http, https, socks5
       username: 'myUser',
       password: 'myPassword',
     }
@@ -110,9 +110,9 @@ anchor_client = Anchorbrowser(api_key=os.getenv('ANCHOR_API_KEY'))
 response = anchor_client.sessions.create(
   session={
     'proxy': {
-        'active': True
+        'active': True,
         'type': 'custom',
-        'server': 'proxy.example.com:port',
+        'server': 'https://proxy.example.com:443',  # Supported protocols: http, https, socks5
         'username': 'myUser',
         'password': 'myPassword',
     }
