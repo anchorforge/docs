@@ -85,7 +85,7 @@ components:
           enum: [custom]
         server:
           type: string
-          description: Proxy server address
+          description: Proxy address in **PROTOCOL://HOST:PORT** format (e.g., https://proxy.example.com:443). See [proxy page](/advanced/proxy#custom-proxy).
         username:
           type: string
           description: Proxy username
