@@ -3049,6 +3049,18 @@ paths:
           description: Search query to filter identities by name
           schema:
             type: string
+        - name: metadata
+          in: query
+          required: false
+          description: Filter identities by metadata. Pass a JSON object to filter identities whose metadata contains the specified key-value pairs.
+          schema:
+            type: object
+            additionalProperties: true
+          style: deepObject
+          explode: true
+          example:
+            department: "Engineering"
+            role: "admin"
       responses:
         '200':
           description: List of identities retrieved successfully
