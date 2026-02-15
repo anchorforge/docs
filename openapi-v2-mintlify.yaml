@@ -69,13 +69,13 @@ components:
 paths:
   /v2/tasks/{taskId}/run:
     post:
-      summary: Run a Task (V2)
+      summary: Run a Task
       description: |
         Triggers execution of a task by ID using the V2 tasks API.
       security:
         - api_key_header: []
       tags:
-        - Tasks (V2)
+        - Tasks
       parameters:
         - name: taskId
           in: path
@@ -118,13 +118,13 @@ paths:
 
   /v2/tasks/runs/{runId}/status:
     get:
-      summary: Get Task Run Status (V2)
+      summary: Get Task Run Status
       description: |
         Retrieves the current status and result of a task run in the V2 tasks API.
       security:
         - api_key_header: []
       tags:
-        - Tasks (V2)
+        - Tasks
       parameters:
         - name: runId
           in: path
