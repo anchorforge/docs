@@ -5073,7 +5073,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Tasks
+        - Tasks (Legacy)
       requestBody:
         required: true
         content:
@@ -5123,7 +5123,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Tasks
+        - Tasks (Legacy)
       parameters:
         - name: page
           in: query
@@ -5165,7 +5165,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Tasks
+        - Tasks (Legacy)
       requestBody:
         required: true
         content:
@@ -5217,7 +5217,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Tasks
+        - Tasks (Legacy)
       parameters:
         - name: taskName
           in: path
@@ -5349,7 +5349,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Tasks
+        - Tasks (Legacy)
       parameters:
         - name: taskId
           in: path
@@ -5386,7 +5386,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Tasks
+        - Tasks (Legacy)
       parameters:
         - name: taskId
           in: path
@@ -5436,7 +5436,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Tasks
+        - Tasks (Legacy)
       parameters:
         - name: taskId
           in: path
@@ -5475,7 +5475,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Tasks
+        - Tasks (Legacy)
       parameters:
         - name: taskId
           in: path
@@ -5514,7 +5514,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Tasks
+        - Tasks (Legacy)
       parameters:
         - name: taskId
           in: path
@@ -5553,7 +5553,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Tasks
+        - Tasks (Legacy)
       parameters:
         - name: taskId
           in: path
@@ -5591,7 +5591,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Tasks
+        - Tasks (Legacy)
       parameters:
         - name: taskId
           in: path
@@ -5637,7 +5637,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Tasks
+        - Tasks (Legacy)
       parameters:
         - name: taskId
           in: path
@@ -5683,7 +5683,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Tasks
+        - Tasks (Legacy)
       parameters:
         - name: taskId
           in: path
@@ -5751,7 +5751,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Tasks
+        - Tasks (Legacy)
       parameters:
         - name: taskId
           in: path
@@ -5796,7 +5796,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Tasks
+        - Tasks (Legacy)
       parameters:
         - name: taskId
           in: path
@@ -5853,7 +5853,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Tasks
+        - Tasks (Legacy)
       parameters:
         - name: taskId
           in: path
