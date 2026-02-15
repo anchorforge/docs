@@ -5068,6 +5068,8 @@ paths:
       description: |
         Creates a new task or updates an existing task with the same name. Tasks are reusable code snippets 
         that can be executed in browser sessions. Tasks support versioning with draft and published versions.
+        
+        If you are using the new Task Builder, see the [v2 tasks endpoints](/api-reference/v2).
       security:
         - api_key_header: []
       tags:
@@ -5116,6 +5118,8 @@ paths:
       description: |
         Retrieves a paginated list of all tasks for the authenticated team. Tasks are returned 
         with their latest version information and metadata.
+        
+        If you are using the new Task Builder, see the [v2 tasks endpoints](/api-reference/v2).
       security:
         - api_key_header: []
       tags:
@@ -5156,6 +5160,8 @@ paths:
       description: |
         Executes a task in a browser session. The task can be run with a specific version or the latest version.
         Optionally, you can provide an existing session ID or let the system create a new one.
+        
+        If you are using the new Task Builder, see the [v2 tasks endpoints](/api-reference/v2).
       security:
         - api_key_header: []
       tags:
@@ -5206,6 +5212,8 @@ paths:
       description: |
         Executes a task by its name, always using the latest version. This is a convenience endpoint
         for running tasks without needing to know the task ID.
+        
+        If you are using the new Task Builder, see the [v2 tasks endpoints](/api-reference/v2).
       security:
         - api_key_header: []
       tags:
@@ -5336,6 +5344,8 @@ paths:
       description: |
         Retrieves task metadata without the code content. Useful for getting task information
         without downloading the full task code.
+        
+        If you are using the new Task Builder, see the [v2 tasks endpoints](/api-reference/v2).
       security:
         - api_key_header: []
       tags:
@@ -5371,6 +5381,8 @@ paths:
       summary: Update Task Metadata
       description: |
         Updates task metadata (name and description). This does not affect the task code or versions.
+        
+        If you are using the new Task Builder, see the [v2 tasks endpoints](/api-reference/v2).
       security:
         - api_key_header: []
       tags:
@@ -5419,6 +5431,8 @@ paths:
       description: |
         Soft deletes a task and all its versions. The task will no longer be accessible
         but the data is preserved for potential recovery.
+        
+        If you are using the new Task Builder, see the [v2 tasks endpoints](/api-reference/v2).
       security:
         - api_key_header: []
       tags:
@@ -5456,6 +5470,8 @@ paths:
       summary: List Task Versions
       description: |
         Retrieves all versions of a specific task, including draft and published versions.
+        
+        If you are using the new Task Builder, see the [v2 tasks endpoints](/api-reference/v2).
       security:
         - api_key_header: []
       tags:
@@ -5493,6 +5509,8 @@ paths:
       summary: Get Latest Task Version
       description: |
         Retrieves the latest version of a task, including the full code content.
+        
+        If you are using the new Task Builder, see the [v2 tasks endpoints](/api-reference/v2).
       security:
         - api_key_header: []
       tags:
@@ -5530,6 +5548,8 @@ paths:
       summary: Get Task Draft
       description: |
         Retrieves the draft version of a task, including the full code content.
+        
+        If you are using the new Task Builder, see the [v2 tasks endpoints](/api-reference/v2).
       security:
         - api_key_header: []
       tags:
@@ -5566,6 +5586,8 @@ paths:
       description: |
         Creates or updates the draft version of a task. Draft versions are used for development
         and testing before publishing.
+        
+        If you are using the new Task Builder, see the [v2 tasks endpoints](/api-reference/v2).
       security:
         - api_key_header: []
       tags:
@@ -5610,6 +5632,8 @@ paths:
       description: |
         Deploys a task by creating a new version with auto-incremented version number.
         This is the recommended way to publish task changes.
+        
+        If you are using the new Task Builder, see the [v2 tasks endpoints](/api-reference/v2).
       security:
         - api_key_header: []
       tags:
@@ -5654,6 +5678,8 @@ paths:
       description: |
         Retrieves execution history for a task, including success/failure status,
         execution times, and outputs. Results can be filtered by version and status.
+        
+        If you are using the new Task Builder, see the [v2 tasks endpoints](/api-reference/v2).
       security:
         - api_key_header: []
       tags:
@@ -5720,6 +5746,8 @@ paths:
       summary: Get Task Version
       description: |
         Retrieves a specific version of a task, including the full code content.
+        
+        If you are using the new Task Builder, see the [v2 tasks endpoints](/api-reference/v2).
       security:
         - api_key_header: []
       tags:
@@ -5763,6 +5791,8 @@ paths:
       description: |
         Publishes a specific version of a task. This creates a new version if it doesn't exist,
         or updates an existing version's metadata.
+        
+        If you are using the new Task Builder, see the [v2 tasks endpoints](/api-reference/v2).
       security:
         - api_key_header: []
       tags:
@@ -5818,6 +5848,8 @@ paths:
       description: |
         Soft deletes a specific version of a task. The version will no longer be accessible
         but the data is preserved for potential recovery.
+        
+        If you are using the new Task Builder, see the [v2 tasks endpoints](/api-reference/v2).
       security:
         - api_key_header: []
       tags:
