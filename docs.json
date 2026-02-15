@@ -244,13 +244,6 @@
               "source": "/openapi-mintlify.yaml",
               "directory": "api-reference"
             }
-          },
-          {
-            "version": "Legacy",
-            "openapi": {
-              "source": "/legacy_openapi.yaml",
-              "directory": "api-reference/legacy"
-            }
           }
         ]
       }

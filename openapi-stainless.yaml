@@ -2123,6 +2123,47 @@ components:
           description: Whether to cleanup browser sessions after task execution. Defaults to true.
           default: true
 
+    RunTaskV2Request:
+      type: object
+      properties:
+        input_params:
+          type: object
+          additionalProperties:
+            type: string
+          description: Key-value pairs of input parameters for the task
+        identity_id:
+          type: string
+          description: Optional identity ID to use for the task
+        session_id:
+          type: string
+          description: Optional session ID to run the task in
+        cleanup_sessions:
+          type: boolean
+          description: Whether to clean up sessions after execution
+      required: [input_params]
+
+    TaskRunStatusV2Response:
+      type: object
+      properties:
+        run_id:
+          type: string
+          description: The ID of the task run
+        status:
+          type: string
+          enum: [queued, running, success, failure, timeout, cancelled]
+          description: Current task run status
+        result:
+          type: object
+          additionalProperties: true
+          description: Task output when available
+        error:
+          type: string
+          description: Error message when the run fails
+        session_id:
+          type: string
+          description: Session ID used for this task run
+      required: [run_id, status]
+
 
     TaskListResponse:
       type: object
@@ -5109,14 +5150,16 @@ paths:
 
   /v1/task:
     post:
-      summary: Create Task
+      summary: Create Task (Legacy)
       description: |
         Creates a new task or updates an existing task with the same name. Tasks are reusable code snippets 
         that can be executed in browser sessions. Tasks support versioning with draft and published versions.
+        
+        If you are using the new Task Builder, see the Tasks V2 endpoints in this API reference.
       security:
         - api_key_header: []
       tags:
-        - Tasks
+        - Tasks (Legacy)
       requestBody:
         required: true
         content:
@@ -5157,14 +5200,16 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
     get:
-      summary: List Tasks
+      summary: List Tasks (Legacy)
       description: |
         Retrieves a paginated list of all tasks for the authenticated team. Tasks are returned 
         with their latest version information and metadata.
+        
+        If you are using the new Task Builder, see the Tasks V2 endpoints in this API reference.
       security:
         - api_key_header: []
       tags:
-        - Tasks
+        - Tasks (Legacy)
       parameters:
         - name: page
           in: query
@@ -5201,6 +5246,8 @@ paths:
       description: |
         Executes a task in a browser session. The task can be run with a specific version or the latest version.
         Optionally, you can provide an existing session ID or let the system create a new one.
+        
+        If you are using the new Task Builder, see the Tasks V2 endpoints in this API reference.
       security:
         - api_key_header: []
       tags:
@@ -5247,14 +5294,16 @@ paths:
 
   /v1/task/run/{taskName}:
     post:
-      summary: Run Task by Name
+      summary: Run Task by Name (Legacy)
       description: |
         Executes a task by its name, always using the latest version. This is a convenience endpoint
         for running tasks without needing to know the task ID.
+        
+        If you are using the new Task Builder, see the Tasks V2 endpoints in this API reference.
       security:
         - api_key_header: []
       tags:
-        - Tasks
+        - Tasks (Legacy)
       parameters:
         - name: taskName
           in: path
@@ -5290,16 +5339,103 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /v1/task/{taskId}:
-    get:
-      summary: Get Task Metadata
+  /v2/tasks/{taskId}/run:
+    post:
+      summary: Run a Task
       description: |
-        Retrieves task metadata without the code content. Useful for getting task information
-        without downloading the full task code.
+        Triggers execution of a task by ID using the V2 tasks API.
       security:
         - api_key_header: []
       tags:
-        - Tasks
+        - Tasks V2
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          description: The ID of the task to run
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RunTaskV2Request'
+            examples:
+              runTaskV2:
+                summary: Run a task with input parameters
+                value:
+                  input_params:
+                    File Name: "invoice-2026-02.pdf"
+                    Operation: "extract_text"
+      responses:
+        '200':
+          description: Task run started successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskRunStatusV2Response'
+        '404':
+          description: Task not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Failed to run task
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v2/tasks/runs/{runId}/status:
+    get:
+      summary: Get Task Run Status
+      description: |
+        Retrieves the current status and result of a task run in the V2 tasks API.
+      security:
+        - api_key_header: []
+      tags:
+        - Tasks V2
+      parameters:
+        - name: runId
+          in: path
+          required: true
+          description: The ID of the task run
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Task run status retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskRunStatusV2Response'
+        '404':
+          description: Task run not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Failed to retrieve task run status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/task/{taskId}:
+    get:
+      summary: Get Task Metadata (Legacy)
+      description: |
+        Retrieves task metadata without the code content. Useful for getting task information
+        without downloading the full task code.
+        
+        If you are using the new Task Builder, see the Tasks V2 endpoints in this API reference.
+      security:
+        - api_key_header: []
+      tags:
+        - Tasks (Legacy)
       parameters:
         - name: taskId
           in: path
@@ -5328,13 +5464,15 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
     put:
-      summary: Update Task Metadata
+      summary: Update Task Metadata (Legacy)
       description: |
         Updates task metadata (name and description). This does not affect the task code or versions.
+        
+        If you are using the new Task Builder, see the Tasks V2 endpoints in this API reference.
       security:
         - api_key_header: []
       tags:
-        - Tasks
+        - Tasks (Legacy)
       parameters:
         - name: taskId
           in: path
@@ -5375,14 +5513,16 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
     delete:
-      summary: Delete Task
+      summary: Delete Task (Legacy)
       description: |
         Soft deletes a task and all its versions. The task will no longer be accessible
         but the data is preserved for potential recovery.
+        
+        If you are using the new Task Builder, see the Tasks V2 endpoints in this API reference.
       security:
         - api_key_header: []
       tags:
-        - Tasks
+        - Tasks (Legacy)
       parameters:
         - name: taskId
           in: path
@@ -5413,13 +5553,15 @@ paths:
 
   /v1/task/{taskId}/versions:
     get:
-      summary: List Task Versions
+      summary: List Task Versions (Legacy)
       description: |
         Retrieves all versions of a specific task, including draft and published versions.
+        
+        If you are using the new Task Builder, see the Tasks V2 endpoints in this API reference.
       security:
         - api_key_header: []
       tags:
-        - Tasks
+        - Tasks (Legacy)
       parameters:
         - name: taskId
           in: path
@@ -5450,13 +5592,15 @@ paths:
 
   /v1/task/{taskId}/latest:
     get:
-      summary: Get Latest Task Version
+      summary: Get Latest Task Version (Legacy)
       description: |
         Retrieves the latest version of a task, including the full code content.
+        
+        If you are using the new Task Builder, see the Tasks V2 endpoints in this API reference.
       security:
         - api_key_header: []
       tags:
-        - Tasks
+        - Tasks (Legacy)
       parameters:
         - name: taskId
           in: path
@@ -5487,13 +5631,15 @@ paths:
 
   /v1/task/{taskId}/draft:
     get:
-      summary: Get Task Draft
+      summary: Get Task Draft (Legacy)
       description: |
         Retrieves the draft version of a task, including the full code content.
+        
+        If you are using the new Task Builder, see the Tasks V2 endpoints in this API reference.
       security:
         - api_key_header: []
       tags:
-        - Tasks
+        - Tasks (Legacy)
       parameters:
         - name: taskId
           in: path
@@ -5522,14 +5668,16 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
     post:
-      summary: Create or Update Task Draft
+      summary: Create or Update Task Draft (Legacy)
       description: |
         Creates or updates the draft version of a task. Draft versions are used for development
         and testing before publishing.
+        
+        If you are using the new Task Builder, see the Tasks V2 endpoints in this API reference.
       security:
         - api_key_header: []
       tags:
-        - Tasks
+        - Tasks (Legacy)
       parameters:
         - name: taskId
           in: path
@@ -5566,14 +5714,16 @@ paths:
 
   /v1/task/{taskId}/deploy:
     post:
-      summary: Deploy Task
+      summary: Deploy Task (Legacy)
       description: |
         Deploys a task by creating a new version with auto-incremented version number.
         This is the recommended way to publish task changes.
+        
+        If you are using the new Task Builder, see the Tasks V2 endpoints in this API reference.
       security:
         - api_key_header: []
       tags:
-        - Tasks
+        - Tasks (Legacy)
       parameters:
         - name: taskId
           in: path
@@ -5610,14 +5760,16 @@ paths:
 
   /v1/task/{taskId}/executions:
     get:
-      summary: List Task Executions
+      summary: List Task Executions (Legacy)
       description: |
         Retrieves execution history for a task, including success/failure status,
         execution times, and outputs. Results can be filtered by version and status.
+        
+        If you are using the new Task Builder, see the Tasks V2 endpoints in this API reference.
       security:
         - api_key_header: []
       tags:
-        - Tasks
+        - Tasks (Legacy)
       parameters:
         - name: taskId
           in: path
@@ -5722,13 +5874,15 @@ paths:
 
   /v1/task/{taskId}/{taskVersion}:
     get:
-      summary: Get Task Version
+      summary: Get Task Version (Legacy)
       description: |
         Retrieves a specific version of a task, including the full code content.
+        
+        If you are using the new Task Builder, see the Tasks V2 endpoints in this API reference.
       security:
         - api_key_header: []
       tags:
-        - Tasks
+        - Tasks (Legacy)
       parameters:
         - name: taskId
           in: path
@@ -5764,14 +5918,16 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
     post:
-      summary: Publish Task Version
+      summary: Publish Task Version (Legacy)
       description: |
         Publishes a specific version of a task. This creates a new version if it doesn't exist,
         or updates an existing version's metadata.
+        
+        If you are using the new Task Builder, see the Tasks V2 endpoints in this API reference.
       security:
         - api_key_header: []
       tags:
-        - Tasks
+        - Tasks (Legacy)
       parameters:
         - name: taskId
           in: path
@@ -5819,14 +5975,16 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
     delete:
-      summary: Delete Task Version
+      summary: Delete Task Version (Legacy)
       description: |
         Soft deletes a specific version of a task. The version will no longer be accessible
         but the data is preserved for potential recovery.
+        
+        If you are using the new Task Builder, see the Tasks V2 endpoints in this API reference.
       security:
         - api_key_header: []
       tags:
-        - Tasks
+        - Tasks (Legacy)
       parameters:
         - name: taskId
           in: path
