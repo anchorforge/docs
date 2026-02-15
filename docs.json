@@ -228,7 +228,7 @@
         "tab": "API Reference",
         "versions": [
           {
-            "version": "v2",
+            "version": "Partial - v2",
             "openapi": {
               "source": "/openapi-v2-mintlify.yaml",
               "directory": "api-reference/v2"
