@@ -5156,7 +5156,7 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
   /v1/task/run:
     post:
-      summary: Run Task (Legacy)
+      summary: Run Task
       description: |
         Executes a task in a browser session. The task can be run with a specific version or the latest version.
         Optionally, you can provide an existing session ID or let the system create a new one.
@@ -5165,7 +5165,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Tasks (Legacy)
+        - Tasks
       requestBody:
         required: true
         content:
