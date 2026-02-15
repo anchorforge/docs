@@ -94,8 +94,8 @@ paths:
                 summary: Run a task with input parameters
                 value:
                   input_params:
-                    ANCHOR_TARGET_URL: "https://example.com"
-                    ANCHOR_MAX_PAGES: "10"
+                    File Name: "invoice-2026-02.pdf"
+                    Operation: "extract_text"
       responses:
         '200':
           description: Task run started successfully
