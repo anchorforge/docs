@@ -5064,7 +5064,7 @@ paths:
 
   /v1/task:
     post:
-      summary: Create Task
+      summary: Create Task (Legacy)
       description: |
         Creates a new task or updates an existing task with the same name. Tasks are reusable code snippets 
         that can be executed in browser sessions. Tasks support versioning with draft and published versions.
@@ -5114,7 +5114,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
     get:
-      summary: List Tasks
+      summary: List Tasks (Legacy)
       description: |
         Retrieves a paginated list of all tasks for the authenticated team. Tasks are returned 
         with their latest version information and metadata.
@@ -5156,7 +5156,7 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
   /v1/task/run:
     post:
-      summary: Run Task
+      summary: Run Task (Legacy)
       description: |
         Executes a task in a browser session. The task can be run with a specific version or the latest version.
         Optionally, you can provide an existing session ID or let the system create a new one.
@@ -5208,7 +5208,7 @@ paths:
 
   /v1/task/run/{taskName}:
     post:
-      summary: Run Task by Name
+      summary: Run Task by Name (Legacy)
       description: |
         Executes a task by its name, always using the latest version. This is a convenience endpoint
         for running tasks without needing to know the task ID.
@@ -5340,7 +5340,7 @@ paths:
 
   /v1/task/{taskId}:
     get:
-      summary: Get Task Metadata
+      summary: Get Task Metadata (Legacy)
       description: |
         Retrieves task metadata without the code content. Useful for getting task information
         without downloading the full task code.
@@ -5378,7 +5378,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
     put:
-      summary: Update Task Metadata
+      summary: Update Task Metadata (Legacy)
       description: |
         Updates task metadata (name and description). This does not affect the task code or versions.
         
@@ -5427,7 +5427,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
     delete:
-      summary: Delete Task
+      summary: Delete Task (Legacy)
       description: |
         Soft deletes a task and all its versions. The task will no longer be accessible
         but the data is preserved for potential recovery.
@@ -5467,7 +5467,7 @@ paths:
 
   /v1/task/{taskId}/versions:
     get:
-      summary: List Task Versions
+      summary: List Task Versions (Legacy)
       description: |
         Retrieves all versions of a specific task, including draft and published versions.
         
@@ -5506,7 +5506,7 @@ paths:
 
   /v1/task/{taskId}/latest:
     get:
-      summary: Get Latest Task Version
+      summary: Get Latest Task Version (Legacy)
       description: |
         Retrieves the latest version of a task, including the full code content.
         
@@ -5545,7 +5545,7 @@ paths:
 
   /v1/task/{taskId}/draft:
     get:
-      summary: Get Task Draft
+      summary: Get Task Draft (Legacy)
       description: |
         Retrieves the draft version of a task, including the full code content.
         
@@ -5582,7 +5582,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
     post:
-      summary: Create or Update Task Draft
+      summary: Create or Update Task Draft (Legacy)
       description: |
         Creates or updates the draft version of a task. Draft versions are used for development
         and testing before publishing.
@@ -5628,7 +5628,7 @@ paths:
 
   /v1/task/{taskId}/deploy:
     post:
-      summary: Deploy Task
+      summary: Deploy Task (Legacy)
       description: |
         Deploys a task by creating a new version with auto-incremented version number.
         This is the recommended way to publish task changes.
@@ -5674,7 +5674,7 @@ paths:
 
   /v1/task/{taskId}/executions:
     get:
-      summary: List Task Executions
+      summary: List Task Executions (Legacy)
       description: |
         Retrieves execution history for a task, including success/failure status,
         execution times, and outputs. Results can be filtered by version and status.
@@ -5743,7 +5743,7 @@ paths:
 
   /v1/task/{taskId}/{taskVersion}:
     get:
-      summary: Get Task Version
+      summary: Get Task Version (Legacy)
       description: |
         Retrieves a specific version of a task, including the full code content.
         
@@ -5787,7 +5787,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
     post:
-      summary: Publish Task Version
+      summary: Publish Task Version (Legacy)
       description: |
         Publishes a specific version of a task. This creates a new version if it doesn't exist,
         or updates an existing version's metadata.
@@ -5844,7 +5844,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
     delete:
-      summary: Delete Task Version
+      summary: Delete Task Version (Legacy)
       description: |
         Soft deletes a specific version of a task. The version will no longer be accessible
         but the data is preserved for potential recovery.
