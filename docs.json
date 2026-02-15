@@ -228,8 +228,15 @@
         "tab": "API Reference",
         "versions": [
           {
-            "version": "Latest - v1",
+            "version": "Latest - v2",
             "default": true,
+            "openapi": {
+              "source": "/openapi-v2-mintlify.yaml",
+              "directory": "api-reference/v2"
+            }
+          },
+          {
+            "version": "Latest - v1",
             "openapi": {
               "source": "/openapi-mintlify.yaml",
               "directory": "api-reference"
