@@ -235,7 +235,7 @@
             }
           },
           {
-            "version": "v1",
+            "version": "Latest - v1",
             "default": true,
             "openapi": {
               "source": "/openapi-mintlify.yaml",
