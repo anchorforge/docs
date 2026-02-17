@@ -7,7 +7,7 @@ icon: 'id-card'
 <Warning>
   This feature is currently in **Early Availability**. Contact [**support**](mailto:support@anchorbrowser.io) to enable this feature.
 </Warning>
-
+## Quick Start
 <Steps>
 <Step title='Create an Application'>
 <CodeGroup>
@@ -187,6 +187,90 @@ print(session.data.id)
 </CodeGroup>
 </Step>
 </Steps>
+
+## Identity Metadata
+
+You can add custom metadata to identities for filtering and organization. Metadata is a flexible key-value store that allows you to tag identities with custom attributes.
+
+### Creating an Identity with Metadata
+
+<CodeGroup>
+```javascript node.js
+const identity = await anchorClient.identities.create({
+  source: 'https://linkedin.com',
+  name: 'John Doe',
+  metadata: {
+    department: 'Engineering',
+    role: 'admin'
+  },
+  credentials: [{
+    type: 'username_password',
+    username: 'john@example.com',
+    password: 'secret'
+  }]
+});
+```
+
+```python python
+identity = anchor_client.identities.create(
+    source="https://linkedin.com",
+    name="John Doe",
+    metadata={
+        "department": "Engineering",
+        "role": "admin"
+    },
+    credentials=[{
+        "type": "username_password",
+        "username": "john@example.com",
+        "password": "secret"
+    }]
+)
+```
+
+```bash cURL
+curl -X POST "https://api.anchorbrowser.io/v1/identities" \
+  -H "anchor-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "source": "https://linkedin.com",
+    "name": "John Doe",
+    "metadata": {
+      "department": "Engineering",
+      "role": "admin"
+    },
+    "credentials": [{
+      "type": "username_password",
+      "username": "john@example.com",
+      "password": "secret"
+    }]
+  }'
+```
+</CodeGroup>
+
+### Filtering Identities by Metadata
+
+You can filter identities by metadata when listing them for an application:
+
+<CodeGroup>
+```javascript node.js
+const identities = await anchorClient.applications.listIdentities(app.id, {
+  metadata: JSON.stringify({ department: 'Engineering' })
+});
+```
+
+```python python
+identities = anchor_client.applications.list_identities(
+    application_id="4d0cfce6-cf86-43eb-9955-1332941dbbb6",
+    metadata=json.dumps({"department": "Engineering"})
+)
+```
+
+```bash cURL
+curl -G "https://api.anchorbrowser.io/v1/applications/{app_id}/identities" \
+  --data-urlencode 'metadata={"department":"Engineering"}' \
+  -H "anchor-api-key: YOUR_API_KEY"
+```
+</CodeGroup>
 
 ## Related
 
