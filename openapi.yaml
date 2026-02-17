@@ -3080,9 +3080,9 @@ paths:
         - name: metadata
           in: query
           required: false
-          description: Filter identities by metadata. Pass a JSON object to filter identities whose metadata contains the specified key-value pairs.
+          description: Filter identities by metadata. Pass a **JSON object** to filter identities whose metadata contains the specified key-value pairs.
           schema:
-            type: object
+            type: string
             additionalProperties: true
           style: deepObject
           explode: true
