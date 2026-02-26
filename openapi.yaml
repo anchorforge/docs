@@ -2790,128 +2790,91 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
-  /v1/sessions/{session_id}/recordings:
-    get:
-      summary: List Session Recordings
-      description: Retrieves the URLs of the browser session's video recordings. Requires a valid API key for authentication.
-      tags:
-        - Session Recordings
-      parameters:
-        - in: path
-          name: session_id
-          required: true
-          description: The ID of the browser session to retrieve recordings for.
-          schema:
-            type: string
+  /v2/tasks/{taskId}/run:
+    post:
+      summary: Run a Task
+      description: |
+        Triggers execution of a task by ID using the non-deprecated Tasks endpoints.
       security:
         - api_key_header: []
-      responses:
-        '200':
-          description: A set of recording URLs associated with the browser session.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RecordingListResponse'
-        '401':
-          description: Invalid API Key.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Session recordings not found.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '429':
-          description: Too many requests, please try again later.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-  /v1/sessions/{session_id}/downloads:
-    get:
-      summary: List Session Downloads
-      description: Retrieves metadata of files downloaded during a browser session. Requires a valid API key for authentication.
       tags:
-        - Browser Sessions
+        - Tasks
       parameters:
-        - in: path
-          name: session_id
+        - name: taskId
+          in: path
           required: true
-          description: The unique identifier of the browser session to retrieve downloads for.
+          description: The ID of the task to run
           schema:
             type: string
-      security:
-        - api_key_header: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RunTaskV2Request'
+            examples:
+              runTaskV2:
+                summary: Run a task with input parameters
+                value:
+                  input_params:
+                    File Name: "invoice-2026-02.pdf"
+                    Operation: "extract_text"
       responses:
         '200':
-          description: A list of download metadata associated with the browser session.
+          description: Task run started successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DownloadListResponse'
-        '401':
-          description: Invalid or missing API key.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: '#/components/schemas/TaskRunStatusV2Response'
         '404':
-          description: The browser session or its downloads metadata could not be found.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '429':
-          description: Too many requests, please try again later.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-  /v1/sessions/{session_id}/recordings/primary/fetch:
-    get:
-      summary: Get Session Recording
-      description: Downloads the primary recording file for the specified browser session. Returns the recording as an MP4 file.
-      tags:
-        - Session Recordings
-      parameters:
-        - in: path
-          name: session_id
-          required: true
-          description: The ID of the browser session to download the recording for.
-          schema:
-            type: string
-      security:
-        - api_key_header: []
-      responses:
-        '200':
-          description: The browser session recording file
-          content:
-            video/mp4:
-              schema:
-                type: string
-                format: binary
-        '401':
-          description: Invalid API Key - Authentication failed or API key is missing.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Recording not found
+          description: Task not found
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: Internal Server Error
+          description: Failed to run task
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  
+
+  /v2/tasks/runs/{runId}/status:
+    get:
+      summary: Get Task Run Status
+      description: |
+        Retrieves the current status and result of a task run in the non-deprecated Tasks endpoints.
+      security:
+        - api_key_header: []
+      tags:
+        - Tasks
+      parameters:
+        - name: runId
+          in: path
+          required: true
+          description: The ID of the task run
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Task run status retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskRunStatusV2Response'
+        '404':
+          description: Task run not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Failed to retrieve task run status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /v1/applications:
     post:
       summary: Create Application
@@ -5238,7 +5201,7 @@ paths:
         Creates a new task or updates an existing task with the same name. Tasks are reusable code snippets 
         that can be executed in browser sessions. Tasks support versioning with draft and published versions.
         
-        If you are using the new Task Builder, see the Tasks V2 endpoints in this API reference.
+        If you are using the new Task Builder, see the non-deprecated Tasks endpoints in this API reference.
       security:
         - api_key_header: []
       tags:
@@ -5288,7 +5251,7 @@ paths:
         Retrieves a paginated list of all tasks for the authenticated team. Tasks are returned 
         with their latest version information and metadata.
         
-        If you are using the new Task Builder, see the Tasks V2 endpoints in this API reference.
+        If you are using the new Task Builder, see the non-deprecated Tasks endpoints in this API reference.
       security:
         - api_key_header: []
       tags:
@@ -5330,7 +5293,7 @@ paths:
         Executes a task in a browser session. The task can be run with a specific version or the latest version.
         Optionally, you can provide an existing session ID or let the system create a new one.
         
-        If you are using the new Task Builder, see the Tasks V2 endpoints in this API reference.
+        If you are using the new Task Builder, see the non-deprecated Tasks endpoints in this API reference.
       security:
         - api_key_header: []
       tags:
@@ -5382,7 +5345,7 @@ paths:
         Executes a task by its name, always using the latest version. This is a convenience endpoint
         for running tasks without needing to know the task ID.
         
-        If you are using the new Task Builder, see the Tasks V2 endpoints in this API reference.
+        If you are using the new Task Builder, see the non-deprecated Tasks endpoints in this API reference.
       security:
         - api_key_header: []
       tags:
@@ -5421,92 +5384,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-
-  /v2/tasks/{taskId}/run:
-    post:
-      summary: Run a Task
-      description: |
-        Triggers execution of a task by ID using the V2 tasks API.
-      security:
-        - api_key_header: []
-      tags:
-        - Tasks V2
-      parameters:
-        - name: taskId
-          in: path
-          required: true
-          description: The ID of the task to run
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/RunTaskV2Request'
-            examples:
-              runTaskV2:
-                summary: Run a task with input parameters
-                value:
-                  input_params:
-                    File Name: "invoice-2026-02.pdf"
-                    Operation: "extract_text"
-      responses:
-        '200':
-          description: Task run started successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TaskRunStatusV2Response'
-        '404':
-          description: Task not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
-          description: Failed to run task
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
-  /v2/tasks/runs/{runId}/status:
-    get:
-      summary: Get Task Run Status
-      description: |
-        Retrieves the current status and result of a task run in the V2 tasks API.
-      security:
-        - api_key_header: []
-      tags:
-        - Tasks V2
-      parameters:
-        - name: runId
-          in: path
-          required: true
-          description: The ID of the task run
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Task run status retrieved successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TaskRunStatusV2Response'
-        '404':
-          description: Task run not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
-          description: Failed to retrieve task run status
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
   /v1/task/{taskId}:
     get:
       summary: Get Task Metadata (Legacy)
@@ -5514,7 +5391,7 @@ paths:
         Retrieves task metadata without the code content. Useful for getting task information
         without downloading the full task code.
         
-        If you are using the new Task Builder, see the Tasks V2 endpoints in this API reference.
+        If you are using the new Task Builder, see the non-deprecated Tasks endpoints in this API reference.
       security:
         - api_key_header: []
       tags:
@@ -5551,7 +5428,7 @@ paths:
       description: |
         Updates task metadata (name and description). This does not affect the task code or versions.
         
-        If you are using the new Task Builder, see the Tasks V2 endpoints in this API reference.
+        If you are using the new Task Builder, see the non-deprecated Tasks endpoints in this API reference.
       security:
         - api_key_header: []
       tags:
@@ -5601,7 +5478,7 @@ paths:
         Soft deletes a task and all its versions. The task will no longer be accessible
         but the data is preserved for potential recovery.
         
-        If you are using the new Task Builder, see the Tasks V2 endpoints in this API reference.
+        If you are using the new Task Builder, see the non-deprecated Tasks endpoints in this API reference.
       security:
         - api_key_header: []
       tags:
@@ -5640,7 +5517,7 @@ paths:
       description: |
         Retrieves all versions of a specific task, including draft and published versions.
         
-        If you are using the new Task Builder, see the Tasks V2 endpoints in this API reference.
+        If you are using the new Task Builder, see the non-deprecated Tasks endpoints in this API reference.
       security:
         - api_key_header: []
       tags:
@@ -5679,7 +5556,7 @@ paths:
       description: |
         Retrieves the latest version of a task, including the full code content.
         
-        If you are using the new Task Builder, see the Tasks V2 endpoints in this API reference.
+        If you are using the new Task Builder, see the non-deprecated Tasks endpoints in this API reference.
       security:
         - api_key_header: []
       tags:
@@ -5718,7 +5595,7 @@ paths:
       description: |
         Retrieves the draft version of a task, including the full code content.
         
-        If you are using the new Task Builder, see the Tasks V2 endpoints in this API reference.
+        If you are using the new Task Builder, see the non-deprecated Tasks endpoints in this API reference.
       security:
         - api_key_header: []
       tags:
@@ -5756,7 +5633,7 @@ paths:
         Creates or updates the draft version of a task. Draft versions are used for development
         and testing before publishing.
         
-        If you are using the new Task Builder, see the Tasks V2 endpoints in this API reference.
+        If you are using the new Task Builder, see the non-deprecated Tasks endpoints in this API reference.
       security:
         - api_key_header: []
       tags:
@@ -5802,7 +5679,7 @@ paths:
         Deploys a task by creating a new version with auto-incremented version number.
         This is the recommended way to publish task changes.
         
-        If you are using the new Task Builder, see the Tasks V2 endpoints in this API reference.
+        If you are using the new Task Builder, see the non-deprecated Tasks endpoints in this API reference.
       security:
         - api_key_header: []
       tags:
@@ -5848,7 +5725,7 @@ paths:
         Retrieves execution history for a task, including success/failure status,
         execution times, and outputs. Results can be filtered by version and status.
         
-        If you are using the new Task Builder, see the Tasks V2 endpoints in this API reference.
+        If you are using the new Task Builder, see the non-deprecated Tasks endpoints in this API reference.
       security:
         - api_key_header: []
       tags:
@@ -5917,7 +5794,7 @@ paths:
         Retrieves a single execution result by its ID. This endpoint is useful for polling
         execution status in async mode or retrieving detailed execution information.
         
-        If you are using the new Task Builder, see the Tasks V2 endpoints in this API reference.
+        If you are using the new Task Builder, see the non-deprecated Tasks endpoints in this API reference.
       security:
         - api_key_header: []
       tags:
@@ -5963,7 +5840,7 @@ paths:
       description: |
         Retrieves a specific version of a task, including the full code content.
         
-        If you are using the new Task Builder, see the Tasks V2 endpoints in this API reference.
+        If you are using the new Task Builder, see the non-deprecated Tasks endpoints in this API reference.
       security:
         - api_key_header: []
       tags:
@@ -6008,7 +5885,7 @@ paths:
         Publishes a specific version of a task. This creates a new version if it doesn't exist,
         or updates an existing version's metadata.
         
-        If you are using the new Task Builder, see the Tasks V2 endpoints in this API reference.
+        If you are using the new Task Builder, see the non-deprecated Tasks endpoints in this API reference.
       security:
         - api_key_header: []
       tags:
@@ -6065,7 +5942,7 @@ paths:
         Soft deletes a specific version of a task. The version will no longer be accessible
         but the data is preserved for potential recovery.
         
-        If you are using the new Task Builder, see the Tasks V2 endpoints in this API reference.
+        If you are using the new Task Builder, see the non-deprecated Tasks endpoints in this API reference.
       security:
         - api_key_header: []
       tags:
@@ -6161,3 +6038,126 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/sessions/{session_id}/recordings:
+    get:
+      summary: List Session Recordings
+      description: Retrieves the URLs of the browser session's video recordings. Requires a valid API key for authentication.
+      tags:
+        - Session Recordings
+      parameters:
+        - in: path
+          name: session_id
+          required: true
+          description: The ID of the browser session to retrieve recordings for.
+          schema:
+            type: string
+      security:
+        - api_key_header: []
+      responses:
+        '200':
+          description: A set of recording URLs associated with the browser session.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordingListResponse'
+        '401':
+          description: Invalid API Key.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Session recordings not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Too many requests, please try again later.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v1/sessions/{session_id}/downloads:
+    get:
+      summary: List Session Downloads
+      description: Retrieves metadata of files downloaded during a browser session. Requires a valid API key for authentication.
+      tags:
+        - Browser Sessions
+      parameters:
+        - in: path
+          name: session_id
+          required: true
+          description: The unique identifier of the browser session to retrieve downloads for.
+          schema:
+            type: string
+      security:
+        - api_key_header: []
+      responses:
+        '200':
+          description: A list of download metadata associated with the browser session.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DownloadListResponse'
+        '401':
+          description: Invalid or missing API key.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: The browser session or its downloads metadata could not be found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Too many requests, please try again later.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v1/sessions/{session_id}/recordings/primary/fetch:
+    get:
+      summary: Get Session Recording
+      description: Downloads the primary recording file for the specified browser session. Returns the recording as an MP4 file.
+      tags:
+        - Session Recordings
+      parameters:
+        - in: path
+          name: session_id
+          required: true
+          description: The ID of the browser session to download the recording for.
+          schema:
+            type: string
+      security:
+        - api_key_header: []
+      responses:
+        '200':
+          description: The browser session recording file
+          content:
+            video/mp4:
+              schema:
+                type: string
+                format: binary
+        '401':
+          description: Invalid API Key - Authentication failed or API key is missing.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Recording not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  
