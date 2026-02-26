@@ -6,6 +6,22 @@ info:
 servers:
   - url: https://api.anchorbrowser.io
     description: API server
+tags:
+  - name: AI Tools
+  - name: Agentic capabilities
+  - name: Browser Sessions
+  - name: Tasks
+  - name: Tasks (Legacy)
+  - name: Tools
+  - name: OS Level Control
+  - name: Profiles
+  - name: Identities
+  - name: Applications
+  - name: Session Recordings
+  - name: Extensions
+  - name: Batch Sessions
+  - name: Integrations
+  - name: Event Coordination
 components:
   securitySchemes:
     api_key_header:
@@ -5430,7 +5446,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Tasks V2
+        - Tasks
       parameters:
         - name: taskId
           in: path
@@ -5479,7 +5495,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Tasks V2
+        - Tasks
       parameters:
         - name: runId
           in: path
