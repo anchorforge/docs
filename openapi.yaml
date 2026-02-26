@@ -5430,7 +5430,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Tasks V2
+        - Tasks
       parameters:
         - name: taskId
           in: path
@@ -5479,7 +5479,7 @@ paths:
       security:
         - api_key_header: []
       tags:
-        - Tasks V2
+        - Tasks
       parameters:
         - name: runId
           in: path
