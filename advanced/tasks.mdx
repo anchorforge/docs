@@ -1,27 +1,210 @@
 ---
 title: "Automation Tasks"
-description: "Create, manage, and execute reusable browser automation tasks"
+description: "Tasks are reusable browser automations that run on any website - with or without authentication. Define your own or import pre-built automations from the Library, then execute via the SDK, API, or dashboard."
 icon: "code"
 ---
 
-## Overview
+<img
+  className="mx-auto"
+  src="/images/tasks-dashboard-white.webp"
+  alt="Tasks dashboard showing task management interface"
+  width="800"
+/>
 
-The Tasks API enables you to **create, version, and execute reusable browser automation code** in your Anchor Browser sessions. Tasks allow you to:
+<Expandable title="Authenticated Task" defaultOpen>
+
+## Authenticated Task
+
+For tasks that require login to an application. Make sure you have set up the required [authentication and identity](/essentials/authentication-and-identity).
+
+### Create a Task
+
+```bash cURL
+curl -X POST "https://api.anchorbrowser.io/v1/tools" \
+  -H "anchor-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Send LinkedIn Message",
+    "description": "Send a message to a colleague on LinkedIn",
+    "application_id": "your-application-uuid",
+    "input_schema": [
+      {
+        "display_name": "Recipient",
+        "type": "string",
+        "required": true,
+        "description": "Name or profile URL of the recipient"
+      },
+      {
+        "display_name": "Message",
+        "type": "string",
+        "required": true,
+        "description": "The message content to send"
+      }
+    ]
+  }'
+```
+
+### Run a Task
+
+```bash cURL
+curl -X POST "https://api.anchorbrowser.io/v2/tasks/{taskId}/run" \
+  -H "anchor-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "input_params": {
+      "Recipient": "John Doe",
+      "Message": "Hello, how are you?"
+    },
+    "identity_id": "your-identity-uuid"
+  }'
+```
+
+<Warning>
+The browser session is not terminated by default when a task ends. To automatically close the session, set `"cleanup_sessions": true` in the request body.
+</Warning>
+
+<br />
+See [Getting Run Results](#getting-run-results) to poll for the task output.
+<br />
+<br />
+</Expandable>
+
+<Expandable title="Unauthenticated Task" defaultOpen>
+
+## Unauthenticated Task
+
+For tasks on public websites that don't require login.
+
+### Create a Task
+
+```bash cURL
+curl -X POST "https://api.anchorbrowser.io/v1/tools" \
+  -H "anchor-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Get Bitcoin Price",
+    "description": "Get the current Bitcoin price from CoinGecko"
+  }'
+```
+
+### Run a Task
+
+```bash cURL
+curl -X POST "https://api.anchorbrowser.io/v2/tasks/{taskId}/run" \
+  -H "anchor-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "input_params": {}
+  }'
+```
+
+<Warning>
+The browser session is not terminated by default when a task ends. To automatically close the session, set `"cleanup_sessions": true` in the request body.
+</Warning>
+
+</Expandable>
+
+## Getting Run Results
+
+Whether running **authenticated** or **unauthenticated** tasks, the run endpoint returns a `run_id`. Use it to poll for the result:
+
+```bash cURL
+curl "https://api.anchorbrowser.io/v2/tasks/runs/{runId}/status" \
+  -H "anchor-api-key: YOUR_API_KEY"
+```
+
+The response includes:
+- `status`: `queued`, `running`, `success`, `failure`, `timeout`, or `cancelled`
+- `result`: the task output (when status is `success`)
+- `error`: error message (when status is `failure`)
+
+# Using the Dashboard
+
+The [Tasks Dashboard](https://app.anchorbrowser.io/tools) provides a visual interface to create, manage, and run your automation tasks.
+
+### Create a Task
+
+Click the **Create Task** button to open the task creation wizard, or browse the [Library](https://app.anchorbrowser.io/library) for ready-to-use automations.
 
 <img
   className="mx-auto"
-  src="/images/tasks-dashboard.webp"
-  alt="Tasks dashboard showing task management interface"
-  
+  src="/images/tasks-form-create-white.webp"
+  alt="Task creation wizard"
+  width="800"
+/>
+
+<Steps>
+<Step title="Application & Goal">
+Select a target application from your connected apps (e.g., LinkedIn, NetSuite, Salesforce) or choose **Unauthenticated** for tasks on public websites. Describe what you want to automate in natural language.
+</Step>
+<Step title="Identity">
+For authenticated applications, choose which identity to use for login. For unauthenticated tasks, this step is skipped automatically.
+</Step>
+<Step title="Build the Flow">
+Demonstrate the task by recording your actions manually, or let AI generate the workflow automatically.
+</Step>
+<Step title="Review">
+Review the recorded steps, make adjustments, and save. The task appears in your dashboard ready to run.
+</Step>
+</Steps>
+
+### Run a Task
+
+Click on a task card and then click **Run Task** to open the run dialog.
+
+<img
+  className="mx-auto"
+  src="/images/tasks-page-header-white.webp"
+  alt="Task card with Run Task button"
+  width="600"
+/>
+
+For authenticated tasks, select an identity.
+
+<img
+  className="mx-auto"
+  src="/images/tasks-form-run-identity-white.webp"
+  alt="Select identity for task run"
+  width="600"
+/>
+
+Fill in the input parameters and click **Run Task** to start.
+
+<img
+  className="mx-auto"
+  src="/images/tasks-form-run-parameters-white.webp"
+  alt="Fill in task parameters"
+  width="600"
+/>
+
+### Getting Run Results
+
+View the task run history and results directly in the dashboard by clicking on a task and selecting the **Runs** tab.
+
+<img
+  className="mx-auto"
+  src="/images/tasks-page-runs.webp"
+  alt="Task runs history"
+  width="600"
+/>
+
+<Expandable title="Legacy Tasks API">
+
+# Legacy Tasks API
+
+The Legacy Tasks API enables you to **create, version, and execute reusable browser automation code** programmatically in your Anchor Browser sessions.
+
+<img
+  className="mx-auto"
+  src="/images/tasks-legacy-dashboard.webp"
+  alt="Legacy tasks dashboard"
 />
 
 <Note>
-Tasks are executed in a secure sandbox environment and can access the full Anchor Browser API for automation capabilities.
+Legacy tasks are executed in a secure sandbox environment and can access the full Anchor Browser API for automation capabilities.
 </Note>
 
-## Creating Your First Task
-
-## Writing Task Code
+## Writing Legacy Task Code
 
 For reliable execution, **follow these guidelines:**
  - Write your **code in TypeScript.**
@@ -29,10 +212,10 @@ For reliable execution, **follow these guidelines:**
  - In that function, **return** whatever your workflow requires as **output** (e.g., status, messages, domain data).
 
 <Note>
-Tasks can receive values as inputs. **All input names must be prefixed with `ANCHOR_`**
+Legacy tasks can receive values as inputs. **All input names must be prefixed with `ANCHOR_`**
 </Note>
 
-### Basic Task Example
+### Basic Legacy Task Example
 
 <CodeGroup>
 ```typescript typescript
@@ -72,7 +255,7 @@ export default async function run() {
 
 ### Using the SDK
 
-Create your task in Anchor:
+Create your legacy task in Anchor:
 <Steps>
 <Step title="Save your typescript code as a .ts file">
 <Warning>
@@ -88,7 +271,7 @@ base64 -i your-task.ts
 
 Copy the output for later.
 </Step>
-<Step title="Create your Task in Anchor" >
+<Step title="Create your Legacy Task in Anchor" >
 <CodeGroup>
 ```typescript node.js
 import Anchorbrowser from 'anchorbrowser';
@@ -131,7 +314,7 @@ print(f"Task created: {task_id}")
 ```
 </CodeGroup>
 </Step>
-<Step title="Running Tasks">
+<Step title="Running Legacy Tasks">
 
 <CodeGroup>
 ```typescript node.js
@@ -164,7 +347,7 @@ print(f"Task execution started: {execution.data}")
 </CodeGroup>
 
 <Note>
-By default, the browser session is automatically closed when the task ends. Set `cleanupSessions: false` to keep the session open after task execution.
+By default, the browser session is automatically closed when a legacy task ends. Set `cleanupSessions: false` to keep the session open after task execution.
 </Note>
 <img
   className="mx-auto"
@@ -173,7 +356,7 @@ By default, the browser session is automatically closed when the task ends. Set 
 />
 
 </Step>
-<Step title="Deploy Task">
+<Step title="Deploy Legacy Task">
 <CodeGroup>
 ```typescript node.js
 // Deploy the task to make it available for production use
@@ -201,13 +384,20 @@ print(f"Task deployed: {deployment.data}")
 </Step>
 </Steps>
 
-## Async Task
+## Async Legacy Task
 
-By default, task execution is **synchronous** - the API call waits for the task to complete before returning results. For long-running tasks, you can use **asynchronous execution** to start the task and check results later.
+By default, legacy task execution is **synchronous** - the API call waits for the task to complete before returning results. For long-running tasks, you can use **asynchronous execution** to start the task and check results later.
 
-### Running Tasks Asynchronously
+<img
+  className="mx-auto"
+  src="/images/tasks-legacy-run.webp"
+  alt="Legacy task run interface"
+  width="600"
+/>
 
-When you set `async: true`, the API returns immediately with a confirmation that the task has started. You can then poll for execution results using the task execution history endpoint.
+### Running Legacy Tasks Asynchronously
+
+When you set `async: true`, the API returns immediately with a confirmation that the legacy task has started. You can then poll for execution results using the task execution history endpoint.
 
 <CodeGroup>
 ```typescript node.js
@@ -245,7 +435,7 @@ print(f"Task execution started: {execution.data}")
 
 ### Checking Execution Results
 
-After starting an async task, you can check its execution status and results by querying the task's execution history endpoint:
+After starting an async legacy task, you can check its execution status and results by querying the task's execution history endpoint:
 
 <CodeGroup>
 ```typescript node.js
@@ -310,14 +500,14 @@ print(f"Execution results: {results['data']}")
 ```
 
 <Warning>
-Async task executions have a maximum duration of **3 hours**. Tasks that exceed this limit will be automatically cancelled.
+Async legacy task executions have a maximum duration of **3 hours**. Legacy tasks that exceed this limit will be automatically cancelled.
 
-**Note:** Tasks must be deployed (not just in draft) to appear in the execution results list.
+**Note:** Legacy tasks must be deployed (not just in draft) to appear in the execution results list.
 </Warning>
 
 ### Polling for Results
 
-For async tasks, you can implement polling to wait for completion:
+For async legacy tasks, you can implement polling to wait for completion:
 
 <CodeGroup>
 ```typescript node.js
@@ -400,9 +590,11 @@ print(f"Task completed: {result}")
 </CodeGroup>
 
 
+</Expandable>
+
 ## Support
 
-For additional help with the Tasks API:
+For additional help:
 
-- Check the [API Reference](/api-reference/browser-sessions/start-browser-session/) for detailed tasks endpoint documentation
-- Contact Anchor Browser support at support@anchorbrowser.io
+- Check the [API Reference](/api-reference/browser-sessions/start-browser-session/) for detailed endpoint documentation
+- Contact support at support@anchorbrowser.io
