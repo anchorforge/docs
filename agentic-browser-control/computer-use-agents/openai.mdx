@@ -18,7 +18,7 @@ OpenAI Computer Use provides:
 
 | Model | Model ID | Best For |
 |-------|----------|----------|
-| Computer Use Preview | `computer-use-preview` | Screenshot-based automation **(default)** |
+| OpenAI 5.4 | `openai-5.4` | Screenshot-based automation **(default)** |
 
 ## Code Example
 
@@ -37,7 +37,7 @@ const response = await anchorClient.agent.task(
     taskOptions: {
       url: 'https://example.com/pricing',
       agent: 'openai-cua',
-      // model: 'computer-use-preview',  // Default model
+      // model: 'openai-5.4',  // Default model
       maxSteps: 25,
       outputSchema: {
         type: 'object',
@@ -73,7 +73,7 @@ response = anchor_client.agent.task(
     task_options={
         'url': 'https://example.com/pricing',
         'agent': 'openai-cua',
-        # 'model': 'computer-use-preview',  # Default model
+        # 'model': 'openai-5.4',  # Default model
         'max_steps': 25,
         'output_schema': {
             'type': 'object',
@@ -104,7 +104,7 @@ print(response)
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `agent` | string | Must be `openai-cua` |
-| `model` | string | OpenAI model to use (default: `computer-use-preview`) |
+| `model` | string | OpenAI model to use (default: `openai-5.4`) |
 | `url` | string | Starting URL for the task |
 | `max_steps` | integer | Maximum actions the agent can take |
 | `output_schema` | object | JSON Schema for structured output |

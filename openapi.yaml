@@ -429,6 +429,74 @@ components:
               items:
                 $ref: '#/components/schemas/SessionStatus'
 
+    SessionHistoryDataPoint:
+      type: object
+      properties:
+        date:
+          type: string
+          description: Date/time period for this data point.
+        session_count:
+          type: number
+          description: Number of sessions created in this period.
+        proxy_bytes:
+          type: number
+          description: Total proxy bytes used in this period.
+        ai_steps:
+          type: number
+          description: Total AI steps taken in this period.
+        session_hours:
+          type: number
+          description: Total session hours in this period (duration/3600).
+        credits_used:
+          type: number
+          description: Total credits used in this period.
+
+    SessionHistorySummary:
+      type: object
+      properties:
+        total_sessions:
+          type: number
+          description: Total number of sessions in the time range.
+        total_proxy_bytes:
+          type: number
+          description: Total proxy bytes used in the time range.
+        total_ai_steps:
+          type: number
+          description: Total AI steps taken in the time range.
+        total_session_hours:
+          type: number
+          description: Total session hours in the time range.
+        total_credits_used:
+          type: number
+          description: Total credits used in the time range.
+
+    SessionHistoryPagination:
+      type: object
+      properties:
+        current_page:
+          type: integer
+        total_pages:
+          type: integer
+        total_records:
+          type: integer
+        has_next:
+          type: boolean
+        has_prev:
+          type: boolean
+
+    SessionHistoryResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          description: Historical data points.
+          items:
+            $ref: '#/components/schemas/SessionHistoryDataPoint'
+        summary:
+          $ref: '#/components/schemas/SessionHistorySummary'
+        pagination:
+          $ref: '#/components/schemas/SessionHistoryPagination'
+
     # ==============================
     # RECORDING SCHEMAS
     # ==============================
@@ -2600,6 +2668,72 @@ paths:
         - api_key_header: []
       tags:
         - Browser Sessions
+      parameters:
+        - in: query
+          name: tags
+          required: false
+          description: Comma-separated list of session tags to filter by. Sessions must contain all provided tags.
+          schema:
+            type: string
+          example: production,scraping
+        - in: query
+          name: domains
+          required: false
+          description: Comma-separated list of domains to filter by. Sessions must contain all provided domains.
+          schema:
+            type: string
+          example: example.com,anchorbrowser.io
+        - in: query
+          name: created_from
+          required: false
+          description: Include sessions created at or after this timestamp (ISO 8601).
+          schema:
+            type: string
+            format: date-time
+        - in: query
+          name: created_to
+          required: false
+          description: Include sessions created at or before this timestamp (ISO 8601).
+          schema:
+            type: string
+            format: date-time
+        - in: query
+          name: batch_id
+          required: false
+          description: Filter sessions by batch identifier.
+          schema:
+            type: string
+        - in: query
+          name: task_initiated
+          required: false
+          description: Filter by whether the session was initiated by a task.
+          schema:
+            type: boolean
+        - in: query
+          name: playground
+          required: false
+          description: Filter by whether the session is a playground session.
+          schema:
+            type: boolean
+        - in: query
+          name: proxy
+          required: false
+          description: Filter by whether proxy was active for the session.
+          schema:
+            type: boolean
+        - in: query
+          name: extra_stealth
+          required: false
+          description: Filter by whether extra stealth mode was active for the session.
+          schema:
+            type: boolean
+        - in: query
+          name: profile_name
+          required: false
+          description: Filter sessions by browser profile name (case-insensitive partial match).
+          schema:
+            type: string
+          example: Default profile
       responses:
         '200':
           description: Successfully retrieved status for all browser sessions
@@ -2609,6 +2743,83 @@ paths:
                 $ref: '#/components/schemas/SessionListResponse'
         '401':
           description: Invalid API Key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v1/sessions/history:
+    get:
+      summary: Get Sessions History
+      description: Retrieves a list of sessions for a team.
+      security:
+        - api_key_header: []
+      tags:
+        - Browser Sessions
+      parameters:
+        - in: query
+          name: from_date
+          required: false
+          description: Start date for filtering (ISO 8601 format).
+          schema:
+            type: string
+            format: date-time
+        - in: query
+          name: to_date
+          required: false
+          description: End date for filtering (ISO 8601 format).
+          schema:
+            type: string
+            format: date-time
+        - in: query
+          name: metrics
+          required: false
+          description: Metrics to include in the response.
+          schema:
+            oneOf:
+              - type: string
+              - type: array
+                items:
+                  type: string
+                  enum:
+                    - session_count
+                    - proxy_bytes
+                    - ai_steps
+                    - session_hours
+                    - credits_used
+            default:
+              - session_count
+        - in: query
+          name: page
+          required: false
+          description: Page number for pagination.
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - in: query
+          name: limit
+          required: false
+          description: Number of records per page.
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+            default: 100
+      responses:
+        '200':
+          description: Session history analytics retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionHistoryResponse'
+        '400':
+          description: Bad Request
           content:
             application/json:
               schema:
@@ -5725,7 +5936,7 @@ paths:
         Retrieves execution history for a task, including success/failure status,
         execution times, and outputs. Results can be filtered by version and status.
         
-        If you are using the new Task Builder, see the non-deprecated Tasks endpoints in this API reference.
+        If you are using the new Task Builder, see the Tasks V2 endpoints in this API reference.
       security:
         - api_key_header: []
       tags:
@@ -5794,7 +6005,7 @@ paths:
         Retrieves a single execution result by its ID. This endpoint is useful for polling
         execution status in async mode or retrieving detailed execution information.
         
-        If you are using the new Task Builder, see the non-deprecated Tasks endpoints in this API reference.
+        If you are using the new Task Builder, see the Tasks V2 endpoints in this API reference.
       security:
         - api_key_header: []
       tags:
@@ -5840,7 +6051,7 @@ paths:
       description: |
         Retrieves a specific version of a task, including the full code content.
         
-        If you are using the new Task Builder, see the non-deprecated Tasks endpoints in this API reference.
+        If you are using the new Task Builder, see the Tasks V2 endpoints in this API reference.
       security:
         - api_key_header: []
       tags:
@@ -5942,7 +6153,7 @@ paths:
         Soft deletes a specific version of a task. The version will no longer be accessible
         but the data is preserved for potential recovery.
         
-        If you are using the new Task Builder, see the non-deprecated Tasks endpoints in this API reference.
+        If you are using the new Task Builder, see the Tasks V2 endpoints in this API reference.
       security:
         - api_key_header: []
       tags:
