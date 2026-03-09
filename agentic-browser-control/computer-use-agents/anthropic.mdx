@@ -18,7 +18,8 @@ Anthropic Computer Use (`anthropic-cua`) leverages Claude's vision and reasoning
 
 | Model | Model ID | Best For |
 |-------|----------|----------|
-| Claude Opus 4.5 | `claude-opus-4-5-20251101` | Most advanced reasoning, complex workflows **(default)** |
+| Claude Opus 4.6 | `claude-opus-4-6` | Most advanced reasoning, complex workflows **(default)** |
+| Claude Opus 4.5 | `claude-opus-4-5-20251101` | Previous generation, complex workflows |
 | Claude Sonnet 4.5 | `claude-sonnet-4-5-20250929` | Balanced performance, general automation |
 | Claude Opus 4 | `claude-opus-4-20250514` | Advanced coding and agentic tasks |
 | Claude Sonnet 4 | `claude-sonnet-4-20250514` | Fast, reliable automation |
@@ -40,7 +41,7 @@ const response = await anchorClient.agent.task(
     taskOptions: {
       url: 'https://github.com',
       agent: 'anthropic-cua',
-      // model: 'claude-opus-4-5-20251101',  // Default model
+      // model: 'claude-opus-4-6',  // Default model
       maxSteps: 30
     }
   }
@@ -60,7 +61,7 @@ response = anchor_client.agent.task(
     task_options={
         'url': 'https://github.com',
         'agent': 'anthropic-cua',
-        # 'model': 'claude-opus-4-5-20251101',  # Default model
+        # 'model': 'claude-opus-4-6',  # Default model
         'max_steps': 30
     }
 )
@@ -75,7 +76,7 @@ print(response)
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `agent` | string | Must be `anthropic-cua` |
-| `model` | string | Claude model to use (default: `claude-opus-4-5-20251101`) |
+| `model` | string | Claude model to use (default: `claude-opus-4-6`) |
 | `url` | string | Starting URL for the task |
 | `max_steps` | integer | Maximum actions the agent can take |
 | `output_schema` | object | JSON Schema for structured output |
@@ -123,7 +124,7 @@ Learn more about [domain-scoped secrets and TOTP support](/agentic-browser-contr
 
 ## Best Practices
 
-- **Opus 4.5 is the default** - most capable model for complex workflows
+- **Opus 4.6 is the default** - most capable model for complex workflows
 - **Use Sonnet 4.5** for faster automation when speed is important
 - **Provide clear, specific prompts** describing the exact task to complete
 
