@@ -2379,9 +2379,8 @@ paths:
           name: limit
           schema:
             type: string
-            enum: ['10', '20', '50']
             default: '10'
-          description: Number of sessions per page.
+          description: Number of sessions per page (1-100).
         - in: query
           name: sort_by
           schema:
