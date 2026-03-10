@@ -429,6 +429,119 @@ components:
               items:
                 $ref: '#/components/schemas/SessionStatus'
 
+    SessionHistoryPageItem:
+      type: object
+      description: A single session record in paginated history listing.
+      properties:
+        id:
+          type: string
+          description: Unique session identifier.
+        status:
+          type: string
+          description: Current session status.
+        tags:
+          type: array
+          nullable: true
+          description: Tags associated with the session.
+          items:
+            type: string
+        headless:
+          type: boolean
+          description: Whether the session ran in headless mode.
+        recording:
+          type: boolean
+          description: Whether recording was enabled for the session.
+        used_credits:
+          oneOf:
+            - type: number
+            - type: string
+              pattern: '^-?\d+(\.\d+)?$'
+            - type: string
+              enum: ['N/A']
+          description: Credits consumed by the session (number or decimal string), or `N/A` while still running.
+        proxy_bytes:
+          type: number
+          nullable: true
+          description: Proxy bandwidth used in bytes.
+        proxy_type:
+          type: string
+          nullable: true
+          description: Proxy type configured for the session.
+        steps:
+          type: number
+          nullable: true
+          description: Number of AI/browser steps recorded.
+        duration:
+          type: number
+          nullable: true
+          description: Session duration in seconds.
+        created_at:
+          type: string
+          format: date-time
+          description: Session creation timestamp in UTC ISO 8601 format.
+        user_configuration:
+          type: object
+          additionalProperties: true
+          description: Full user configuration payload saved for the session.
+        task_initiated:
+          type: boolean
+          description: Whether the session was initiated by a task execution.
+        task_executions_count:
+          type: number
+          description: Number of non-internal task executions associated with this session.
+        api_key_name:
+          type: string
+          description: Display name of the API key that created the session.
+        browser_ip:
+          type: string
+          nullable: true
+          description: Browser/proxy IP observed for the session.
+        domains:
+          type: array
+          nullable: true
+          description: Domains observed during session execution.
+          items:
+            type: string
+      required:
+        - id
+        - status
+        - headless
+        - recording
+        - used_credits
+        - created_at
+        - user_configuration
+        - task_initiated
+        - task_executions_count
+        - api_key_name
+        - browser_ip
+
+    SessionHistoryPageResponse:
+      type: object
+      description: Paginated session history listing response.
+      properties:
+        data:
+          type: object
+          properties:
+            sessions:
+              type: array
+              description: Session records in the current page.
+              items:
+                $ref: '#/components/schemas/SessionHistoryPageItem'
+            total:
+              type: number
+              description: Total number of matching sessions.
+            page:
+              type: number
+              description: Current page number.
+            total_pages:
+              type: number
+              description: Total number of pages.
+          required:
+            - sessions
+            - total
+            - page
+            - total_pages
+
     SessionHistoryDataPoint:
       type: object
       properties:
@@ -2606,6 +2719,174 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
   /v1/sessions:
+    get:
+      summary: List Sessions History Page
+      description: |
+        Retrieves a paginated list of sessions for the authenticated team with support for
+        sorting and advanced filtering. This endpoint mirrors the backend session history-page
+        filtering behavior.
+      security:
+        - api_key_header: []
+      tags:
+        - Browser Sessions
+      parameters:
+        - in: query
+          name: page
+          required: false
+          description: Page number to fetch.
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - in: query
+          name: limit
+          required: false
+          description: Number of sessions per page. Supported values are 10, 20, and 50.
+          schema:
+            type: integer
+            enum: [10, 20, 50]
+            default: 10
+        - in: query
+          name: sort_by
+          required: false
+          description: |
+            Sort field. Common values are `created_at`, `session_id`, `used_credits`,
+            `created_at`, and `api_key_name`.
+          schema:
+            type: string
+            default: created_at
+        - in: query
+          name: sort_order
+          required: false
+          description: Sort direction.
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: asc
+        - in: query
+          name: search
+          required: false
+          description: Comma-separated tag search terms (partial, case-insensitive).
+          schema:
+            type: string
+        - in: query
+          name: status
+          required: false
+          description: Exact session status filter.
+          schema:
+            type: string
+        - in: query
+          name: tags
+          required: false
+          description: Comma-separated tag list. Session must include all provided tags.
+          schema:
+            type: string
+          example: production,scraping
+        - in: query
+          name: domains
+          required: false
+          description: Comma-separated domain list. Session must include all provided domains.
+          schema:
+            type: string
+          example: example.com,anchorbrowser.io
+        - in: query
+          name: created_from
+          required: false
+          description: Include sessions created at or after this timestamp (ISO 8601).
+          schema:
+            type: string
+            format: date-time
+        - in: query
+          name: created_to
+          required: false
+          description: Include sessions created at or before this timestamp (ISO 8601).
+          schema:
+            type: string
+            format: date-time
+        - in: query
+          name: batch_id
+          required: false
+          description: Filter by batch identifier.
+          schema:
+            type: string
+        - in: query
+          name: task_initiated
+          required: false
+          description: Filter by whether the session was task-initiated.
+          schema:
+            type: boolean
+        - in: query
+          name: playground
+          required: false
+          description: Filter by whether the session is a playground session.
+          schema:
+            type: boolean
+        - in: query
+          name: proxy
+          required: false
+          description: Filter by whether proxy was active for the session.
+          schema:
+            type: boolean
+        - in: query
+          name: extra_stealth
+          required: false
+          description: Filter by whether extra stealth mode was active.
+          schema:
+            type: boolean
+        - in: query
+          name: profile_name
+          required: false
+          description: Case-insensitive partial match on browser profile name.
+          schema:
+            type: string
+          example: Default profile
+      responses:
+        '200':
+          description: Paginated sessions history retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionHistoryPageResponse'
+              examples:
+                filteredSessionsPage:
+                  summary: Example filtered session page
+                  value:
+                    data:
+                      sessions:
+                        - id: sess_123456
+                          status: completed
+                          tags: ['production', 'scraping']
+                          headless: false
+                          recording: true
+                          used_credits: 12.5
+                          proxy_bytes: 102400
+                          proxy_type: anchor_proxy
+                          steps: 48
+                          duration: 420
+                          created_at: '2026-03-09T12:34:56.789Z'
+                          user_configuration:
+                            session:
+                              idle_timeout: 300
+                          task_initiated: true
+                          task_executions_count: 2
+                          api_key_name: automation-key
+                          browser_ip: 192.0.2.10
+                          domains: ['example.com']
+                      total: 145
+                      page: 1
+                      total_pages: 15
+        '400':
+          description: Invalid query parameters (for example unsupported limit or sort options).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
     post:
       summary: Start Browser Session
       description: Allocates a new browser session for the user, with optional configurations for ad-blocking, captcha solving, proxy usage, and idle timeout.
