@@ -1,0 +1,210 @@
+---
+title: 'Sensitive Data Masking'
+description: 'Automatically detect and mask sensitive data like passwords, emails, phone numbers, and credit cards in your browser sessions'
+icon: 'eye-slash'
+---
+
+Sensitive data masking automatically detects and hides sensitive information displayed in web pages. It blurs input fields containing passwords, emails, and credit card numbers, and masks sensitive text visible on the page. This is useful for browser automation workflows that handle real user data, recordings, or live views where sensitive information should not be exposed.
+
+<Note>
+Sensitive data masking is disabled by default. Enable it when your sessions handle real credentials, financial data, or other PII that should not appear in recordings or live views.
+</Note>
+
+## Quick Start
+
+<CodeGroup>
+```javascript node.js
+import AnchorBrowser from 'anchorbrowser';
+
+(async () => {
+  const anchorClient = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
+  
+  const session = await anchorClient.sessions.create({
+    browser: {
+      sensitive_data_mask: {
+        active: true
+      }
+    }
+  });
+  
+  console.log("Session:", session.data.id);
+})().catch(console.error);
+```
+
+```python python
+import os
+from anchorbrowser import Anchorbrowser
+
+anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
+
+session = anchor_client.sessions.create(
+    browser={
+        "sensitive_data_mask": {
+            "active": True
+        }
+    }
+)
+
+print("Session:", session.data.id)
+```
+</CodeGroup>
+
+## What Gets Masked
+
+When enabled, the extension automatically detects and masks the following without any additional configuration.
+
+### Input Fields (blurred)
+
+The following input fields are visually blurred with `filter: blur(8px)`:
+
+- Password fields (`type="password"`)
+- Email fields (`type="email"`)
+- Phone fields (`type="tel"`)
+- Credit card fields (detected by `name` or `autocomplete` attributes containing `card`, `cc`, `cvv`, `cvc`, `expir`)
+- SSN fields (detected by `name` containing `ssn`, `social_security`)
+- Token and API key fields (detected by `name` containing `token`, `secret`, `api_key`, `access_key`, `private_key`)
+- One-time code fields (`autocomplete="one-time-code"`)
+
+### Text Content
+
+Sensitive patterns found in visible text on the page are handled in two ways:
+
+- **Dedicated elements**: When an element's text is primarily a sensitive value (e.g., `<span>alice@example.com</span>`), the entire element is blurred.
+- **Inline text**: When a sensitive value is embedded in a larger sentence (e.g., "Contact us at alice@example.com for help"), only the matched portion is replaced with `****`.
+
+Built-in patterns include email addresses, phone numbers, credit card numbers, and long token-like strings (40+ characters).
+
+## Custom CSS Selectors
+
+You can specify additional CSS selectors to blur elements that the automatic detection might not cover. Custom selectors can be applied globally or scoped to specific sites.
+
+<CodeGroup>
+```javascript node.js
+import AnchorBrowser from 'anchorbrowser';
+
+(async () => {
+  const anchorClient = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
+  
+  const session = await anchorClient.sessions.create({
+    browser: {
+      sensitive_data_mask: {
+        active: true,
+        custom_selectors: [".api-key-display", "#secret-field", "[data-sensitive]"],
+        site_selectors: {
+          "app.example.com": [".account-number", ".routing-number"],
+          "*.bank.com": [".balance", ".ssn-display"]
+        }
+      }
+    }
+  });
+  
+  console.log("Session:", session.data.id);
+})().catch(console.error);
+```
+
+```python python
+import os
+from anchorbrowser import Anchorbrowser
+
+anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
+
+session = anchor_client.sessions.create(
+    browser={
+        "sensitive_data_mask": {
+            "active": True,
+            "custom_selectors": [".api-key-display", "#secret-field", "[data-sensitive]"],
+            "site_selectors": {
+                "app.example.com": [".account-number", ".routing-number"],
+                "*.bank.com": [".balance", ".ssn-display"]
+            }
+        }
+    }
+)
+
+print("Session:", session.data.id)
+```
+</CodeGroup>
+
+### Selector Options
+
+| Option | Type | Description |
+|---|---|---|
+| `custom_selectors` | `string[]` | CSS selectors applied globally across all sites. Matched elements are blurred. |
+| `site_selectors` | `object` | Per-site CSS selectors. Keys are hostnames (supports `*.` wildcard prefix), values are arrays of CSS selectors. |
+
+Site selector keys support wildcard matching:
+- `"example.com"` matches only `example.com`
+- `"*.example.com"` matches `app.example.com`, `dashboard.example.com`, etc.
+
+## Custom Regex Patterns
+
+For data formats not covered by the built-in patterns, you can define custom regular expressions. Custom patterns follow the same blur-vs-replace logic as built-in patterns.
+
+<CodeGroup>
+```javascript node.js
+import AnchorBrowser from 'anchorbrowser';
+
+(async () => {
+  const anchorClient = new AnchorBrowser({apiKey: process.env.ANCHOR_API_KEY});
+  
+  const session = await anchorClient.sessions.create({
+    browser: {
+      sensitive_data_mask: {
+        active: true,
+        custom_patterns: [
+          { regex: "AKIA[0-9A-Z]{16}", mask: "[AWS_KEY]" },
+          { regex: "ghp_[a-zA-Z0-9]{36}", mask: "[GITHUB_TOKEN]" },
+          { regex: "sk-[a-zA-Z0-9]{48}" }
+        ]
+      }
+    }
+  });
+  
+  console.log("Session:", session.data.id);
+})().catch(console.error);
+```
+
+```python python
+import os
+from anchorbrowser import Anchorbrowser
+
+anchor_client = Anchorbrowser(api_key=os.getenv("ANCHOR_API_KEY"))
+
+session = anchor_client.sessions.create(
+    browser={
+        "sensitive_data_mask": {
+            "active": True,
+            "custom_patterns": [
+                {"regex": "AKIA[0-9A-Z]{16}", "mask": "[AWS_KEY]"},
+                {"regex": "ghp_[a-zA-Z0-9]{36}", "mask": "[GITHUB_TOKEN]"},
+                {"regex": "sk-[a-zA-Z0-9]{48}"}
+            ]
+        }
+    }
+)
+
+print("Session:", session.data.id)
+```
+</CodeGroup>
+
+### Pattern Options
+
+| Option | Type | Required | Description |
+|---|---|---|---|
+| `regex` | `string` | Yes | A regular expression pattern to match sensitive data. |
+| `mask` | `string` | No | Replacement string for matched text. Defaults to `****`. |
+
+## Configuration Reference
+
+| Option | Type | Default | Description |
+|---|---|---|---|
+| `active` | `boolean` | `false` | Enable or disable sensitive data masking. |
+| `custom_selectors` | `string[]` | `[]` | Additional CSS selectors to blur globally. |
+| `site_selectors` | `object` | `{}` | Per-site CSS selectors keyed by hostname. |
+| `custom_patterns` | `object[]` | `[]` | Custom regex patterns with optional replacement strings. |
+
+## Related Features
+
+- [Recording](/essentials/recording) - Session recordings where sensitive data masking prevents PII exposure
+- [Browser Live View](/advanced/browser-live-view) - Live view where masked data stays hidden from observers
+- [Stealth](/essentials/stealth) - Bot detection avoidance (separate concern from data masking)

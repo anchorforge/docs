@@ -92,6 +92,7 @@
               "advanced/captcha-solving",
               "advanced/adblocker",
               "advanced/popup-blocker",
+              "advanced/sensitive-data-masking",
               "advanced/browser-live-view",
               "essentials/tool-building",
               {
