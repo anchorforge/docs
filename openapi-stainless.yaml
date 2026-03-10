@@ -2361,175 +2361,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-    get:
-      summary: List Browser Sessions
-      description: Returns a paginated list of browser sessions with filtering and sorting options.
-      security:
-        - api_key_header: []
-      tags:
-        - Browser Sessions
-      parameters:
-        - in: query
-          name: page
-          schema:
-            type: string
-            default: '1'
-          description: Page number for pagination.
-        - in: query
-          name: limit
-          schema:
-            type: string
-            default: '10'
-          description: Number of sessions per page (1-100).
-        - in: query
-          name: sort_by
-          schema:
-            type: string
-            enum: [created_at, session_id, used_credits, api_key_name]
-            default: created_at
-          description: Field to sort results by.
-        - in: query
-          name: sort_order
-          schema:
-            type: string
-            enum: [asc, desc]
-            default: desc
-          description: Sort order.
-        - in: query
-          name: status
-          schema:
-            type: string
-            enum: [running, completed, failed]
-          description: Filter by session status.
-        - in: query
-          name: tags
-          schema:
-            type: string
-          description: Comma-separated list of tags to filter by (exact match, AND logic).
-        - in: query
-          name: domains
-          schema:
-            type: string
-          description: Comma-separated list of domains to filter by.
-        - in: query
-          name: created_from
-          schema:
-            type: string
-          description: Filter sessions created after this date.
-        - in: query
-          name: created_to
-          schema:
-            type: string
-          description: Filter sessions created before this date.
-        - in: query
-          name: batch_id
-          schema:
-            type: string
-          description: Filter by batch ID.
-        - in: query
-          name: profile_name
-          schema:
-            type: string
-          description: Filter by browser profile name.
-        - in: query
-          name: proxy
-          schema:
-            type: string
-            enum: ['true', 'false']
-          description: Filter by proxy usage.
-        - in: query
-          name: extra_stealth
-          schema:
-            type: string
-            enum: ['true', 'false']
-          description: Filter by extra stealth mode.
-      responses:
-        '200':
-          description: Successfully returned paginated list of sessions.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      sessions:
-                        type: array
-                        items:
-                          type: object
-                          properties:
-                            id:
-                              type: string
-                              description: Session ID.
-                            status:
-                              type: string
-                              enum: [running, completed, failed]
-                            tags:
-                              type: array
-                              items:
-                                type: string
-                              nullable: true
-                            headless:
-                              type: boolean
-                            recording:
-                              type: boolean
-                            used_credits:
-                              oneOf:
-                                - type: number
-                                - type: string
-                                  enum: ['N/A']
-                            proxy_bytes:
-                              type: number
-                            proxy_type:
-                              type: string
-                            steps:
-                              type: integer
-                              nullable: true
-                            duration:
-                              type: integer
-                              nullable: true
-                            created_at:
-                              type: number
-                              description: Creation timestamp (epoch ms).
-                            task_initiated:
-                              type: boolean
-                            task_executions_count:
-                              type: integer
-                            api_key_name:
-                              type: string
-                            browser_ip:
-                              type: string
-                              nullable: true
-                            domains:
-                              type: array
-                              items:
-                                type: string
-                      pagination:
-                        type: object
-                        properties:
-                          current_page:
-                            type: integer
-                          total_pages:
-                            type: integer
-                          total_records:
-                            type: integer
-                          has_next:
-                            type: boolean
-                          has_prev:
-                            type: boolean
-        '400':
-          description: Bad Request - Invalid query parameters.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
-          description: Internal server error.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
   /v1/sessions/all:
     delete:
       summary: End All Sessions
@@ -3212,6 +3043,149 @@ paths:
                     type: string
         '500':
           description: Failed to take screenshot
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /v1/sessions/{sessionId}/page-pdf:
+    get:
+      summary: Get Page PDF
+      description: Generates a PDF of the current page in the browser session and returns it as a binary PDF file. Accepts optional query parameters to customize the PDF output (paper size, margins, orientation, etc.).
+      security:
+        - api_key_header: []
+      tags:
+        - OS Level Control
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          description: The ID of the browser session
+          schema:
+            type: string
+            format: uuid
+        - name: landscape
+          in: query
+          required: false
+          description: Paper orientation. Defaults to false.
+          schema:
+            type: boolean
+        - name: displayHeaderFooter
+          in: query
+          required: false
+          description: Display header and footer. Defaults to false.
+          schema:
+            type: boolean
+        - name: printBackground
+          in: query
+          required: false
+          description: Print background graphics. Defaults to true.
+          schema:
+            type: boolean
+        - name: scale
+          in: query
+          required: false
+          description: Scale of the webpage rendering (0.1 to 2). Defaults to 1.
+          schema:
+            type: number
+            minimum: 0.1
+            maximum: 2
+        - name: paperWidth
+          in: query
+          required: false
+          description: Paper width in inches. Defaults to 8.5.
+          schema:
+            type: number
+        - name: paperHeight
+          in: query
+          required: false
+          description: Paper height in inches. Defaults to 11.
+          schema:
+            type: number
+        - name: marginTop
+          in: query
+          required: false
+          description: Top margin in inches. Defaults to ~0.4.
+          schema:
+            type: number
+        - name: marginBottom
+          in: query
+          required: false
+          description: Bottom margin in inches. Defaults to ~0.4.
+          schema:
+            type: number
+        - name: marginLeft
+          in: query
+          required: false
+          description: Left margin in inches. Defaults to ~0.4.
+          schema:
+            type: number
+        - name: marginRight
+          in: query
+          required: false
+          description: Right margin in inches. Defaults to ~0.4.
+          schema:
+            type: number
+        - name: pageRanges
+          in: query
+          required: false
+          description: "Page ranges to print, e.g. '1-5, 8, 11-13'. Defaults to all pages."
+          schema:
+            type: string
+            pattern: '^\d+(-\d+)?(,\s*\d+(-\d+)?)*$'
+        - name: headerTemplate
+          in: query
+          required: false
+          description: HTML template for the print header.
+          schema:
+            type: string
+        - name: footerTemplate
+          in: query
+          required: false
+          description: HTML template for the print footer.
+          schema:
+            type: string
+        - name: preferCSSPageSize
+          in: query
+          required: false
+          description: Prefer page size as defined by CSS. Defaults to true.
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: PDF generated successfully
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Invalid parameters
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  details:
+                    type: array
+                    items:
+                      type: string
+        '404':
+          description: Session not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          description: Failed to generate PDF
           content:
             application/json:
               schema:
