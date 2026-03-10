@@ -4201,17 +4201,89 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /v1/tools/get-page-pdf:
-    get:
+  /v1/tools/page-pdf:
+    post:
       summary: Get Page PDF
-      description: Retrieves the PDF of the current page.
+      description: Generates a PDF of the current page for a browser session and returns it as a binary PDF file.
       tags:
         - Tools
       security:
         - api_key_header: []
+      parameters:
+        - in: query
+          name: sessionId
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: Optional browser session ID. If omitted, `url` in the request body is required.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - url
+              properties:
+                url:
+                  type: string
+                  format: uri
+                  description: The URL of the page to print to PDF.
+                landscape:
+                  type: boolean
+                  description: Paper orientation. Defaults to false.
+                displayHeaderFooter:
+                  type: boolean
+                  description: Display header and footer. Defaults to false.
+                printBackground:
+                  type: boolean
+                  description: Print background graphics. Defaults to false.
+                scale:
+                  type: number
+                  minimum: 0.1
+                  maximum: 2
+                  description: Scale of the webpage rendering. Defaults to 1.
+                paperWidth:
+                  type: number
+                  exclusiveMinimum: 0
+                  description: Paper width in inches. Defaults to 8.5.
+                paperHeight:
+                  type: number
+                  exclusiveMinimum: 0
+                  description: Paper height in inches. Defaults to 11.
+                marginTop:
+                  type: number
+                  minimum: 0
+                  description: Top margin in inches. Defaults to ~0.4.
+                marginBottom:
+                  type: number
+                  minimum: 0
+                  description: Bottom margin in inches. Defaults to ~0.4.
+                marginLeft:
+                  type: number
+                  minimum: 0
+                  description: Left margin in inches. Defaults to ~0.4.
+                marginRight:
+                  type: number
+                  minimum: 0
+                  description: Right margin in inches. Defaults to ~0.4.
+                pageRanges:
+                  type: string
+                  pattern: '^\d+(-\d+)?(,\s*\d+(-\d+)?)*$'
+                  description: "Page ranges to print, e.g. '1-5, 8, 11-13'. Defaults to all pages."
+                headerTemplate:
+                  type: string
+                  description: HTML template for the print header.
+                footerTemplate:
+                  type: string
+                  description: HTML template for the print footer.
+                preferCSSPageSize:
+                  type: boolean
+                  description: Prefer page size as defined by CSS. Defaults to false.
       responses:
         '200':
-          description: PDF retrieved successfully
+          description: PDF generated successfully
           content:
             application/pdf:
               schema:
@@ -4230,6 +4302,24 @@ paths:
                     type: array
                     items:
                       type: string
+        '404':
+          description: Session not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          description: Failed to generate PDF
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
   /v1/sessions/{sessionId}/screenshot:
     get:
       summary: Take Screenshot
@@ -4265,149 +4355,6 @@ paths:
                     type: string
         '500':
           description: Failed to take screenshot
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-
-  /v1/sessions/{sessionId}/page-pdf:
-    get:
-      summary: Get Page PDF
-      description: Generates a PDF of the current page in the browser session and returns it as a binary PDF file. Accepts optional query parameters to customize the PDF output (paper size, margins, orientation, etc.).
-      security:
-        - api_key_header: []
-      tags:
-        - OS Level Control
-      parameters:
-        - name: sessionId
-          in: path
-          required: true
-          description: The ID of the browser session
-          schema:
-            type: string
-            format: uuid
-        - name: landscape
-          in: query
-          required: false
-          description: Paper orientation. Defaults to false.
-          schema:
-            type: boolean
-        - name: displayHeaderFooter
-          in: query
-          required: false
-          description: Display header and footer. Defaults to false.
-          schema:
-            type: boolean
-        - name: printBackground
-          in: query
-          required: false
-          description: Print background graphics. Defaults to true.
-          schema:
-            type: boolean
-        - name: scale
-          in: query
-          required: false
-          description: Scale of the webpage rendering (0.1 to 2). Defaults to 1.
-          schema:
-            type: number
-            minimum: 0.1
-            maximum: 2
-        - name: paperWidth
-          in: query
-          required: false
-          description: Paper width in inches. Defaults to 8.5.
-          schema:
-            type: number
-        - name: paperHeight
-          in: query
-          required: false
-          description: Paper height in inches. Defaults to 11.
-          schema:
-            type: number
-        - name: marginTop
-          in: query
-          required: false
-          description: Top margin in inches. Defaults to ~0.4.
-          schema:
-            type: number
-        - name: marginBottom
-          in: query
-          required: false
-          description: Bottom margin in inches. Defaults to ~0.4.
-          schema:
-            type: number
-        - name: marginLeft
-          in: query
-          required: false
-          description: Left margin in inches. Defaults to ~0.4.
-          schema:
-            type: number
-        - name: marginRight
-          in: query
-          required: false
-          description: Right margin in inches. Defaults to ~0.4.
-          schema:
-            type: number
-        - name: pageRanges
-          in: query
-          required: false
-          description: "Page ranges to print, e.g. '1-5, 8, 11-13'. Defaults to all pages."
-          schema:
-            type: string
-            pattern: '^\d+(-\d+)?(,\s*\d+(-\d+)?)*$'
-        - name: headerTemplate
-          in: query
-          required: false
-          description: HTML template for the print header.
-          schema:
-            type: string
-        - name: footerTemplate
-          in: query
-          required: false
-          description: HTML template for the print footer.
-          schema:
-            type: string
-        - name: preferCSSPageSize
-          in: query
-          required: false
-          description: Prefer page size as defined by CSS. Defaults to true.
-          schema:
-            type: boolean
-      responses:
-        '200':
-          description: PDF generated successfully
-          content:
-            application/pdf:
-              schema:
-                type: string
-                format: binary
-        '400':
-          description: Invalid parameters
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                  details:
-                    type: array
-                    items:
-                      type: string
-        '404':
-          description: Session not found
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-        '500':
-          description: Failed to generate PDF
           content:
             application/json:
               schema:
